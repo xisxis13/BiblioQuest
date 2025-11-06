@@ -86,7 +86,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
 
 export default {
-  name: 'Login',
+  name: 'LoginPage',
   setup() {
     const authStore = useAuthStore()
     const router = useRouter()
@@ -135,17 +135,27 @@ export default {
     },
     
     async handleLogin() {
-      if (!this.validateForm()) return
-      
-      this.authStore.clearError()
-      
-      const result = await this.authStore.login({
-        email: this.form.email,
-        password: this.form.password
-      })
-      
-      if (result.success) {
-        this.router.push('/')
+      try {
+        console.log('Tentative de connexion...')
+        if (!this.validateForm()) return
+        
+        this.authStore.clearError()
+        
+        const result = await this.authStore.login({
+          username: this.form.email,  // On envoie l'email dans le champ 'username'
+          password: this.form.password
+        })
+        
+        console.log('Résultat login:', result)
+        
+        if (result.success) {
+          console.log('Connexion réussie, redirection...')
+          this.router.push('/')
+        } else {
+          console.error('Échec de connexion:', result.error)
+        }
+      } catch (error) {
+        console.error('Erreur dans handleLogin:', error)
       }
     }
   },

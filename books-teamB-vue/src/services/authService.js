@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-// Configuration API
-const API_BASE_URL = 'http://localhost:3000/api'
+// Configuration API - Backend Spring Boot
+const API_BASE_URL = 'http://localhost:8080/api'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -40,16 +40,19 @@ export const authService = {
   // Connexion
   async login(credentials) {
     try {
+      console.log('AuthService: Calling backend with:', credentials)
       const response = await api.post('/auth/login', credentials)
-      const { token, user } = response.data
+      console.log('AuthService: Backend response:', response.data)
       
-      // Stocker les données d'authentification
-      localStorage.setItem('auth_token', token)
+      const user = response.data
+      
+      // Stocker les données d'authentification (simple, sans JWT pour l'instant)
       localStorage.setItem('auth_user', JSON.stringify(user))
       
-      return { token, user }
+      return { user }
     } catch (error) {
-      const message = error.response?.data?.message || 'Erreur de connexion'
+      console.error('AuthService login error:', error)
+      const message = error.response?.data || 'Erreur de connexion'
       throw new Error(message)
     }
   },
@@ -58,15 +61,14 @@ export const authService = {
   async register(userData) {
     try {
       const response = await api.post('/auth/register', userData)
-      const { token, user } = response.data
+      const user = response.data
       
-      // Stocker les données d'authentification
-      localStorage.setItem('auth_token', token)
+      // Stocker les données d'authentification (simple, sans JWT pour l'instant)
       localStorage.setItem('auth_user', JSON.stringify(user))
       
-      return { token, user }
+      return { user }
     } catch (error) {
-      const message = error.response?.data?.message || 'Erreur d\'inscription'
+      const message = error.response?.data || 'Erreur d\'inscription'
       throw new Error(message)
     }
   },

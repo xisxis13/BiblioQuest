@@ -30,15 +30,22 @@ export const useAuthStore = defineStore('auth', {
 
     // Connexion
     async login(credentials) {
+      console.log('AuthStore login called with:', credentials)
       this.loading = true
       this.error = null
       
       try {
-        const { token, user } = await authService.login(credentials)
-        this.token = token
+        const result = await authService.login(credentials)
+        console.log('AuthService result:', result)
+        
+        const { user } = result
+        this.token = 'simple-auth' // Token simple pour l'instant
         this.user = user
+        
+        console.log('User set in store:', this.user)
         return { success: true }
       } catch (error) {
+        console.error('Login error in authStore:', error)
         this.error = error.message
         return { success: false, error: error.message }
       } finally {
@@ -52,8 +59,8 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
       
       try {
-        const { token, user } = await authService.register(userData)
-        this.token = token
+        const { user } = await authService.register(userData)
+        this.token = 'simple-auth' // Token simple pour l'instant
         this.user = user
         return { success: true }
       } catch (error) {
