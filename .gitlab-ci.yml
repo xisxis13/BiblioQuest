@@ -1,45 +1,44 @@
 stages:
   - build
-  - update
   - deploy
 
-build-azure:
-  stage: build
-  rules:
-    - if: $CI_COMMIT_TAG == "app"
-      when: never
-    - when: always
-  image:
-    name: hashicorp/terraform:1.7.5
-    #desactive l'entrypoint de l'image terraform pour pouvoir executer commande shell
-    entrypoint: [""]
-  variables:               # <- le provider lira ces vars automatiquement
-    ARM_CLIENT_ID: "$ARM_CLIENT_ID"
-    ARM_CLIENT_SECRET: "$ARM_CLIENT_SECRET"
-    ARM_TENANT_ID: "$ARM_TENANT_ID"
-    ARM_SUBSCRIPTION_ID: "$ARM_SUBSCRIPTION_ID"
-  before_script:
-    - cd terraform
-  script:
-    - echo "Mise en place de l'infrastructure azure"
-    #installe les providers avant de faire un apply
-    - terraform init -input=false
-    - terraform apply --auto-approve
+# build-azure:
+#   stage: build
+#   rules:
+#     - if: $CI_COMMIT_TAG == "app"
+#       when: never
+#     - when: always
+#   image:
+#     name: hashicorp/terraform:1.7.5
+#     #desactive l'entrypoint de l'image terraform pour pouvoir executer commande shell
+#     entrypoint: [""]
+#   variables:               # <- le provider lira ces vars automatiquement
+#     ARM_CLIENT_ID: "$ARM_CLIENT_ID"
+#     ARM_CLIENT_SECRET: "$ARM_CLIENT_SECRET"
+#     ARM_TENANT_ID: "$ARM_TENANT_ID"
+#     ARM_SUBSCRIPTION_ID: "$ARM_SUBSCRIPTION_ID"
+#   before_script:
+#     - cd terraform
+#   script:
+#     - echo "Mise en place de l'infrastructure azure"
+#     #installe les providers avant de faire un apply
+#     - terraform init -input=false
+#     - terraform apply --auto-approve
 
-    - echo "recuperation des variables..."
-    # Récupération des outputs Terraform
-    - export ACR_REGISTRY="$(terraform output -raw acr_login_server)"
-    - export ACR_USERNAME="$(terraform output -raw acr_admin_username)"
-    - export ACR_PASSWORD="$(terraform output -raw acr_admin_password_primary)"
-    # Écriture dans le fichier dotenv pour les jobs suivants
-    - echo "ACR_REGISTRY=$ACR_REGISTRY"   >  "$CI_PROJECT_DIR/acr.env"
-    - echo "ACR_USERNAME=$ACR_USERNAME"  >> "$CI_PROJECT_DIR/acr.env"
-    - echo "ACR_PASSWORD=$ACR_PASSWORD"  >> "$CI_PROJECT_DIR/acr.env"
+#     - echo "recuperation des variables..."
+#     # Récupération des outputs Terraform
+#     - export ACR_REGISTRY="$(terraform output -raw acr_login_server)"
+#     - export ACR_USERNAME="$(terraform output -raw acr_admin_username)"
+#     - export ACR_PASSWORD="$(terraform output -raw acr_admin_password_primary)"
+#     # Écriture dans le fichier dotenv pour les jobs suivants
+#     - echo "ACR_REGISTRY=$ACR_REGISTRY"   >  "$CI_PROJECT_DIR/acr.env"
+#     - echo "ACR_USERNAME=$ACR_USERNAME"  >> "$CI_PROJECT_DIR/acr.env"
+#     - echo "ACR_PASSWORD=$ACR_PASSWORD"  >> "$CI_PROJECT_DIR/acr.env"
 
-  artifacts:
-    reports:
-      dotenv: acr.env
-    expire_in: 1 week
+#   artifacts:
+#     reports:
+#       dotenv: acr.env
+#     expire_in: 1 week
 
 docker_images_push:
   stage: deploy
