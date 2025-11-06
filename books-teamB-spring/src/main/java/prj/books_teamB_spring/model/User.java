@@ -35,6 +35,6 @@ public class User {
 
     @NotBlank
     @Enumerated(EnumType.STRING)
-    private String Role;
+    private Role Role;
 
 }
