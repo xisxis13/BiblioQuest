@@ -59,7 +59,7 @@ variable "server_app_port" {
 }
 
 variable "client_app_port" {
-  description = "Port on which the flask app listens"
+  description = "Port on which the vue.js app listens"
   type        = string
   default     = "80"
 }

@@ -1,0 +1,29 @@
+server {
+  listen 80;
+  server_name _;
+
+  root /usr/share/nginx/html;
+  index index.html;
+
+  # Healthcheck
+  location = /healthz { access_log off; return 200; }
+
+  # Reverse proxy (le front appelle /api/…)
+  location /api/ {
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # IMPORTANT pour Azure : envoyer l'host de l'upstream + activer SNI
+    proxy_set_header Host $proxy_host;
+    proxy_ssl_server_name on;
+
+    # ${SERVER_URL} doit être SANS chemin /api (ex: https://attendance-server-app.azurewebsites.net)
+    proxy_pass ${SERVER_URL};
+  }
+
+  # Fallback SPA
+  location / { try_files $uri $uri/ /index.html; }
+}
