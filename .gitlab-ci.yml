@@ -53,7 +53,6 @@ docker_images_push:
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
   needs:
-    - job: build-azure
       artifacts: true
   before_script:
     # garde tes identifiants ACR en variables CI (ACR_USERNAME / ACR_PASSWORD)
