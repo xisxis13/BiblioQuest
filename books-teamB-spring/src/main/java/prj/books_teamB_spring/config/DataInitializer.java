@@ -7,6 +7,7 @@ import prj.books_teamB_spring.model.User;
 import prj.books_teamB_spring.model.Role;
 import prj.books_teamB_spring.repository.UserRepository;
 
+//Create a default Admin user
 @Configuration
 public class DataInitializer {
 
