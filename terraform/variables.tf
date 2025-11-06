@@ -31,13 +31,13 @@ variable "service_plan_name" {
 variable "server_app_name" {
   description = "Name of the spring App"
   type        = string
-  default     = "attendance-server-app"
+  default     = "books-server-app"
 }
 
 variable "client_app_name" {
   description = "Name of the flask App"
   type        = string
-  default     = "attendance-client-app"
+  default     = "books-client-app"
 }
 
 variable "spring_docker_image_name" {
