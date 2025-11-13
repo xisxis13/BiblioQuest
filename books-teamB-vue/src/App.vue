@@ -1,20 +1,30 @@
 <script>
+import { useAuthStore } from '@/stores/authStore'
+
 export default {
-  data() {
+  name: 'App',
+  setup() {
+    const authStore = useAuthStore()
+    
+    // Initialize authentication state when app starts
+    authStore.initializeAuth()
+    
     return {
-      text: 'Touch me'
+      text: 'Touch me',
+      authStore
     }
   }
 }
 </script>
 
-
 <template>
-  <h1>Un retour rapide sur le champ de saisie</h1>
-  <input v-model="text">
-  <p>Le champ de saisie contient : {{ text }}</p>
+  <div id="app">
+    <router-view />
+  </div>
 </template>
 
 <style>
-
+#app {
+  min-height: 100vh;
+}
 </style>
