@@ -14,7 +14,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -38,6 +40,7 @@ public class User {
     private String username;
 
     @NotBlank
+    @Email
     @Column(unique = true)
     private String email;
 
@@ -45,6 +48,7 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @NotNull
     private Role role;
 
     @ManyToMany
