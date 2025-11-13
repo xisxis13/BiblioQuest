@@ -6,7 +6,7 @@
         <div class="flex justify-center mb-6">
           <img src="@/assets/BCO.png" alt="Logo" class="logo-lg" />
         </div>
-        <h2 class="text-3xl font-bold text-gray-900 mb-2">Connexion</h2>
+        <h2 class="text-3xl font-bold text-red-900 mb-2">Connexion</h2>
         <p class="text-gray-600">Accédez à votre compte</p>
       </div>
 
@@ -110,44 +110,44 @@ export default {
     validateForm() {
       this.emailError = ''
       this.passwordError = ''
-      
+
       if (!this.form.email) {
         this.emailError = 'L\'email est requis'
         return false
       }
-      
+
       if (!this.form.email.includes('@')) {
         this.emailError = 'Format d\'email invalide'
         return false
       }
-      
+
       if (!this.form.password) {
         this.passwordError = 'Le mot de passe est requis'
         return false
       }
-      
+
       if (this.form.password.length < 6) {
         this.passwordError = 'Le mot de passe doit contenir au moins 6 caractères'
         return false
       }
-      
+
       return true
     },
-    
+
     async handleLogin() {
       try {
         console.log('Tentative de connexion...')
         if (!this.validateForm()) return
-        
+
         this.authStore.clearError()
-        
+
         const result = await this.authStore.login({
           username: this.form.email,  // On envoie l'email dans le champ 'username'
           password: this.form.password
         })
-        
+
         console.log('Résultat login:', result)
-        
+
         if (result.success) {
           console.log('Connexion réussie, redirection...')
           this.router.push('/')
@@ -159,7 +159,7 @@ export default {
       }
     }
   },
-  
+
   mounted() {
     // Rediriger si déjà connecté
     if (this.authStore.isAuthenticated) {

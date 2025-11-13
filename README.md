@@ -2,3 +2,5 @@
 
 ### Start docker config:
 ```docker compose up --build```
+### Stop docker config:
+```docker compose down```

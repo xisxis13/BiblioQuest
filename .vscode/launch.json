@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-BooksTeamBSpringApplication<books-teamB-spring>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "prj.books_teamB_spring.BooksTeamBSpringApplication",
+            "projectName": "books-teamB-spring",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
