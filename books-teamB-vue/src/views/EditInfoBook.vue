@@ -239,10 +239,15 @@ export default {
     // Initialiser l'authentification au montage
     this.authStore.initializeAuth()
 
-    // Rediriger si pas connecté       A REMETTRE APRES LES TESTS !!!!!!
-    //if (!this.authStore.isAuthenticated) {
-    //  this.router.push('/login')
-    //}
+    // Rediriger si pas connecté
+    if (!this.authStore.isAuthenticated) {
+      this.router.push('/login')
+    }
+
+    // Rediriger si pas Bibliothécaire/Admin
+    if (this.authStore.getUser.role != 'BIBLIOTHECAIRE' || this.authStore.getUser.role != 'ADMIN'){
+      this.router.push('/login')
+    }
 
     const now = new Date();
 
