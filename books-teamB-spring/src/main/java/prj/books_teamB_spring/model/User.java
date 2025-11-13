@@ -35,11 +35,7 @@ public class User {
     @NotBlank
     private String password;
 
-<<<<<<< HEAD
-}
-=======
     @Enumerated(EnumType.STRING)
     private Role role;
 
 }
->>>>>>> 8350d2b0c94d736d35024a39e2ff7e062ae0b99c
