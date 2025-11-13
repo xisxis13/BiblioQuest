@@ -13,8 +13,8 @@
       <!-- Formulaire -->
       <div class="card">
         <div class="card-body">
-          <form @submit.prevent="handleLogin" class="space-y-6">
-            <!-- Titre -->
+          <form @submit.prevent="handleEdit" class="space-y-6">
+            <!-- Titre (BOOK) -->
             <div>
               <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
                 Titre
@@ -27,15 +27,15 @@
                 class="input"
                 :class="{ 'input-error': titleError }"
                 placeholder="Titre du livre"
-                autocomplete="current-title"
+                autocomplete="off"
               />
               <p v-if="titleError" class="mt-1 text-sm text-red-600">{{ titleError }}</p>
             </div>
 
-            <!-- isbn -->
+            <!-- ISBN (EDITION) -->
             <div>
               <label for="isbn" class="block text-sm font-medium text-gray-700 mb-2">
-                Isbn
+                ISBN
               </label>
               <input
                 id="isbn"
@@ -43,17 +43,16 @@
                 type="text"
                 inputmode="numeric"
                 pattern="[0-9]*"
-                required
                 maxlength="13"
                 class="input"
                 :class="{ 'input-error': isbnError }"
-                placeholder="isbn"
-                autocomplete="current-isbn"
+                placeholder="ISBN"
+                autocomplete="off"
               />
               <p v-if="isbnError" class="mt-1 text-sm text-red-600">{{ isbnError }}</p>
             </div>
 
-            <!-- Summary -->
+            <!-- Résumé (BOOK.desc_txt) -->
             <div>
               <label for="summary" class="block text-sm font-medium text-gray-700 mb-2">
                 Résumé
@@ -66,7 +65,6 @@
                 class="input"
                 :class="{ 'input-error': summaryError }"
                 placeholder="Résumé du livre"
-                autocomplete="current-summary"
               ></textarea>
 
               <p v-if="summaryError" class="mt-1 text-sm text-red-600">
@@ -74,8 +72,121 @@
               </p>
             </div>
 
+            <!-- Série (BOOK.serie_id, dropdown sur SERIES) -->
+            <div>
+              <label for="serie" class="block text-sm font-medium text-gray-700 mb-2">
+                Série
+              </label>
+              <select
+                id="serie"
+                v-model="form.serieId"
+                class="input"
+                :class="{ 'input-error': serieIdError }"
+              >
+                <option disabled value="">Sélectionner une série</option>
+                <option
+                  v-for="serie in series"
+                  :key="serie.id"
+                  :value="serie.id"
+                >
+                  {{ serie.name }}
+                </option>
+              </select>
+              <p v-if="serieIdError" class="mt-1 text-sm text-red-600">
+                {{ serieIdError }}
+              </p>
+            </div>
 
-            <!-- PublicationYear -->
+            <!-- Position dans la série (BOOK.serie_pos) -->
+            <div>
+              <label for="seriePos" class="block text-sm font-medium text-gray-700 mb-2">
+                Position dans la série
+              </label>
+              <input
+                id="seriePos"
+                v-model="form.seriePos"
+                type="text"
+                maxlength="2"
+                class="input"
+                :class="{ 'input-error': seriePosError }"
+                placeholder="1, 2, 10..."
+              />
+              <p v-if="seriePosError" class="mt-1 text-sm text-red-600">
+                {{ seriePosError }}
+              </p>
+            </div>
+
+            <!-- Nombre de pages (EDITION.number_of_pages) -->
+            <div>
+              <label for="pageCount" class="block text-sm font-medium text-gray-700 mb-2">
+                Nombre de pages
+              </label>
+              <input
+                id="pageCount"
+                v-model="form.pageCount"
+                type="text"
+                inputmode="numeric"
+                maxlength="4"
+                class="input"
+                :class="{ 'input-error': pageCountError }"
+                placeholder="Ex: 352"
+              />
+              <p v-if="pageCountError" class="mt-1 text-sm text-red-600">
+                {{ pageCountError }}
+              </p>
+            </div>
+
+            <!-- Format physique (EDITION.physical_format) -->
+            <div>
+              <label for="physicalFormat" class="block text-sm font-medium text-gray-700 mb-2">
+                Format physique
+              </label>
+              <select
+                id="physicalFormat"
+                v-model="form.physicalFormat"
+                class="input"
+                :class="{ 'input-error': physicalFormatError }"
+              >
+                <option disabled value="">Sélectionner un format</option>
+                <option
+                  v-for="opt in physicalFormatOptions"
+                  :key="opt"
+                  :value="opt"
+                >
+                  {{ opt }}
+                </option>
+              </select>
+              <p v-if="physicalFormatError" class="mt-1 text-sm text-red-600">
+                {{ physicalFormatError }}
+              </p>
+            </div>
+
+            <!-- Sujet (BOOK.subject_id, dropdown sur SUBJECTS) -->
+            <div>
+              <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
+                Sujet
+              </label>
+              <select
+                id="subject"
+                v-model="form.subjectId"
+                class="input"
+                :class="{ 'input-error': subjectError }"
+              >
+                <option disabled value="">Sélectionner un sujet</option>
+                <option
+                  v-for="subject in subjects"
+                  :key="subject.id"
+                  :value="subject.id"
+                >
+                  {{ subject.text }}
+                </option>
+              </select>
+              <p v-if="subjectError" class="mt-1 text-sm text-red-600">
+                {{ subjectError }}
+              </p>
+            </div>
+
+            <!-- Année / date de publication (EDITION.publish_date, readonly ou pas selon ton choix) -->
             <div>
               <label for="publicationYear" class="block text-sm font-medium text-gray-700 mb-2">
                 Année de publication
@@ -84,19 +195,16 @@
                 id="publicationYear"
                 v-model="form.publicationYear"
                 type="text"
-                required
-                readonly
                 class="input bg-gray-100 cursor-not-allowed"
                 :class="{ 'input-error': publicationYearError }"
-                placeholder="form.publicationYear"
+                readonly
               />
               <p v-if="publicationYearError" class="mt-1 text-sm text-red-600">
                 {{ publicationYearError }}
               </p>
             </div>
 
-
-            <!-- CoverImage -->
+            <!-- Image de couverture (on suppose stockée côté BOOK.cover) -->
             <div>
               <label for="coverImage" class="block text-sm font-medium text-gray-700 mb-2">
                 Image de couverture du livre
@@ -106,13 +214,12 @@
                 id="coverImage"
                 type="file"
                 accept="image/*"
-                required
                 class="input"
                 :class="{ 'input-error': coverImageUrlError }"
                 @change="onCoverImageChange"
               />
 
-              <!-- Aperçu de l'image (optionnel) -->
+              <!-- Aperçu de l'image -->
               <div v-if="form.coverImageUrl" class="mt-2">
                 <img
                   :src="form.coverImageUrl"
@@ -126,19 +233,18 @@
               </p>
             </div>
 
-
-            <!-- Message d'erreur global -->
-            <div v-if="authStore.getError" class="alert alert-error">
-              {{ authStore.getError }}
+            <!-- Message d'erreur global éventuel -->
+            <div v-if="globalError" class="alert alert-error">
+              {{ globalError }}
             </div>
 
-            <!-- Bouton de connexion -->
+            <!-- Bouton -->
             <button
               type="submit"
               :disabled="authStore.edit"
               class="btn btn-primary w-full"
             >
-            Modifier
+              Modifier
             </button>
           </form>
 
@@ -150,74 +256,139 @@
 
 <script>
 import { useAuthStore } from '@/stores/authStore'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import axios from 'axios'
 
 export default {
   name: 'EditInfoBookPage',
   setup() {
     const authStore = useAuthStore()
     const router = useRouter()
+    const route = useRoute()
 
     return {
       authStore,
-      router
+      router,
+      route,
     }
   },
   data() {
     return {
+      // Formulaire = mélange BOOK + EDITION
       form: {
+        // BOOK
         title: '',
-        isbn: '',
         summary: '',
-        publicationYear: '',
+        serieId: '',
+        seriePos: '',
+        subjectId: '',
         coverImageFile: null,
         coverImageUrl: null,
+
+        // EDITION
+        editionId: null,        // on la récupère pour le PUT
+        isbn: '',
+        pageCount: '',
+        physicalFormat: '',
+        publicationYear: '',
       },
+
+      physicalFormatOptions: [
+        'Hardcover',
+        'Paperback',
+        'Library binding',
+        'Audio CD',
+        'E-Book',
+        'MP3 CD',
+        'Audiobook MP3',
+        'Audiobook CD',
+        'Digital Audiobook',
+      ],
+
+      series: [],    // pour le dropdown série
+      subjects: [],  // pour le dropdown sujet
+
+      // erreurs
       titleError: '',
       isbnError: '',
       summaryError: '',
       publicationYearError: '',
       coverImageUrlError: '',
+      serieIdError: '',
+      seriePosError: '',
+      pageCountError: '',
+      physicalFormatError: '',
+      subjectError: '',
+
+      globalError: '',
     }
   },
   methods: {
     onCoverImageChange(event) {
-      const file = event.target.files[0];
+      const file = event.target.files[0]
 
       if (!file) {
-        this.form.coverImageFile = null;
-        this.form.coverImageUrl = null;
-        return;
+        this.form.coverImageFile = null
+        this.form.coverImageUrl = null
+        return
       }
 
-      this.coverImageUrlError = '';
-      this.form.coverImageFile = file;
-
-      // Pour afficher un aperçu
-      this.form.coverImageUrl = URL.createObjectURL(file);
+      this.coverImageUrlError = ''
+      this.form.coverImageFile = file
+      this.form.coverImageUrl = URL.createObjectURL(file)
     },
 
     validateForm() {
+      // reset errors
       this.titleError = ''
       this.isbnError = ''
       this.summaryError = ''
       this.publicationYearError = ''
       this.coverImageUrlError = ''
-
+      this.serieIdError = ''
+      this.seriePosError = ''
+      this.pageCountError = ''
+      this.physicalFormatError = ''
+      this.subjectError = ''
+      this.globalError = ''
 
       if (!this.form.title) {
         this.titleError = 'Le titre est requis'
         return false
       }
 
-
-      if (!this.form.isbn) {
-        this.passwordError = "L'isbn est requis"
+      if (!this.form.summary) {
+        this.summaryError = 'Le résumé est requis'
         return false
       }
 
-      if (!this.form.summary) {
-        this.summaryError = "Le résumé est requis"
+      if (!this.form.isbn) {
+        this.isbnError = "L'ISBN est requis"
+        return false
+      }
+
+      if (!this.form.serieId) {
+        this.serieIdError = 'La série est requise'
+        return false
+      }
+
+      if (!this.form.seriePos) {
+        this.seriePosError = 'La position dans la série est requise'
+        return false
+      }
+
+      if (!this.form.pageCount) {
+        this.pageCountError = 'Le nombre de pages est requis'
+        return false
+      }
+
+      if (!this.form.physicalFormat) {
+        this.physicalFormatError = 'Le format physique est requis'
+        return false
+      }
+
+      if (!this.form.subjectId) {
+        this.subjectError = 'Le sujet est requis'
         return false
       }
 
@@ -226,42 +397,140 @@ export default {
         return false
       }
 
-      if (!this.form.coverImageUrl) {
-        this.coverImageUrlError = "L'image de couverture est requise"
-        return false
-      }
-
       return true
+    },
+
+    async fetchSubjects() {
+      const res = await axios.get('/api/subjects')
+      this.subjects = res.data
+    },
+
+    async fetchSeries() {
+      const res = await axios.get('/api/series')
+      this.series = res.data
+    },
+
+    async fetchBook() {
+      const id = this.route.params.id
+      const res = await axios.get(`/api/books/${id}`)
+      const book = res.data
+
+      // BOOK -> form
+      this.form.title = book.title
+      this.form.summary = book.desc_txt || ''
+      this.form.serieId = book.serie_id || ''
+      this.form.seriePos = book.serie_pos || ''
+      this.form.subjectId = book.subject ? book.subject.id : ''
+
+      // cover si présente
+      if (book.cover) {
+        this.form.coverImageUrl = book.cover
+      }
+    },
+
+    async fetchEdition() {
+      const bookId = this.route.params.id
+      // endpoint à adapter: par ex /api/editions/by-book/{bookId}
+      const res = await axios.get(`/api/editions/by-book/${bookId}`)
+      const edition = res.data
+
+      this.form.editionId = edition.id
+      this.form.isbn = edition.isbn || ''
+      this.form.pageCount = edition.number_of_pages ? edition.number_of_pages.toString() : ''
+      this.form.physicalFormat = edition.physical_format || ''
+      this.form.publicationYear = edition.publish_date || ''
+
+      // si tu décides que la cover est sur Edition et pas Book :
+      // if (!this.form.coverImageUrl && edition.cover) {
+      //   this.form.coverImageUrl = edition.cover
+      // }
+    },
+
+    async handleEdit() {
+      if (!this.validateForm()) return
+
+      try {
+        const bookId = this.route.params.id
+
+        // ---------- UPDATE BOOK ----------
+        const bookFormData = new FormData()
+        bookFormData.append('title', this.form.title)
+        bookFormData.append('desc_txt', this.form.summary)
+        bookFormData.append('serie_id', this.form.serieId)
+        bookFormData.append('serie_pos', this.form.seriePos)
+        bookFormData.append('subjectId', this.form.subjectId)
+
+        if (this.form.coverImageFile) {
+          bookFormData.append('coverFile', this.form.coverImageFile)
+        }
+
+        await axios.put(`/api/books/${bookId}`, bookFormData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${this.authStore.token}`,
+          },
+        })
+
+        // ---------- UPDATE EDITION ----------
+        if (!this.form.editionId) {
+          // au cas où aucune édition n'aurait été trouvée
+          this.globalError = "Impossible de trouver l'édition associée à ce livre."
+          return
+        }
+
+        const editionPayload = {
+          isbn: this.form.isbn,
+          number_of_pages: this.form.pageCount,
+          physical_format: this.form.physicalFormat,
+          publish_date: this.form.publicationYear,
+          bookId: bookId,
+        }
+
+        await axios.put(`/api/editions/${this.form.editionId}`, editionPayload, {
+          headers: {
+            Authorization: `Bearer ${this.authStore.token}`,
+          },
+        })
+
+        // Redirection vers la page de détail du livre
+        this.router.push(`/books/${bookId}`)
+      } catch (e) {
+        console.error(e)
+        this.globalError = 'Erreur lors de la modification du livre et de son édition.'
+      }
     },
   },
 
-  mounted() {
+  async mounted() {
     // Initialiser l'authentification au montage
     this.authStore.initializeAuth()
 
     // Rediriger si pas connecté
-    if (!this.authStore.isAuthenticated) {
-      this.router.push('/login')
+    //if (!this.authStore.isAuthenticated) {
+    //  this.router.push('/login')
+    //  return
+    //}
+
+    // Correction de la condition: && pour "ni bibliothécaire ni admin"
+    //if (
+    //  this.authStore.getUser.role !== 'BIBLIOTHECAIRE' &&
+    //  this.authStore.getUser.role !== 'ADMIN'
+    //) {
+    //  this.router.push('/login')
+    //  return
+    //}
+
+    try {
+      await Promise.all([
+        this.fetchSubjects(),
+        this.fetchSeries(),
+        this.fetchBook(),
+        this.fetchEdition(),
+      ])
+    } catch (e) {
+      console.error(e)
+      this.globalError = 'Erreur lors du chargement des données du livre.'
     }
-
-    // Rediriger si pas Bibliothécaire/Admin
-    if (this.authStore.getUser.role != 'BIBLIOTHECAIRE' || this.authStore.getUser.role != 'ADMIN'){
-      this.router.push('/login')
-    }
-
-    const now = new Date();
-
-    const pad = (n) => n.toString().padStart(2, '0');
-
-    const fullDate =
-      now.getFullYear() + '-' +
-      pad(now.getMonth() + 1) + '-' +
-      pad(now.getDate()) + ' ' +
-      pad(now.getHours()) + ':' +
-      pad(now.getMinutes()) + ':' +
-      pad(now.getSeconds());
-
-    this.form.publicationYear = fullDate;
-  }
+  },
 }
 </script>
