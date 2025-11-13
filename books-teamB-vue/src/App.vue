@@ -2,7 +2,7 @@
 export default {
   data() {
     return {
-      text: 'Edit me'
+      text: 'Touch me'
     }
   }
 }
