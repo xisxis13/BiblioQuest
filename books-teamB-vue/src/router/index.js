@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/authStore'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
+import Catalog from '../views/Catalog.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +24,12 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: Register,
+      meta: { requiresGuest: true }
+    },
+    {
+      path: '/catalog',
+      name: 'catalog',
+      component: Catalog,
       meta: { requiresGuest: true }
     },
     {
