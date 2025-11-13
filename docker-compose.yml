@@ -1,0 +1,21 @@
+services:
+  server:
+    build: ./books-teamB-spring
+    environment:
+      - APP_FRONTEND_URL=http://localhost
+    container_name: books-spring-app
+    ports:
+      - "8080:8080"
+    networks:
+      - books-network
+
+  client:
+    build: ./books-teamB-vue
+    container_name: books-vuejs-app
+    ports:
+      - "80:80"
+    networks:
+      - books-network
+networks:
+  books-network:
+    driver: bridge
