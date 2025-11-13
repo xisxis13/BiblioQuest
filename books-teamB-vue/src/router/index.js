@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/authStore'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
+import Library from '../views/Library.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,6 +12,12 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Home,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/library',
+      name: 'library',
+      component: Library,
       meta: { requiresAuth: true }
     },
     {

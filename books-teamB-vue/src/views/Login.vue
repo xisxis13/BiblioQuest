@@ -1,81 +1,60 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8 animate-fadeIn">
-      <!-- En-tête avec logo -->
-      <div class="text-center">
-        <div class="flex justify-center mb-6">
-          <img src="@/assets/BCO.png" alt="Logo" class="logo-lg" />
-        </div>
-        <h2 class="text-3xl font-bold text-red-900 mb-2">Connexion</h2>
-        <p class="text-gray-600">Accédez à votre compte</p>
+  <div class="min-h-screen bg-background flex items-center justify-center px-4 py-12">
+    <div class="max-w-md w-full">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold">
+          Bienvenue sur <span class="text-primary">BiblioQuest</span> !
+        </h2>
       </div>
 
-      <!-- Formulaire -->
-      <div class="card">
-        <div class="card-body">
-          <form @submit.prevent="handleLogin" class="space-y-6">
-            <!-- Email -->
-            <div>
-              <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                Adresse email
-              </label>
-              <input
-                id="email"
-                v-model="form.email"
-                type="email"
-                required
-                class="input"
-                :class="{ 'input-error': emailError }"
-                placeholder="votre@email.com"
-                autocomplete="email"
-              />
-              <p v-if="emailError" class="mt-1 text-sm text-red-600">{{ emailError }}</p>
-            </div>
-
-            <!-- Mot de passe -->
-            <div>
-              <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                Mot de passe
-              </label>
-              <input
-                id="password"
-                v-model="form.password"
-                type="password"
-                required
-                class="input"
-                :class="{ 'input-error': passwordError }"
-                placeholder="••••••••"
-                autocomplete="current-password"
-              />
-              <p v-if="passwordError" class="mt-1 text-sm text-red-600">{{ passwordError }}</p>
-            </div>
-
-            <!-- Message d'erreur global -->
-            <div v-if="authStore.getError" class="alert alert-error">
-              {{ authStore.getError }}
-            </div>
-
-            <!-- Bouton de connexion -->
-            <button
-              type="submit"
-              :disabled="authStore.isLoading"
-              class="btn btn-primary w-full"
-            >
-              <span v-if="authStore.isLoading" class="spinner mr-2"></span>
-              {{ authStore.isLoading ? 'Connexion...' : 'Se connecter' }}
-            </button>
-          </form>
-
-          <!-- Lien vers inscription -->
-          <div class="mt-6 text-center">
-            <p class="text-sm text-gray-600">
-              Pas encore de compte ?
-              <router-link to="/register" class="font-medium text-blue-600 hover:text-blue-500">
-                Créer un compte
-              </router-link>
-            </p>
-          </div>
+      <div class="bg-card border border-border rounded-2xl p-8">
+        <div class="flex justify-center mb-6">
+          <img src="@/assets/BCO.png" alt="BiblioQuest Logo" class="h-16 w-auto" />
         </div>
+
+        <div class="text-center mb-6">
+          <p class="text-sm text-foreground">
+            Pas encore de compte ?
+            <router-link to="/register" class="text-primary hover:underline font-medium">Inscris toi ici</router-link>
+          </p>
+        </div>
+
+        <form @submit.prevent="handleLogin" class="space-y-5">
+          <div class="space-y-2">
+            <label for="email" class="text-sm font-semibold">Email</label>
+            <input
+              id="email"
+              v-model="form.email"
+              type="email"
+              required
+              class="w-full px-4 py-2.5 bg-input border border-border rounded-2xl text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder="ex: example@mail.com"
+            />
+            <p v-if="emailError" class="text-sm text-destructive">{{ emailError }}</p>
+          </div>
+
+          <div class="space-y-2">
+            <label for="password" class="text-sm font-semibold">Mot de passe</label>
+            <input
+              id="password"
+              v-model="form.password"
+              type="password"
+              required
+              minlength="6"
+              class="w-full px-4 py-2.5 bg-input border border-border rounded-2xl text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder="ex: ••••••••"
+            />
+            <p v-if="passwordError" class="text-sm text-destructive">{{ passwordError }}</p>
+          </div>
+
+          <button
+            type="submit"
+            :disabled="authStore.isLoading"
+            class="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 rounded-2xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {{ authStore.isLoading ? 'Connexion...' : 'Connexion' }}
+          </button>
+        </form>
       </div>
     </div>
   </div>
@@ -136,23 +115,17 @@ export default {
 
     async handleLogin() {
       try {
-        console.log('Tentative de connexion...')
         if (!this.validateForm()) return
 
         this.authStore.clearError()
 
         const result = await this.authStore.login({
-          username: this.form.email,  // On envoie l'email dans le champ 'username'
+          username: this.form.email,
           password: this.form.password
         })
 
-        console.log('Résultat login:', result)
-
         if (result.success) {
-          console.log('Connexion réussie, redirection...')
-          this.router.push('/')
-        } else {
-          console.error('Échec de connexion:', result.error)
+          this.router.push('/library')
         }
       } catch (error) {
         console.error('Erreur dans handleLogin:', error)
@@ -161,9 +134,8 @@ export default {
   },
 
   mounted() {
-    // Rediriger si déjà connecté
     if (this.authStore.isAuthenticated) {
-      this.router.push('/')
+      this.router.push('/library')
     }
   }
 }

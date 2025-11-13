@@ -1,30 +1,15 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8 animate-fadeIn">
-      <!-- En-tête avec logo -->
-      <div class="text-center">
-        <div class="flex justify-center mb-6">
-          <img src="@/assets/BCO.png" alt="Logo" class="logo-lg" />
-        </div>
-        <h2 class="text-3xl font-bold text-gray-900 mb-2">PAGE D'ACCUEIL</h2>
-        <p class="text-gray-600">Connexion réussie ✅</p>
-      </div>
-
-      <!-- Message de bienvenue -->
-      <div class="card">
-        <div class="card-body text-center">
-          <h3 class="text-xl font-semibold text-gray-900 mb-4">
-            Bienvenue {{ authStore.getUser?.username || 'Utilisateur' }} !
-          </h3>
-          <p class="text-gray-600 mb-6">Vous êtes maintenant connecté</p>
-          <button
-            @click="handleLogout"
-            class="btn btn-secondary"
-          >
-            Se déconnecter
-          </button>
-        </div>
-      </div>
+  <div class="py-10">
+    <div class="text-center mb-10">
+      <h2 class="text-3xl font-bold">
+        Bienvenue <span class="text-primary">{{ authStore.getUser?.username || 'user' }}</span> !
+      </h2>
+      <p class="text-muted-foreground">Vous êtes maintenant connecté</p>
+    </div>
+    <div class="max-w-xl mx-auto">
+      <router-link to="/library" class="inline-flex items-center justify-center rounded-2xl text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-6 w-full">
+        Ma Bibliothèque
+      </router-link>
     </div>
   </div>
 </template>
@@ -42,21 +27,6 @@ export default {
     return {
       authStore,
       router
-    }
-  },
-  methods: {
-    handleLogout() {
-      this.authStore.logout()
-      this.router.push('/login')
-    }
-  },
-  mounted() {
-    // Initialiser l'authentification au montage
-    this.authStore.initializeAuth()
-    
-    // Rediriger si pas connecté
-    if (!this.authStore.isAuthenticated) {
-      this.router.push('/login')
     }
   }
 }

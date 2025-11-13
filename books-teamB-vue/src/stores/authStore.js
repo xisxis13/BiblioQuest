@@ -10,7 +10,11 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   getters: {
-    isAuthenticated: (state) => !!state.token,
+    isAuthenticated: (state) => {
+      if (!state.token) return false
+      // Vérifier que le token n'est pas expiré
+      return authService.isAuthenticated()
+    },
     getUser: (state) => state.user,
     getError: (state) => state.error,
     isLoading: (state) => state.loading
@@ -19,12 +23,18 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     // Initialiser avec les données localStorage
     initializeAuth() {
-      const token = authService.getToken()
-      const user = authService.getUser()
-      
-      if (token && user) {
-        this.token = token
-        this.user = user
+      // Vérifier si la session est toujours valide
+      if (authService.isAuthenticated()) {
+        const tokenData = authService.getToken()
+        const user = authService.getUser()
+        
+        if (tokenData && user) {
+          this.token = tokenData.token
+          this.user = user
+        }
+      } else {
+        // Session expirée, nettoyer
+        this.logout()
       }
     },
 
@@ -38,8 +48,8 @@ export const useAuthStore = defineStore('auth', {
         const result = await authService.login(credentials)
         console.log('AuthService result:', result)
         
-        const { user } = result
-        this.token = 'simple-auth' // Token simple pour l'instant
+        const { user, token } = result
+        this.token = token
         this.user = user
         
         console.log('User set in store:', this.user)
@@ -59,8 +69,8 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
       
       try {
-        const { user } = await authService.register(userData)
-        this.token = 'simple-auth' // Token simple pour l'instant
+        const { user, token } = await authService.register(userData)
+        this.token = token
         this.user = user
         return { success: true }
       } catch (error) {

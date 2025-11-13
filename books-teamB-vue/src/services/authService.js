@@ -46,10 +46,17 @@ export const authService = {
       
       const user = response.data
       
-      // Stocker les données d'authentification (simple, sans JWT pour l'instant)
+      // Créer un token de session qui expire dans 15 minutes
+      const sessionToken = {
+        token: 'session_' + Date.now(),
+        expiresAt: Date.now() + (15 * 60 * 1000) // 15 minutes
+      }
+      
+      // Stocker les données d'authentification
+      localStorage.setItem('auth_token', JSON.stringify(sessionToken))
       localStorage.setItem('auth_user', JSON.stringify(user))
       
-      return { user }
+      return { user, token: sessionToken.token }
     } catch (error) {
       console.error('AuthService login error:', error)
       const message = error.response?.data || 'Erreur de connexion'
@@ -63,10 +70,17 @@ export const authService = {
       const response = await api.post('/auth/register', userData)
       const user = response.data
       
-      // Stocker les données d'authentification (simple, sans JWT pour l'instant)
+      // Créer un token de session qui expire dans 15 minutes
+      const sessionToken = {
+        token: 'session_' + Date.now(),
+        expiresAt: Date.now() + (15 * 60 * 1000) // 15 minutes
+      }
+      
+      // Stocker les données d'authentification
+      localStorage.setItem('auth_token', JSON.stringify(sessionToken))
       localStorage.setItem('auth_user', JSON.stringify(user))
       
-      return { user }
+      return { user, token: sessionToken.token }
     } catch (error) {
       const message = error.response?.data || 'Erreur d\'inscription'
       throw new Error(message)
@@ -81,12 +95,28 @@ export const authService = {
 
   // Vérifier l'authentification
   isAuthenticated() {
-    return !!localStorage.getItem('auth_token')
+    const tokenData = this.getToken()
+    if (!tokenData) return false
+    
+    // Vérifier si le token n'est pas expiré
+    if (tokenData.expiresAt && Date.now() > tokenData.expiresAt) {
+      this.logout()
+      return false
+    }
+    
+    return true
   },
 
   // Récupérer le token
   getToken() {
-    return localStorage.getItem('auth_token')
+    const token = localStorage.getItem('auth_token')
+    if (!token) return null
+    
+    try {
+      return JSON.parse(token)
+    } catch {
+      return null
+    }
   },
 
   // Récupérer l'utilisateur

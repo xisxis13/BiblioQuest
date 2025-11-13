@@ -1,22 +1,41 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8 animate-fadeIn">
-      <!-- En-tête avec logo -->
-      <div class="text-center">
-        <div class="flex justify-center mb-6">
-          <img src="@/assets/BCO.png" alt="Logo" class="logo-lg" />
-        </div>
-        <h2 class="text-3xl font-bold text-gray-900 mb-2">Inscription</h2>
-        <p class="text-gray-600">Créez votre compte</p>
+  <div class="min-h-screen bg-background flex flex-col">
+    <!-- Header -->
+    <header class="bg-card shadow-sm py-4">
+      <div class="max-w-7xl mx-auto px-4">
+        <h1 class="text-2xl font-bold text-foreground">Browser</h1>
       </div>
+    </header>
 
-      <!-- Formulaire -->
-      <div class="card">
-        <div class="card-body">
-          <form @submit.prevent="handleRegister" class="space-y-6">
+    <!-- Content -->
+    <div class="flex-1 flex items-center justify-center py-12 px-4">
+      <div class="max-w-md w-full">
+        <!-- Titre -->
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-bold text-foreground mb-2">
+            Rejoindre <span class="text-primary">BiblioQuest</span> !
+          </h2>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="bg-card rounded-2xl shadow-md p-8 border border-border">
+          <!-- Logo BQ -->
+          <div class="flex justify-center mb-6">
+            <img src="@/assets/BCO.png" alt="BiblioQuest Logo" class="h-16 w-auto" />
+          </div>
+
+          <!-- Texte connexion -->
+          <div class="text-center mb-6">
+            <p class="text-sm text-foreground">
+              Déjà un compte ? <router-link to="/login" class="text-primary hover:underline font-medium">Se connecter</router-link>
+            </p>
+          </div>
+
+          <!-- Form -->
+          <form @submit.prevent="handleRegister" class="space-y-5">
             <!-- Nom d'utilisateur -->
-            <div>
-              <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+            <div class="space-y-2">
+              <label for="username" class="text-sm font-semibold text-foreground">
                 Nom d'utilisateur
               </label>
               <input
@@ -24,35 +43,34 @@
                 v-model="form.username"
                 type="text"
                 required
-                class="input"
-                :class="{ 'input-error': usernameError }"
+                minlength="3"
+                class="w-full px-4 py-2.5 bg-input border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 placeholder="Votre nom d'utilisateur"
                 autocomplete="username"
               />
-              <p v-if="usernameError" class="mt-1 text-sm text-red-600">{{ usernameError }}</p>
+              <p v-if="usernameError" class="text-sm text-destructive">{{ usernameError }}</p>
             </div>
 
             <!-- Email -->
-            <div>
-              <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                Adresse email
+            <div class="space-y-2">
+              <label for="email" class="text-sm font-semibold text-foreground">
+                Email
               </label>
               <input
                 id="email"
                 v-model="form.email"
                 type="email"
                 required
-                class="input"
-                :class="{ 'input-error': emailError }"
+                class="w-full px-4 py-2.5 bg-input border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 placeholder="votre@email.com"
                 autocomplete="email"
               />
-              <p v-if="emailError" class="mt-1 text-sm text-red-600">{{ emailError }}</p>
+              <p v-if="emailError" class="text-sm text-destructive">{{ emailError }}</p>
             </div>
 
             <!-- Mot de passe -->
-            <div>
-              <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+            <div class="space-y-2">
+              <label for="password" class="text-sm font-semibold text-foreground">
                 Mot de passe
               </label>
               <input
@@ -60,17 +78,17 @@
                 v-model="form.password"
                 type="password"
                 required
-                class="input"
-                :class="{ 'input-error': passwordError }"
+                minlength="6"
+                class="w-full px-4 py-2.5 bg-input border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 placeholder="Minimum 6 caractères"
                 autocomplete="new-password"
               />
-              <p v-if="passwordError" class="mt-1 text-sm text-red-600">{{ passwordError }}</p>
+              <p v-if="passwordError" class="text-sm text-destructive">{{ passwordError }}</p>
             </div>
 
             <!-- Confirmation mot de passe -->
-            <div>
-              <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-2">
+            <div class="space-y-2">
+              <label for="confirmPassword" class="text-sm font-semibold text-foreground">
                 Confirmer le mot de passe
               </label>
               <input
@@ -78,39 +96,23 @@
                 v-model="form.confirmPassword"
                 type="password"
                 required
-                class="input"
-                :class="{ 'input-error': confirmPasswordError }"
+                minlength="6"
+                class="w-full px-4 py-2.5 bg-input border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 placeholder="Répétez votre mot de passe"
                 autocomplete="new-password"
               />
-              <p v-if="confirmPasswordError" class="mt-1 text-sm text-red-600">{{ confirmPasswordError }}</p>
-            </div>
-
-            <!-- Message d'erreur global -->
-            <div v-if="authStore.getError" class="alert alert-error">
-              {{ authStore.getError }}
+              <p v-if="confirmPasswordError" class="text-sm text-destructive">{{ confirmPasswordError }}</p>
             </div>
 
             <!-- Bouton d'inscription -->
             <button
               type="submit"
               :disabled="authStore.isLoading"
-              class="btn btn-primary w-full"
+              class="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span v-if="authStore.isLoading" class="spinner mr-2"></span>
-              {{ authStore.isLoading ? 'Inscription...' : 'Créer un compte' }}
+              {{ authStore.isLoading ? 'Inscription...' : 'S\'inscrire' }}
             </button>
           </form>
-
-          <!-- Lien vers connexion -->
-          <div class="mt-6 text-center">
-            <p class="text-sm text-gray-600">
-              Déjà un compte ?
-              <router-link to="/login" class="font-medium text-blue-600 hover:text-blue-500">
-                Se connecter
-              </router-link>
-            </p>
-          </div>
         </div>
       </div>
     </div>
@@ -122,15 +124,11 @@ import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
 
 export default {
-  name: 'Register',
+  name: 'RegisterPage',
   setup() {
     const authStore = useAuthStore()
     const router = useRouter()
-
-    return {
-      authStore,
-      router
-    }
+    return { authStore, router }
   },
   data() {
     return {
@@ -153,64 +151,40 @@ export default {
       this.passwordError = ''
       this.confirmPasswordError = ''
       
-      let isValid = true
-      
-      if (!this.form.username) {
-        this.usernameError = 'Le nom d\'utilisateur est requis'
-        isValid = false
-      } else if (this.form.username.length < 3) {
+      if (!this.form.username || this.form.username.length < 3) {
         this.usernameError = 'Le nom d\'utilisateur doit contenir au moins 3 caractères'
-        isValid = false
+        return false
       }
-      
-      if (!this.form.email) {
-        this.emailError = 'L\'email est requis'
-        isValid = false
-      } else if (!this.form.email.includes('@')) {
+      if (!this.form.email || !this.form.email.includes('@')) {
         this.emailError = 'Format d\'email invalide'
-        isValid = false
+        return false
       }
-      
-      if (!this.form.password) {
-        this.passwordError = 'Le mot de passe est requis'
-        isValid = false
-      } else if (this.form.password.length < 6) {
+      if (!this.form.password || this.form.password.length < 6) {
         this.passwordError = 'Le mot de passe doit contenir au moins 6 caractères'
-        isValid = false
+        return false
       }
-      
-      if (!this.form.confirmPassword) {
-        this.confirmPasswordError = 'La confirmation du mot de passe est requise'
-        isValid = false
-      } else if (this.form.password !== this.form.confirmPassword) {
+      if (this.form.password !== this.form.confirmPassword) {
         this.confirmPasswordError = 'Les mots de passe ne correspondent pas'
-        isValid = false
+        return false
       }
-      
-      return isValid
+      return true
     },
-    
     async handleRegister() {
       if (!this.validateForm()) return
-      
       this.authStore.clearError()
-      
       const result = await this.authStore.register({
         username: this.form.username,
         email: this.form.email,
         password: this.form.password
       })
-      
       if (result.success) {
-        this.router.push('/')
+        this.router.push('/library')
       }
     }
   },
-  
   mounted() {
-    // Rediriger si déjà connecté
     if (this.authStore.isAuthenticated) {
-      this.router.push('/')
+      this.router.push('/library')
     }
   }
 }
