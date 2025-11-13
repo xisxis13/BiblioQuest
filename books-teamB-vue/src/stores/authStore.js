@@ -42,6 +42,9 @@ export const useAuthStore = defineStore('auth', {
         this.token = 'simple-auth' // Token simple pour l'instant
         this.user = user
         
+        // IMPORTANT: Stocker le token dans localStorage
+        localStorage.setItem('auth_token', this.token)
+        
         console.log('User set in store:', this.user)
         return { success: true }
       } catch (error) {
@@ -62,6 +65,10 @@ export const useAuthStore = defineStore('auth', {
         const { user } = await authService.register(userData)
         this.token = 'simple-auth' // Token simple pour l'instant
         this.user = user
+        
+        // IMPORTANT: Stocker le token dans localStorage
+        localStorage.setItem('auth_token', this.token)
+        
         return { success: true }
       } catch (error) {
         this.error = error.message

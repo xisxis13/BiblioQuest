@@ -4,16 +4,15 @@
       <!-- En-tête avec logo -->
       <div class="text-center">
         <div class="flex justify-center mb-6">
-          <img src="@/assets/BCO.png" alt="Logo" class="logo-lg" />
+          <img src="@/assets/BCO.png" alt="Logo" class="w-20 h-20 object-contain" />
         </div>
         <h2 class="text-3xl font-bold text-gray-900 mb-2">Inscription</h2>
         <p class="text-gray-600">Créez votre compte</p>
       </div>
 
       <!-- Formulaire -->
-      <div class="card">
-        <div class="card-body">
-          <form @submit.prevent="handleRegister" class="space-y-6">
+      <div class="bg-white rounded-2xl shadow-sm p-8">
+        <form @submit.prevent="handleRegister" class="space-y-6">
             <!-- Nom d'utilisateur -->
             <div>
               <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
@@ -24,8 +23,11 @@
                 v-model="form.username"
                 type="text"
                 required
-                class="input"
-                :class="{ 'input-error': usernameError }"
+                :class="[
+                  'w-full px-4 py-3 border rounded-lg text-sm transition-all',
+                  usernameError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500',
+                  'focus:outline-none focus:ring-2 focus:border-transparent'
+                ]"
                 placeholder="Votre nom d'utilisateur"
                 autocomplete="username"
               />
@@ -42,8 +44,11 @@
                 v-model="form.email"
                 type="email"
                 required
-                class="input"
-                :class="{ 'input-error': emailError }"
+                :class="[
+                  'w-full px-4 py-3 border rounded-lg text-sm transition-all',
+                  emailError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500',
+                  'focus:outline-none focus:ring-2 focus:border-transparent'
+                ]"
                 placeholder="votre@email.com"
                 autocomplete="email"
               />
@@ -60,9 +65,12 @@
                 v-model="form.password"
                 type="password"
                 required
-                class="input"
-                :class="{ 'input-error': passwordError }"
-                placeholder="Minimum 6 caractères"
+                :class="[
+                  'w-full px-4 py-3 border rounded-lg text-sm transition-all',
+                  passwordError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500',
+                  'focus:outline-none focus:ring-2 focus:border-transparent'
+                ]"
+                placeholder="••••••••"
                 autocomplete="new-password"
               />
               <p v-if="passwordError" class="mt-1 text-sm text-red-600">{{ passwordError }}</p>
@@ -78,39 +86,41 @@
                 v-model="form.confirmPassword"
                 type="password"
                 required
-                class="input"
-                :class="{ 'input-error': confirmPasswordError }"
-                placeholder="Répétez votre mot de passe"
+                :class="[
+                  'w-full px-4 py-3 border rounded-lg text-sm transition-all',
+                  confirmPasswordError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500',
+                  'focus:outline-none focus:ring-2 focus:border-transparent'
+                ]"
+                placeholder="••••••••"
                 autocomplete="new-password"
               />
               <p v-if="confirmPasswordError" class="mt-1 text-sm text-red-600">{{ confirmPasswordError }}</p>
             </div>
 
             <!-- Message d'erreur global -->
-            <div v-if="authStore.getError" class="alert alert-error">
-              {{ authStore.getError }}
+            <div v-if="authStore.getError" class="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p class="text-sm text-red-600">{{ authStore.getError }}</p>
             </div>
 
             <!-- Bouton d'inscription -->
             <button
               type="submit"
               :disabled="authStore.isLoading"
-              class="btn btn-primary w-full"
+              class="w-full px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span v-if="authStore.isLoading" class="spinner mr-2"></span>
               {{ authStore.isLoading ? 'Inscription...' : 'Créer un compte' }}
             </button>
           </form>
 
-          <!-- Lien vers connexion -->
-          <div class="mt-6 text-center">
-            <p class="text-sm text-gray-600">
-              Déjà un compte ?
-              <router-link to="/login" class="font-medium text-blue-600 hover:text-blue-500">
-                Se connecter
-              </router-link>
-            </p>
-          </div>
+        <!-- Lien vers connexion -->
+        <div class="mt-6 text-center">
+          <p class="text-sm text-gray-600">
+            Déjà un compte ?
+            <router-link to="/login" class="font-medium text-blue-600 hover:text-blue-500">
+              Se connecter
+            </router-link>
+          </p>
         </div>
       </div>
     </div>
