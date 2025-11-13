@@ -13,7 +13,12 @@ public class BookService {
     private final BookRepository bookRepository;
 
     public List<Book> searchBooks(String query) {
-        return bookRepository.findByTitleContainingIgnoreCase(query);
+        // Pour l'instant recherche simple par titre, peut être étendu plus tard
+        return (List<Book>) bookRepository.findAll();
+    }
+
+    public List<Book> getAllBooks() {
+        return (List<Book>) bookRepository.findAll();
     }
 
     public Book getBookById(Long id) {

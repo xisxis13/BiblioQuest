@@ -33,17 +33,31 @@ public class LibraryService {
     }
 
     public UserBook updateProgress(Long userId, Long bookId, int progress) {
-        UserBook userBook = userBookRepository.findByUser(userRepository.findById(userId).orElseThrow())
-                .stream().filter(ub -> ub.getBook().getId().equals(bookId))
-                .findFirst().orElseThrow(() -> new RuntimeException("Livre non-trouvé dans la bibliothèque"));
+        UserBook userBook = userBookRepository.findByUserIdAndBookId(userId, bookId)
+                .orElseThrow(() -> new RuntimeException("Livre non-trouvé dans la bibliothèque"));
         userBook.setProgress(progress);
         return userBookRepository.save(userBook);
     }
 
+    public UserBook updateUserBook(Long userId, Long bookId, ReadingStatus status, Integer progress, Integer rating, String personalNote) {
+        UserBook userBook = userBookRepository.findByUserIdAndBookId(userId, bookId)
+                .orElseThrow(() -> new RuntimeException("Livre non-trouvé dans la bibliothèque"));
+        
+        if (status != null) userBook.setStatus(status);
+        if (progress != null) userBook.setProgress(progress);
+        if (rating != null) userBook.setRating(rating);
+        if (personalNote != null) userBook.setPersonalNote(personalNote);
+        
+        return userBookRepository.save(userBook);
+    }
+
     public void deleteUserBook(Long userId, Long bookId) {
-        UserBook userBook = userBookRepository.findByUser(userRepository.findById(userId).orElseThrow())
-                .stream().filter(ub -> ub.getBook().getId().equals(bookId))
-                .findFirst().orElseThrow(() -> new RuntimeException("Livre non-trouvé"));
+        UserBook userBook = userBookRepository.findByUserIdAndBookId(userId, bookId)
+                .orElseThrow(() -> new RuntimeException("Livre non-trouvé"));
         userBookRepository.delete(userBook);
+    }
+
+    public boolean existsInLibrary(Long userId, Long bookId) {
+        return userBookRepository.existsByUserIdAndBookId(userId, bookId);
     }
 }

@@ -9,6 +9,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
 public class ReadingController {
     private final ReadingService readingService;
 
@@ -28,8 +29,29 @@ public class ReadingController {
         return readingService.shareSession(id);
     }
 
+    @PutMapping("/reading-sessions/{id}")
+    public ReadingSession updateSession(@PathVariable Long id,
+                                       @RequestParam(required = false) Integer duration,
+                                       @RequestParam(required = false) Integer pagesRead,
+                                       @RequestParam(required = false) String notes,
+                                       @RequestParam(required = false) String mood) {
+        return readingService.updateSession(id, duration, pagesRead, notes, mood);
+    }
+
     @PostMapping("/reading-sessions/{id}/reaction")
     public ReadingSession addReaction(@PathVariable Long id, @RequestParam String comment, @RequestParam String mood) {
         return readingService.addReaction(id, comment, mood);
+    }
+
+    @GetMapping("/users/{id}/reading-stats")
+    public String getReadingStats(@PathVariable Long id) {
+        Long totalTime = readingService.getTotalReadingTime(id);
+        Long totalPages = readingService.getTotalPagesRead(id);
+        Double avgSpeed = readingService.getAverageReadingSpeed(id);
+        
+        return String.format("Temps total: %d min, Pages: %d, Vitesse: %.1f pages/min", 
+                           totalTime != null ? totalTime : 0, 
+                           totalPages != null ? totalPages : 0, 
+                           avgSpeed != null ? avgSpeed : 0.0);
     }
 }

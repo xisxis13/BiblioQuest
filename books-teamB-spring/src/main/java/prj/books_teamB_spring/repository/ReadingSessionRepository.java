@@ -57,11 +57,7 @@ public interface ReadingSessionRepository extends JpaRepository<ReadingSession, 
     @Query("SELECT rs FROM ReadingSession rs WHERE rs.user.id = :userId ORDER BY rs.sessionDate DESC")
     List<ReadingSession> findRecentSessions(@Param("userId") Long userId);
     
-    /**
-     * Statistiques par jour: sessions du jour
-     */
-    @Query("SELECT rs FROM ReadingSession rs WHERE rs.user.id = :userId AND DATE(rs.sessionDate) = CURRENT_DATE ORDER BY rs.sessionDate DESC")
-    List<ReadingSession> findTodaySessions(@Param("userId") Long userId);
+    // Statistiques simplifiées (versions de base qui fonctionnent)
     
     /**
      * Statistiques par semaine: temps total cette semaine
@@ -70,8 +66,8 @@ public interface ReadingSessionRepository extends JpaRepository<ReadingSession, 
     Long getWeeklyReadingTime(@Param("userId") Long userId, @Param("weekStart") LocalDateTime weekStart);
     
     /**
-     * Moyenne de pages par minute pour un utilisateur
+     * Moyenne de pages par minute pour un utilisateur (version simple)
      */
-    @Query("SELECT AVG(CAST(rs.pagesRead AS DOUBLE) / rs.duration) FROM ReadingSession rs WHERE rs.user.id = :userId AND rs.duration > 0")
+    @Query("SELECT AVG(rs.pagesRead * 1.0 / rs.duration) FROM ReadingSession rs WHERE rs.user.id = :userId AND rs.duration > 0")
     Double getAverageReadingSpeedByUserId(@Param("userId") Long userId);
 }

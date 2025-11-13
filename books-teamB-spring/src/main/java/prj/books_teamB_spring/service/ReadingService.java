@@ -14,6 +14,7 @@ public class ReadingService {
     private final UserBookRepository userBookRepository;
     private final UserRepository userRepository;
 
+
     public ReadingSession createSession(Long userId, Long userBookId, Integer duration, Integer pagesRead) {
         User user = userRepository.findById(userId).orElseThrow();
         UserBook userBook = userBookRepository.findById(userBookId).orElseThrow();
@@ -22,8 +23,7 @@ public class ReadingService {
     }
 
     public List<ReadingSession> getSessions(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
-        return sessionRepository.findByUser(user);
+        return sessionRepository.findByUserId(userId);
     }
 
     public ReadingSession shareSession(Long sessionId) {
@@ -37,5 +37,34 @@ public class ReadingService {
         session.setSessionNotes(comment);
         session.setMood(mood);
         return sessionRepository.save(session);
+    }
+
+    public ReadingSession updateSession(Long sessionId, Integer duration, Integer pagesRead, String notes, String mood) {
+        ReadingSession session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session introuvable"));
+        
+        if (duration != null) session.setDuration(duration);
+        if (pagesRead != null) session.setPagesRead(pagesRead);
+        if (notes != null) session.setSessionNotes(notes);
+        if (mood != null) session.setMood(mood);
+        
+        return sessionRepository.save(session);
+    }
+
+    public List<ReadingSession> getSessionsForBook(Long userId, Long bookId) {
+        return sessionRepository.findByUserIdAndBookId(userId, bookId);
+    }
+
+    // Statistiques
+    public Long getTotalReadingTime(Long userId) {
+        return sessionRepository.getTotalReadingTimeByUserId(userId);
+    }
+
+    public Long getTotalPagesRead(Long userId) {
+        return sessionRepository.getTotalPagesReadByUserId(userId);
+    }
+
+    public Double getAverageReadingSpeed(Long userId) {
+        return sessionRepository.getAverageReadingSpeedByUserId(userId);
     }
 }
