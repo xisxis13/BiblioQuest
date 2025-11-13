@@ -44,6 +44,17 @@ public class Book {
     private String cover;
     private String serie_id;
     private String serie_pos;
+    
+    /**
+     * Nombre total de pages du livre (pour calculs de progression)
+     */
+    private Integer totalPages;
+    
+    /**
+     * ISBN du livre (pour identification unique)
+     */
+    private String isbn;
+    
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
     
