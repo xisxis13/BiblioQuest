@@ -36,9 +36,15 @@ apiClient.interceptors.response.use(
 )
 
 export default {
-  // Récupérer tous les livres de l'utilisateur
-  async getUserBooks() {
+  // Récupérer tous les livres disponibles (pour le catalogue)
+  async getAllBooks() {
     const response = await apiClient.get('/books')
+    return response.data
+  },
+
+  // Rechercher des livres
+  async searchBooks(query) {
+    const response = await apiClient.get(`/books/search?query=${encodeURIComponent(query)}`)
     return response.data
   },
 
@@ -48,27 +54,9 @@ export default {
     return response.data
   },
 
-  // Ajouter un nouveau livre
+  // Ajouter un nouveau livre (admin)
   async addBook(bookData) {
     const response = await apiClient.post('/books', bookData)
-    return response.data
-  },
-
-  // Mettre à jour un livre
-  async updateBook(id, bookData) {
-    const response = await apiClient.put(`/books/${id}`, bookData)
-    return response.data
-  },
-
-  // Supprimer un livre
-  async deleteBook(id) {
-    const response = await apiClient.delete(`/books/${id}`)
-    return response.data
-  },
-
-  // Mettre à jour le statut d'un livre
-  async updateBookStatus(id, status) {
-    const response = await apiClient.patch(`/books/${id}/status`, { status })
     return response.data
   }
 }

@@ -1,9 +1,12 @@
 <template>
   <div class="min-h-screen bg-background flex flex-col">
     <!-- Header -->
-    <header class="bg-card shadow-sm py-4">
-      <div class="max-w-7xl mx-auto px-4">
-        <h1 class="text-2xl font-bold text-foreground">Browser</h1>
+    <header class="bg-white shadow-sm py-4 border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 flex items-center justify-center gap-3">
+        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center border-2 border-orange-200">
+          <img src="@/assets/BCO.png" alt="BiblioQuest Logo" class="h-7 w-7 object-contain" />
+        </div>
+        <h1 class="text-2xl font-bold text-[#8B4513]">BiblioQuest</h1>
       </div>
     </header>
 
@@ -21,7 +24,9 @@
         <div class="bg-card rounded-2xl shadow-md p-8 border border-border">
           <!-- Logo BQ -->
           <div class="flex justify-center mb-6">
-            <img src="@/assets/BCO.png" alt="BiblioQuest Logo" class="h-16 w-auto" />
+            <div class="h-20 w-20 bg-orange-100 rounded-2xl flex items-center justify-center shadow-lg border-4 border-orange-200">
+              <img src="@/assets/BCO.png" alt="BiblioQuest Logo" class="h-14 w-14 object-contain" />
+            </div>
           </div>
 
           <!-- Texte connexion -->

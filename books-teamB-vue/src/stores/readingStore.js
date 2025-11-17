@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia'
+import { readingService } from '@/services/readingService'
 
 export const useReadingStore = defineStore('reading', {
   state: () => ({
+    userLibrary: [],
     readingSessions: [],
     readingNotes: [],
     readingGoals: [],
@@ -38,175 +40,149 @@ export const useReadingStore = defineStore('reading', {
   },
 
   actions: {
+    // === BIBLIOTHÈQUE UTILISATEUR ===
+    
+    // Récupérer la bibliothèque de l'utilisateur connecté
+    async fetchUserLibrary() {
+      this.isLoading = true
+      this.error = null
+      
+      try {
+        const currentUser = JSON.parse(localStorage.getItem('auth_user'))
+        if (!currentUser) throw new Error('Utilisateur non connecté')
+        
+        const library = await readingService.getUserLibrary(currentUser.id || 1)
+        this.userLibrary = library
+        return library
+      } catch (error) {
+        this.error = error.message
+        console.error('Erreur lors de la récupération de la bibliothèque:', error)
+        throw error
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    // Ajouter un livre à la bibliothèque
+    async addBookToLibrary(bookId) {
+      this.isLoading = true
+      this.error = null
+      
+      try {
+        const currentUser = JSON.parse(localStorage.getItem('auth_user'))
+        if (!currentUser) throw new Error('Utilisateur non connecté')
+        
+        const userBook = await readingService.addBookToLibrary(currentUser.id || 1, bookId)
+        this.userLibrary.push(userBook)
+        return userBook
+      } catch (error) {
+        this.error = error.message
+        console.error('Erreur lors de l\'ajout du livre:', error)
+        throw error
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    // Mettre à jour le statut/progression d'un livre
+    async updateUserBook(bookId, updates) {
+      this.isLoading = true
+      this.error = null
+      
+      try {
+        const currentUser = JSON.parse(localStorage.getItem('auth_user'))
+        if (!currentUser) throw new Error('Utilisateur non connecté')
+        
+        const updatedBook = await readingService.updateUserBook(currentUser.id || 1, bookId, updates)
+        
+        // Mettre à jour dans le store local
+        const index = this.userLibrary.findIndex(book => book.book.id === bookId)
+        if (index !== -1) {
+          this.userLibrary[index] = updatedBook
+        }
+        
+        return updatedBook
+      } catch (error) {
+        this.error = error.message
+        console.error('Erreur lors de la mise à jour du livre:', error)
+        throw error
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    // === SESSIONS DE LECTURE ===
+    
     // Create a new reading session
-    async createReadingSession(sessionData) {
+    async createReadingSession(userBookId, duration, pagesRead) {
       this.isLoading = true
       this.error = null
       
       try {
-        // API call to create session
-        // const response = await axios.post('/api/reading-sessions', sessionData)
+        const currentUser = JSON.parse(localStorage.getItem('auth_user'))
+        if (!currentUser) throw new Error('Utilisateur non connecté')
         
-        // Mock implementation
-        const newSession = {
-          id: Date.now(),
-          ...sessionData,
-          createdAt: new Date().toISOString()
-        }
+        const session = await readingService.createReadingSession(
+          currentUser.id || 1, 
+          userBookId, 
+          duration, 
+          pagesRead
+        )
         
-        this.readingSessions.push(newSession)
-        
-        // Update progress
-        this.updateProgress(sessionData.bookId, sessionData.currentPage, sessionData.totalPages)
-        
-        return { success: true, session: newSession }
+        this.readingSessions.push(session)
+        return session
       } catch (error) {
         this.error = error.message
-        return { success: false, error: error.message }
+        console.error('Erreur lors de la création de la session:', error)
+        throw error
       } finally {
         this.isLoading = false
       }
     },
 
-    // Create a reading note
-    async createReadingNote(noteData) {
+    // Récupérer les sessions de lecture de l'utilisateur
+    async fetchUserSessions() {
       this.isLoading = true
       this.error = null
       
       try {
-        // API call to create note
-        // const response = await axios.post('/api/reading-notes', noteData)
+        const currentUser = JSON.parse(localStorage.getItem('auth_user'))
+        if (!currentUser) throw new Error('Utilisateur non connecté')
         
-        // Mock implementation
-        const newNote = {
-          id: Date.now(),
-          ...noteData,
-          createdAt: new Date().toISOString()
-        }
-        
-        this.readingNotes.push(newNote)
-        
-        return { success: true, note: newNote }
+        const sessions = await readingService.getUserSessions(currentUser.id || 1)
+        this.readingSessions = sessions
+        return sessions
       } catch (error) {
         this.error = error.message
-        return { success: false, error: error.message }
+        console.error('Erreur lors de la récupération des sessions:', error)
+        throw error
       } finally {
         this.isLoading = false
       }
     },
 
-    // Create a reading goal
-    async createReadingGoal(goalData) {
+    // Récupérer les statistiques de lecture
+    async fetchReadingStats() {
       this.isLoading = true
       this.error = null
       
       try {
-        // API call to create goal
-        // const response = await axios.post('/api/reading-goals', goalData)
+        const currentUser = JSON.parse(localStorage.getItem('auth_user'))
+        if (!currentUser) throw new Error('Utilisateur non connecté')
         
-        // Mock implementation
-        const newGoal = {
-          id: Date.now(),
-          ...goalData,
-          status: 'active',
-          progress: 0,
-          createdAt: new Date().toISOString()
-        }
-        
-        this.readingGoals.push(newGoal)
-        
-        return { success: true, goal: newGoal }
+        const stats = await readingService.getReadingStats(currentUser.id || 1)
+        // Les stats arrivent sous forme de string, on peut les parser si nécessaire
+        return stats
       } catch (error) {
         this.error = error.message
-        return { success: false, error: error.message }
+        console.error('Erreur lors de la récupération des statistiques:', error)
+        throw error
       } finally {
         this.isLoading = false
       }
     },
 
-    // Update reading progress for a book
-    updateProgress(bookId, currentPage, totalPages) {
-      const percentage = totalPages > 0 ? Math.round((currentPage / totalPages) * 100) : 0
-      
-      this.currentProgress[bookId] = {
-        currentPage,
-        totalPages,
-        percentage
-      }
-    },
-
-    // Update goal progress
-    updateGoalProgress(goalId, progress) {
-      const goal = this.readingGoals.find(g => g.id === goalId)
-      if (goal) {
-        goal.progress = progress
-        if (progress >= goal.target) {
-          goal.status = 'completed'
-        }
-      }
-    },
-
-    // Delete a reading note
-    async deleteNote(noteId) {
-      this.isLoading = true
-      this.error = null
-      
-      try {
-        // API call to delete note
-        // await axios.delete(`/api/reading-notes/${noteId}`)
-        
-        const index = this.readingNotes.findIndex(note => note.id === noteId)
-        if (index > -1) {
-          this.readingNotes.splice(index, 1)
-        }
-        
-        return { success: true }
-      } catch (error) {
-        this.error = error.message
-        return { success: false, error: error.message }
-      } finally {
-        this.isLoading = false
-      }
-    },
-
-    // Fetch user's reading stats
-    async fetchReadingStats(userId) {
-      this.isLoading = true
-      this.error = null
-      
-      try {
-        // API call to fetch stats
-        // const response = await axios.get(`/api/users/${userId}/stats`)
-        
-        // Mock data
-        return {
-          success: true,
-          stats: {
-            totalBooksRead: 0,
-            totalPagesRead: this.getTotalPagesRead,
-            averagePagesPerDay: 0,
-            currentStreak: 0,
-            longestStreak: 0
-          }
-        }
-      } catch (error) {
-        this.error = error.message
-        return { success: false, error: error.message }
-      } finally {
-        this.isLoading = false
-      }
-    },
-
-    // Clear all reading data
-    clearReadingData() {
-      this.readingSessions = []
-      this.readingNotes = []
-      this.readingGoals = []
-      this.currentProgress = {}
-      this.error = null
-    },
-
-    // Clear error
+    // Effacer les erreurs
     clearError() {
       this.error = null
     }

@@ -2,11 +2,14 @@
   <div class="fixed left-0 top-16 bottom-0 w-44 bg-white border-r border-gray-200 z-10">
     <!-- Header with Logo -->
     <div class="p-4 border-b border-gray-200">
-      <div class="flex items-center gap-2 mb-4">
-        <div class="w-8 h-8 bg-white rounded flex items-center justify-center border border-gray-200">
-          <img src="@/assets/BCO.png" alt="BiblioQuest Logo" class="h-6 w-6 object-contain" />
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center border-2 border-orange-200">
+          <img src="@/assets/BCO.png" alt="BiblioQuest Logo" class="h-7 w-7 object-contain" />
         </div>
-        <span class="text-sm font-semibold text-gray-700">Application</span>
+        <div>
+          <div class="text-sm font-bold text-[#8B4513]">BiblioQuest</div>
+          <div class="text-xs text-gray-500">Votre bibliothèque</div>
+        </div>
       </div>
     </div>
 

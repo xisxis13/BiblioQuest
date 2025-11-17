@@ -13,6 +13,11 @@ import java.util.List;
 public class BookController {
     private final BookService bookService;
 
+    @GetMapping
+    public List<Book> getAllBooks() {
+        return bookService.getAllBooks();
+    }
+
     @GetMapping("/search")
     public List<Book> searchBooks(@RequestParam String query) {
         return bookService.searchBooks(query);

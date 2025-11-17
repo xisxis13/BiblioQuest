@@ -16,8 +16,8 @@
           <h1 class="text-4xl font-bold text-orange-500 mb-6">BiblioQuest !</h1>
           
           <!-- Logo -->
-          <div class="mx-auto h-16 w-16 bg-orange-500 rounded-full flex items-center justify-center mb-8">
-            <img src="@/assets/BCO.png" alt="BiblioQuest Logo" class="h-10 w-10 object-contain" />
+          <div class="mx-auto h-20 w-20 bg-white rounded-2xl flex items-center justify-center mb-8 shadow-lg border-4 border-orange-200">
+            <img src="@/assets/BCO.png" alt="BiblioQuest Logo" class="h-14 w-14 object-contain" />
           </div>
           
           <p class="text-sm text-gray-600 mb-6">Pas encore de compte ? <router-link to="/register" class="text-orange-500 hover:text-orange-600">Inscris toi ici</router-link></p>
