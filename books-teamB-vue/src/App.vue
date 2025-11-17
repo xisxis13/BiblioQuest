@@ -1,14 +1,26 @@
 <script>
 import { useAuthStore } from '@/stores/authStore'
+import VerticalNavbar from './components/VerticalNavbar.vue';
 
 export default {
   name: 'App',
+  components: {
+    VerticalNavbar
+  },
+  data: () => {
+    return {
+      navItems: [
+        {name: "home", route: "/"},
+        {name: "login", route: "/catalog"}
+      ]
+    }
+  },
   setup() {
     const authStore = useAuthStore()
-    
+
     // Initialize authentication state when app starts
     authStore.initializeAuth()
-    
+
     return {
       text: 'Touch me',
       authStore
@@ -19,6 +31,7 @@ export default {
 
 <template>
   <div id="app">
+    <VerticalNavbar :items="navItems"/>
     <router-view />
   </div>
 </template>

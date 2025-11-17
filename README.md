@@ -4,3 +4,16 @@
 ```docker compose up --build```
 ### Stop docker config:
 ```docker compose down```
+### Connecting to db
+#### PgAdmin 4
+- install pgAdmin 4
+    windows: https://www.postgresql.org/ftp/pgadmin/pgadmin4/v9.10/windows/
+    macOS: https://www.postgresql.org/ftp/pgadmin/pgadmin4/v9.10/macos/
+- register database server
+<p align="center">
+  <img src="img/registerServer.png" alt="Synth Interface Preview" width="600"/><br>
+  <img src="img/registerServerGeneral.png" alt="Synth Interface Preview" width="600"/><br>
+  <img src="img/registerServerConnection.png" alt="Synth Interface Preview" width="600"/><br>
+</p>
+- click save
+
