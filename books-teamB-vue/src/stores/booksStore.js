@@ -12,12 +12,10 @@ export const useBooksStore = defineStore('books', {
     // Obtenir tous les livres
     allBooks: (state) => state.books,
 
-    // Livres par statut
     toReadBooks: (state) => state.books.filter(book => book.status === 'TO_READ'),
     inProgressBooks: (state) => state.books.filter(book => book.status === 'IN_PROGRESS'),
     completedBooks: (state) => state.books.filter(book => book.status === 'COMPLETED'),
 
-    // Statistiques
     stats: (state) => ({
       total: state.books.length,
       toRead: state.books.filter(b => b.status === 'TO_READ').length,
@@ -25,7 +23,6 @@ export const useBooksStore = defineStore('books', {
       completed: state.books.filter(b => b.status === 'COMPLETED').length
     }),
 
-    // État de chargement et d'erreur
     isLoading: (state) => state.loading,
     getError: (state) => state.error
   },

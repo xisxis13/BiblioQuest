@@ -1,5 +1,11 @@
 -- ============================================================================
--- 1. INSERTION DES SUJETS (Genres)
+-- 1. INSERTION DES UTILISATEURS DE TEST
+-- ============================================================================
+INSERT INTO users (id, username, email, password, role) VALUES 
+(1, 'admin@example.com', 'admin@example.com', 'password123', 'USER');
+
+-- ============================================================================
+-- 2. INSERTION DES SUJETS (Genres)
 -- ============================================================================
 INSERT INTO subject (id, text) VALUES 
 (1, 'Fantasy'),
@@ -8,7 +14,7 @@ INSERT INTO subject (id, text) VALUES
 (4, 'Romance');
 
 -- ============================================================================
--- 2. INSERTION DES AUTEURS
+-- 3. INSERTION DES AUTEURS
 -- ============================================================================
 INSERT INTO author (id, first_name, last_name) VALUES 
 (1, 'Tracy', 'Deonn'),

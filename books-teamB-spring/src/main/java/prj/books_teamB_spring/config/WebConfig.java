@@ -12,7 +12,12 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         // During development allow requests from any origin. Narrow this in production.
         registry.addMapping("/api/**")
-                .allowedOrigins("http://localhost5173", "http://localhost:127.0.0.1:3000")
+                .allowedOrigins(
+                    "http://localhost:5173",
+                    "http://localhost:3000",
+                    "http://127.0.0.1:3000",
+                    "http://127.0.0.1:5173"
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);

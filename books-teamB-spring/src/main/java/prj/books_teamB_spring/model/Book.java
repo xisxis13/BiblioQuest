@@ -30,14 +30,14 @@ public class Book {
 
     @ManyToMany
     @JoinTable(
-        name = "book_author", // Nom de la table qui fera le lien
+        name = "book_author",
         joinColumns = @JoinColumn(name = "book_id"), 
         inverseJoinColumns = @JoinColumn(name = "author_id") 
     )
     private Set<Author> authors = new HashSet<>();
    
     @ManyToOne
-    @JoinColumn(name = "subject_id") // C'est une bonne pratique de l'ajouter
+    @JoinColumn(name = "subject_id")
     private Subject subject; 
 
     private String desc_txt; 

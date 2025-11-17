@@ -1,5 +1,13 @@
 <template>
-  <div class="grid grid-cols-12 gap-6">
+  <div class="min-h-screen bg-[#F5F1ED]">
+    <Header />
+    <Sidebar />
+    <div class="ml-44 pt-20 px-6 py-8">
+      <div class="mb-8">
+        <h1 class="text-4xl font-bold text-[#8B4513] mb-2">Bibliothèque</h1>
+        <p class="text-gray-600">Explorez tous les livres disponibles</p>
+      </div>
+      <div class="grid grid-cols-12 gap-6">
     <aside class="col-span-12 lg:col-span-3">
       <div class="bg-card border border-border rounded-2xl p-4 space-y-4">
         <div class="relative">
@@ -54,15 +62,13 @@
           :key="book.id"
           :book="book"
           @edit="editBook"
-          @delete="deleteBook"
-          @update-status="updateBookStatus"
-          @start-reading="startReading"
         />
       </div>
     </main>
-
-    <BookModal v-if="showAddModal || showEditModal" :book="selectedBook" :is-editing="showEditModal" @close="closeModals" @save="saveBook" />
+      </div>
+    </div>
   </div>
+  <BookModal v-if="showAddModal || showEditModal" :book="selectedBook" :is-editing="showEditModal" @close="closeModals" @save="saveBook" />
 </template>
 
 <script>
@@ -71,10 +77,12 @@ import { useRouter } from 'vue-router'
 import { useBooksStore } from '@/stores/booksStore'
 import BookCard from '@/components/BookCard.vue'
 import BookModal from '@/components/BookModal.vue'
+import Sidebar from '@/components/Sidebar.vue'
+import Header from '@/components/Header.vue'
 
 export default {
   name: 'LibraryPage',
-  components: { BookCard, BookModal },
+  components: { BookCard, BookModal, Sidebar, Header },
   setup() {
     const router = useRouter()
     const booksStore = useBooksStore()

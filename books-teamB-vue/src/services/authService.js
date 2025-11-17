@@ -40,8 +40,13 @@ export const authService = {
   // Connexion
   async login(credentials) {
     try {
-      console.log('AuthService: Calling backend with:', credentials)
-      const response = await api.post('/auth/login', credentials)
+      // Mapper email vers username pour le backend
+      const loginData = {
+        username: credentials.email,
+        password: credentials.password
+      }
+      console.log('AuthService: Calling backend with:', loginData)
+      const response = await api.post('/auth/login', loginData)
       console.log('AuthService: Backend response:', response.data)
       
       const user = response.data
