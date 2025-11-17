@@ -40,6 +40,11 @@ public class Book {
     @JoinColumn(name = "subject_id") // C'est une bonne pratique de l'ajouter
     private Subject subject; 
 
+    @ManyToOne
+    @JoinColumn(name = "serie_id") // C'est une bonne pratique de l'ajouter
+    private Serie serie;
+
+    @Column(columnDefinition = "TEXT")
     private String desc_txt; 
     private String cover;
     private String serie_id;
