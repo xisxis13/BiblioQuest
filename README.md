@@ -21,7 +21,7 @@
             <strong>hostname:</strong> bookspg.postgres.database.azure.com
         </li>
         <li>
-            <strong>port:</strong> 5462
+            <strong>port:</strong> 5432
         </li>
         <li>
             <strong>username:</strong> elmos
