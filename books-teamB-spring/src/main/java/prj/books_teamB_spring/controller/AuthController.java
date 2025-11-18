@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prj.books_teamB_spring.model.User;
+import prj.books_teamB_spring.model.Role;
 import prj.books_teamB_spring.repository.UserRepository;
 
 @RestController
@@ -16,21 +17,44 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        // Connexion par email seulement
+        // Vérifier si l'email existe
         User user = userRepository.findByEmail(request.getUsername()).orElse(null);
         
-        if (user != null && user.getPassword().equals(request.getPassword())) {
-            return ResponseEntity.ok(new LoginResponse(user.getUsername(), user.getRole().toString()));
+        if (user == null) {
+            return ResponseEntity.status(401).body(new ErrorResponse("EMAIL_NOT_FOUND", "Aucun compte associé à cette adresse email"));
         }
         
-        return ResponseEntity.status(401).body("Invalid credentials");
+        // Vérifier le mot de passe
+        if (!user.getPassword().equals(request.getPassword())) {
+            return ResponseEntity.status(401).body(new ErrorResponse("INVALID_PASSWORD", "Mot de passe incorrect"));
+        }
+        
+        return ResponseEntity.ok(new LoginResponse(user.getUsername(), user.getRole().toString()));
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        // Vérifier si l'utilisateur existe déjà
+        // Vérifier si l'email existe déjà
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            return ResponseEntity.status(400).body(new ErrorResponse("EMAIL_EXISTS", "Cette adresse email est déjà utilisée"));
+        }
+        
+        // Vérifier si le nom d'utilisateur existe déjà
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            return ResponseEntity.status(400).body("Username already exists");
+            return ResponseEntity.status(400).body(new ErrorResponse("USERNAME_EXISTS", "Ce nom d'utilisateur est déjà pris"));
+        }
+        
+        // Validation des champs
+        if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
+            return ResponseEntity.status(400).body(new ErrorResponse("INVALID_USERNAME", "Le nom d'utilisateur est requis"));
+        }
+        
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+            return ResponseEntity.status(400).body(new ErrorResponse("INVALID_EMAIL", "L'adresse email est requise"));
+        }
+        
+        if (request.getPassword() == null || request.getPassword().length() < 6) {
+            return ResponseEntity.status(400).body(new ErrorResponse("INVALID_PASSWORD", "Le mot de passe doit contenir au moins 6 caractères"));
         }
         
         // Créer nouveau user
@@ -38,7 +62,7 @@ public class AuthController {
         newUser.setUsername(request.getUsername());
         newUser.setEmail(request.getEmail());
         newUser.setPassword(request.getPassword());
-        newUser.setRole(prj.books_teamB_spring.model.Role.USER);
+        newUser.setRole(Role.USER);
         
         User savedUser = userRepository.save(newUser);
         return ResponseEntity.ok(new LoginResponse(savedUser.getUsername(), savedUser.getRole().toString()));
@@ -78,5 +102,18 @@ public class AuthController {
         
         public String getUsername() { return username; }
         public String getRole() { return role; }
+    }
+
+    static class ErrorResponse {
+        private String code;
+        private String message;
+        
+        public ErrorResponse(String code, String message) {
+            this.code = code;
+            this.message = message;
+        }
+        
+        public String getCode() { return code; }
+        public String getMessage() { return message; }
     }
 }

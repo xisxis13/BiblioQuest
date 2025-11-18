@@ -37,24 +37,59 @@
 
       <!-- Books Grid -->
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <!-- Empty State -->
+        <div v-if="filteredBooks.length === 0" class="col-span-full flex justify-center items-center py-12">
+          <div class="text-center">
+            <svg class="h-12 w-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <p class="text-gray-500 mb-2">Aucun livre trouvé</p>
+            <p class="text-sm text-gray-400">Essayez de modifier vos filtres de recherche</p>
+          </div>
+        </div>
+
+        <!-- Books Grid -->
         <div
+          v-else
           v-for="book in filteredBooks"
           :key="book.id"
           class="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
         >
           <!-- Book Cover -->
-          <div class="aspect-[3/4] bg-gradient-to-br from-blue-400 to-purple-600 rounded-lg mb-3 flex items-center justify-center text-white text-center p-2">
-            <div>
-              <h3 class="font-bold text-xs mb-1 leading-tight">{{ book.title }}</h3>
-              <p class="text-xs opacity-90">{{ book.author }}</p>
+          <div class="aspect-[3/4] rounded-lg mb-3 overflow-hidden">
+            <img 
+              v-if="book.cover" 
+              :src="book.cover" 
+              :alt="book.title"
+              class="w-full h-full object-cover"
+              @error="$event.target.style.display='none'"
+            />
+            <div 
+              v-else
+              class="w-full h-full bg-gradient-to-br from-orange-400 to-red-600 flex items-center justify-center text-white text-center p-2"
+            >
+              <div>
+                <h3 class="font-bold text-xs mb-1 leading-tight">{{ book.title }}</h3>
+                <p class="text-xs opacity-90">{{ getAuthorsNames(book) }}</p>
+              </div>
             </div>
           </div>
           
           <!-- Book Info -->
           <div class="space-y-1">
             <h3 class="font-semibold text-xs text-gray-900 line-clamp-2 leading-tight">{{ book.title }}</h3>
-            <p class="text-xs text-gray-600">{{ book.author }}</p>
-            <span class="inline-block px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full">{{ book.year }}</span>
+            <p class="text-xs text-gray-600">{{ getAuthorsNames(book) }}</p>
+            <div class="flex items-center gap-2">
+              <span v-if="book.subject" class="inline-block px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full">
+                {{ book.subject.text }}
+              </span>
+              <span v-if="book.created_at" class="text-xs text-gray-500">
+                {{ new Date(book.created_at).getFullYear() }}
+              </span>
+            </div>
+            <p v-if="book.desc_txt" class="text-xs text-gray-500 line-clamp-2 mt-1">
+              {{ book.desc_txt }}
+            </p>
           </div>
         </div>
       </div>
@@ -87,20 +122,20 @@
               <span class="ml-2 text-sm text-gray-700">Tous</span>
             </label>
             <label class="flex items-center">
-              <input type="radio" v-model="selectedGenre" value="Fantaisie" class="text-orange-500 focus:ring-orange-500">
-              <span class="ml-2 text-sm text-gray-700">Fantaisie</span>
+              <input type="radio" v-model="selectedGenre" value="Fantasy" class="text-orange-500 focus:ring-orange-500">
+              <span class="ml-2 text-sm text-gray-700">Fantasy</span>
             </label>
             <label class="flex items-center">
-              <input type="radio" v-model="selectedGenre" value="Science-Fiction" class="text-orange-500 focus:ring-orange-500">
-              <span class="ml-2 text-sm text-gray-700">Science-Fiction</span>
+              <input type="radio" v-model="selectedGenre" value="Young Adult" class="text-orange-500 focus:ring-orange-500">
+              <span class="ml-2 text-sm text-gray-700">Young Adult</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" v-model="selectedGenre" value="Aventure" class="text-orange-500 focus:ring-orange-500">
+              <span class="ml-2 text-sm text-gray-700">Aventure</span>
             </label>
             <label class="flex items-center">
               <input type="radio" v-model="selectedGenre" value="Romance" class="text-orange-500 focus:ring-orange-500">
               <span class="ml-2 text-sm text-gray-700">Romance</span>
-            </label>
-            <label class="flex items-center">
-              <input type="radio" v-model="selectedGenre" value="Thriller" class="text-orange-500 focus:ring-orange-500">
-              <span class="ml-2 text-sm text-gray-700">Thriller</span>
             </label>
           </div>
         </div>
@@ -137,8 +172,10 @@
 </template>
 
 <script>
-import Header from '@/components/Header.vue'
+import { ref, computed, onMounted } from 'vue'
 import Sidebar from '@/components/Sidebar.vue'
+import Header from '@/components/Header.vue'
+import { useBooksStore } from '@/stores/booksStore'
 
 export default {
   name: 'CataloguePage',
@@ -153,16 +190,72 @@ export default {
       selectedYear: 'toutes',
       showFilters: false,
       books: [
-        { id: 1, title: 'In Other Lands', author: 'Sarah Rees Brennan', year: '2017', genre: 'Fantaisie' },
-        { id: 2, title: "The Gentleman's Guide to Vice and Virtue", author: 'Mackenzi Lee', year: '2018', genre: 'Romance' },
-        { id: 3, title: 'Anger is a Gift', author: 'Mark Oshiro', year: '2018', genre: 'Contemporary' },
-        { id: 4, title: "The Lady's Guide to Petticoats and Piracy", author: 'Mackenzi Lee', year: '2018', genre: 'Romance' },
-        { id: 5, title: 'The Ruin of a Rake', author: 'Mackenzi Lee', year: '2019', genre: 'Romance' },
-        { id: 6, title: 'The Darkest Minds', author: 'Alexandra Bracken', year: '2012', genre: 'Science-Fiction' },
-        { id: 7, title: 'Nevernight', author: 'Jay Kristoff', year: '2016', genre: 'Fantaisie' },
-        { id: 8, title: 'Illuminae', author: 'Amie Kaufman', year: '2015', genre: 'Science-Fiction' },
-        { id: 9, title: 'Gemina', author: 'Amie Kaufman', year: '2016', genre: 'Science-Fiction' },
-        { id: 10, title: 'Obsidio', author: 'Amie Kaufman', year: '2018', genre: 'Science-Fiction' }
+        { 
+          id: 1, 
+          title: 'Bloodmarked', 
+          authors: [{ firstName: 'Tracy', lastName: 'Deonn' }],
+          year: '2010', 
+          genre: 'Fantasy',
+          subject: { text: 'Fantasy' },
+          desc_txt: 'The Legendborn Cycle, Book 2. Bree wants to heal, but the war has just begun.',
+          cover: 'https://covers.openlibrary.org/a/id/12617874-L.jpg',
+          created_at: '2010-03-02T03:44:17'
+        },
+        { 
+          id: 2, 
+          title: 'In Other Lands', 
+          authors: [{ firstName: 'Sarah', lastName: 'Rees Brennan' }],
+          year: '2017', 
+          genre: 'Young Adult',
+          subject: { text: 'Young Adult' },
+          desc_txt: 'The Borderlands aren\'t like anywhere else. Don\'t try to smuggle a phone... Elliot is thirteen years old. He\'s smart and just a tiny bit obnoxious.',
+          cover: 'https://covers.openlibrary.org/a/id/12354250-L.jpg',
+          created_at: '2017-10-20T01:27:09'
+        },
+        { 
+          id: 3, 
+          title: 'Strange the Dreamer', 
+          authors: [{ firstName: 'Laini', lastName: 'Taylor' }],
+          year: '2018', 
+          genre: 'Fantasy',
+          subject: { text: 'Fantasy' },
+          desc_txt: 'The dream chooses the dreamer, not the other way around. Lazlo Strange, war orphan and junior librarian, has always feared that his dream chose poorly.',
+          cover: 'https://covers.openlibrary.org/a/id/8367802-L.jpg',
+          created_at: '2018-05-15T01:36:29'
+        },
+        { 
+          id: 4, 
+          title: 'Muse of Nightmares', 
+          authors: [{ firstName: 'Laini', lastName: 'Taylor' }],
+          year: '2018', 
+          genre: 'Fantasy',
+          subject: { text: 'Fantasy' },
+          desc_txt: 'In the wake of tragedy, neither Lazlo nor Sarai are who they were before. One a god, the other a ghost, they struggle to grasp the new boundaries of their selves.',
+          cover: 'https://covers.openlibrary.org/a/id/12366752-L.jpg',
+          created_at: '2018-10-18T01:40:34'
+        },
+        { 
+          id: 5, 
+          title: "The Gentleman's Guide to Vice and Virtue", 
+          authors: [{ firstName: 'Mackenzi', lastName: 'Lee' }],
+          year: '2018', 
+          genre: 'Romance',
+          subject: { text: 'Romance' },
+          desc_txt: 'A young bisexual British lord embarks on an unforgettable Grand Tour of Europe with his best friend/secret crush.',
+          cover: 'https://covers.openlibrary.org/b/id/8225261-L.jpg',
+          created_at: '2018-01-15T10:20:30'
+        },
+        { 
+          id: 6, 
+          title: 'The Darkest Minds', 
+          authors: [{ firstName: 'Alexandra', lastName: 'Bracken' }],
+          year: '2012', 
+          genre: 'Young Adult',
+          subject: { text: 'Young Adult' },
+          desc_txt: 'When Ruby woke up on her tenth birthday, something about her had changed. Something alarming enough to make her parents lock her in the garage.',
+          cover: 'https://covers.openlibrary.org/b/id/7572080-L.jpg',
+          created_at: '2012-12-18T14:30:45'
+        }
       ]
     }
   },
@@ -174,19 +267,25 @@ export default {
       if (this.searchQuery) {
         filtered = filtered.filter(book =>
           book.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          book.author.toLowerCase().includes(this.searchQuery.toLowerCase())
+          (book.authors && book.authors.some(author => 
+            `${author.firstName} ${author.lastName}`.toLowerCase().includes(this.searchQuery.toLowerCase())
+          )) ||
+          (book.desc_txt && book.desc_txt.toLowerCase().includes(this.searchQuery.toLowerCase()))
         )
       }
 
-      // Filter by genre
+      // Filter by genre (using subject)
       if (this.selectedGenre !== 'tous') {
-        filtered = filtered.filter(book => book.genre === this.selectedGenre)
+        filtered = filtered.filter(book => 
+          book.subject && book.subject.text === this.selectedGenre
+        )
       }
 
-      // Filter by year
+      // Filter by year (using created_at)
       if (this.selectedYear !== 'toutes') {
         filtered = filtered.filter(book => {
-          const year = parseInt(book.year)
+          if (!book.created_at) return false
+          const year = new Date(book.created_at).getFullYear()
           switch (this.selectedYear) {
             case '2025-2020':
               return year >= 2020 && year <= 2025
@@ -203,6 +302,14 @@ export default {
       }
 
       return filtered
+    }
+  },
+  methods: {
+    getAuthorsNames(book) {
+      if (!book.authors || book.authors.length === 0) {
+        return 'Auteur inconnu'
+      }
+      return book.authors.map(author => `${author.firstName} ${author.lastName}`).join(', ')
     }
   }
 }

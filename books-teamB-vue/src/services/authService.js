@@ -64,8 +64,21 @@ export const authService = {
       return { user, token: sessionToken.token }
     } catch (error) {
       console.error('AuthService login error:', error)
-      const message = error.response?.data || 'Erreur de connexion'
-      throw new Error(message)
+      
+      // Gérer les erreurs spécifiques du backend
+      if (error.response?.status === 401 && error.response?.data) {
+        const errorData = error.response.data
+        if (errorData.code && errorData.message) {
+          // Erreur structurée du backend
+          throw new Error(errorData.message)
+        } else if (typeof errorData === 'string') {
+          // Erreur simple du backend
+          throw new Error(errorData)
+        }
+      }
+      
+      // Erreur générique
+      throw new Error('Erreur de connexion. Vérifiez vos identifiants.')
     }
   },
 
@@ -87,8 +100,22 @@ export const authService = {
       
       return { user, token: sessionToken.token }
     } catch (error) {
-      const message = error.response?.data || 'Erreur d\'inscription'
-      throw new Error(message)
+      console.error('AuthService register error:', error)
+      
+      // Gérer les erreurs spécifiques du backend
+      if (error.response?.status === 400 && error.response?.data) {
+        const errorData = error.response.data
+        if (errorData.code && errorData.message) {
+          // Erreur structurée du backend
+          throw new Error(errorData.message)
+        } else if (typeof errorData === 'string') {
+          // Erreur simple du backend
+          throw new Error(errorData)
+        }
+      }
+      
+      // Erreur générique
+      throw new Error('Erreur lors de l\'inscription. Veuillez réessayer.')
     }
   },
 

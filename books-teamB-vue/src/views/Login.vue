@@ -27,8 +27,23 @@
         <div class="bg-white rounded-2xl p-8 shadow-sm">
           <form @submit.prevent="handleLogin" class="space-y-6">
             <!-- Error Message -->
-            <div v-if="authStore.getError" class="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p class="text-sm text-red-600">{{ authStore.getError }}</p>
+            <div v-if="errorMessage" class="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div class="flex items-center">
+                <svg class="h-5 w-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="text-sm text-red-800">{{ errorMessage }}</p>
+              </div>
+            </div>
+
+            <!-- Success Message -->
+            <div v-if="successMessage" class="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div class="flex items-center">
+                <svg class="h-5 w-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="text-sm text-green-800">{{ successMessage }}</p>
+              </div>
             </div>
 
             <!-- Email Field -->
@@ -40,7 +55,8 @@
                 type="email"
                 required
                 class="w-full px-4 py-3 bg-[#F5F1ED] border border-gray-300 rounded-xl text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="ex: example@mail.com"
+                placeholder="ex: admin@example.com"
+                @input="clearMessages"
               />
             </div>
 
@@ -55,17 +71,23 @@
                 minlength="6"
                 class="w-full px-4 py-3 bg-[#F5F1ED] border border-gray-300 rounded-xl text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="ex: ••••••••"
+                @input="clearMessages"
               />
             </div>
 
             <!-- Submit Button -->
             <button
               type="submit"
-              :disabled="authStore.isLoading"
-              class="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-semibold py-3 px-4 rounded-xl transition-colors duration-200"
+              :disabled="isLoading"
+              class="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-semibold py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2"
+              @click="clearMessages"
             >
-              <span v-if="authStore.isLoading">Connexion...</span>
-              <span v-else>Connexion</span>
+              <svg v-if="isLoading" class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span v-if="isLoading">Connexion en cours...</span>
+              <span v-else>Se connecter</span>
             </button>
           </form>
         </div>
@@ -94,17 +116,38 @@ export default {
       form: {
         email: '',
         password: ''
-      }
+      },
+      errorMessage: '',
+      successMessage: '',
+      isLoading: false
     }
   },
   methods: {
     async handleLogin() {
+      // Réinitialiser les messages
+      this.errorMessage = ''
+      this.successMessage = ''
+      this.isLoading = true
+
       try {
         await this.authStore.login(this.form)
-        this.router.push('/')
+        this.successMessage = 'Connexion réussie ! Redirection en cours...'
+        
+        // Rediriger après un court délai pour montrer le message de succès
+        setTimeout(() => {
+          this.router.push('/')
+        }, 1000)
       } catch (error) {
         console.error('Login failed:', error)
+        this.errorMessage = error.message || 'Erreur de connexion'
+      } finally {
+        this.isLoading = false
       }
+    },
+
+    clearMessages() {
+      this.errorMessage = ''
+      this.successMessage = ''
     }
   },
   mounted() {

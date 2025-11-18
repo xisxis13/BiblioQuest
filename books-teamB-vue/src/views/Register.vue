@@ -36,6 +36,25 @@
             </p>
           </div>
 
+          <!-- Messages d'erreur/succès -->
+          <div v-if="errorMessage" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+            <div class="flex items-center">
+              <svg class="h-5 w-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p class="text-sm text-red-800">{{ errorMessage }}</p>
+            </div>
+          </div>
+
+          <div v-if="successMessage" class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+            <div class="flex items-center">
+              <svg class="h-5 w-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p class="text-sm text-green-800">{{ successMessage }}</p>
+            </div>
+          </div>
+
           <!-- Form -->
           <form @submit.prevent="handleRegister" class="space-y-5">
             <!-- Nom d'utilisateur -->
@@ -143,48 +162,65 @@ export default {
         password: '',
         confirmPassword: ''
       },
-      usernameError: '',
-      emailError: '',
-      passwordError: '',
-      confirmPasswordError: ''
+      errorMessage: '',
+      successMessage: '',
+      isLoading: false
     }
   },
   methods: {
     validateForm() {
-      this.usernameError = ''
-      this.emailError = ''
-      this.passwordError = ''
-      this.confirmPasswordError = ''
-      
       if (!this.form.username || this.form.username.length < 3) {
-        this.usernameError = 'Le nom d\'utilisateur doit contenir au moins 3 caractères'
+        this.errorMessage = 'Le nom d\'utilisateur doit contenir au moins 3 caractères'
         return false
       }
       if (!this.form.email || !this.form.email.includes('@')) {
-        this.emailError = 'Format d\'email invalide'
+        this.errorMessage = 'Format d\'email invalide'
         return false
       }
       if (!this.form.password || this.form.password.length < 6) {
-        this.passwordError = 'Le mot de passe doit contenir au moins 6 caractères'
+        this.errorMessage = 'Le mot de passe doit contenir au moins 6 caractères'
         return false
       }
       if (this.form.password !== this.form.confirmPassword) {
-        this.confirmPasswordError = 'Les mots de passe ne correspondent pas'
+        this.errorMessage = 'Les mots de passe ne correspondent pas'
         return false
       }
       return true
     },
+
     async handleRegister() {
+      // Réinitialiser les messages
+      this.errorMessage = ''
+      this.successMessage = ''
+      
       if (!this.validateForm()) return
-      this.authStore.clearError()
-      const result = await this.authStore.register({
-        username: this.form.username,
-        email: this.form.email,
-        password: this.form.password
-      })
-      if (result.success) {
-        this.router.push('/library')
+      
+      this.isLoading = true
+
+      try {
+        await this.authStore.register({
+          username: this.form.username,
+          email: this.form.email,
+          password: this.form.password
+        })
+        
+        this.successMessage = 'Inscription réussie ! Redirection en cours...'
+        
+        // Rediriger après un court délai
+        setTimeout(() => {
+          this.router.push('/')
+        }, 1000)
+      } catch (error) {
+        console.error('Registration failed:', error)
+        this.errorMessage = error.message || 'Erreur lors de l\'inscription'
+      } finally {
+        this.isLoading = false
       }
+    },
+
+    clearMessages() {
+      this.errorMessage = ''
+      this.successMessage = ''
     }
   },
   mounted() {

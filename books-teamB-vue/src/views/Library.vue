@@ -113,10 +113,43 @@ export default {
       return books
     })
 
+    // Données mockées pour le développement
+    const mockBooks = [
+      { 
+        id: 1, 
+        title: 'Bloodmarked', 
+        author: 'Tracy Deonn',
+        status: 'TO_READ',
+        progress: 0,
+        totalPages: 400,
+        cover: 'https://covers.openlibrary.org/a/id/12617874-L.jpg'
+      },
+      { 
+        id: 2, 
+        title: 'In Other Lands', 
+        author: 'Sarah Rees Brennan',
+        status: 'IN_PROGRESS',
+        progress: 45,
+        totalPages: 432,
+        cover: 'https://covers.openlibrary.org/a/id/12354250-L.jpg'
+      },
+      { 
+        id: 3, 
+        title: 'Strange the Dreamer', 
+        author: 'Laini Taylor',
+        status: 'COMPLETED',
+        progress: 100,
+        totalPages: 536,
+        cover: 'https://covers.openlibrary.org/a/id/8367802-L.jpg'
+      }
+    ]
+
     const loadBooks = async () => {
       try {
         isLoading.value = true
-        await booksStore.fetchUserBooks()
+        // Simuler un délai de chargement
+        await new Promise(resolve => setTimeout(resolve, 500))
+        booksStore.books = mockBooks
       } catch (error) {
         console.error('Erreur chargement livres:', error)
       } finally {

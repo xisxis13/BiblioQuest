@@ -28,15 +28,45 @@ export const useBooksStore = defineStore('books', {
   },
 
   actions: {
-    // Récupérer tous les livres de l'utilisateur
-    async fetchUserBooks() {
+    // Récupérer tous les livres disponibles (catalogue)
+    async fetchAllBooks() {
       this.loading = true
       this.error = null
       try {
-        this.books = await booksService.getUserBooks()
+        this.books = await booksService.getAllBooks()
       } catch (error) {
         console.error('Erreur lors de la récupération des livres:', error)
         this.error = error.response?.data?.message || 'Erreur lors du chargement des livres'
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // Rechercher des livres
+    async searchBooks(query) {
+      this.loading = true
+      this.error = null
+      try {
+        this.books = await booksService.searchBooks(query)
+      } catch (error) {
+        console.error('Erreur lors de la recherche:', error)
+        this.error = error.response?.data?.message || 'Erreur lors de la recherche'
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // Récupérer un livre par ID
+    async fetchBookById(id) {
+      this.loading = true
+      this.error = null
+      try {
+        return await booksService.getBookById(id)
+      } catch (error) {
+        console.error('Erreur lors de la récupération du livre:', error)
+        this.error = error.response?.data?.message || 'Erreur lors du chargement du livre'
         throw error
       } finally {
         this.loading = false
