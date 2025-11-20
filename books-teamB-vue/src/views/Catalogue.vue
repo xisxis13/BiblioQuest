@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-[#F5F1ED]">
-    <Header />
+    <HeaderComponent />
     <Sidebar />
     <div class="ml-44 pt-20 px-6 py-8">
       <!-- Page Header -->
@@ -174,13 +174,13 @@
 <script>
 import { ref, computed, onMounted } from 'vue'
 import Sidebar from '@/components/Sidebar.vue'
-import Header from '@/components/Header.vue'
+import HeaderComponent from '@/components/HeaderComponent.vue'
 import { useBooksStore } from '@/stores/booksStore'
 
 export default {
   name: 'CataloguePage',
   components: {
-    Header,
+    HeaderComponent,
     Sidebar
   },
   data() {

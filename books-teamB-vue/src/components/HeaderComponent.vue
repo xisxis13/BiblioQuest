@@ -2,12 +2,12 @@
   <header class="bg-white border-b border-gray-200 py-3 px-6 fixed top-0 left-0 right-0 z-20">
     <div class="flex items-center justify-between max-w-7xl mx-auto">
       <!-- Logo et titre -->
-      <div class="flex items-center gap-3">
+      <router-link to="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
         <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center border-2 border-orange-200">
           <img src="@/assets/BCO.png" alt="BiblioQuest Logo" class="h-7 w-7 object-contain" />
         </div>
         <span class="text-2xl font-bold text-[#8B4513]">BiblioQuest</span>
-      </div>
+      </router-link>
 
       <!-- Barre de recherche centrale -->
       <div class="flex-1 max-w-md mx-8">
@@ -229,7 +229,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
 
 export default {
-  name: 'Header',
+  name: 'HeaderComponent',
   setup() {
     const authStore = useAuthStore()
     const router = useRouter()

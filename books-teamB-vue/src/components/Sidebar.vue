@@ -94,10 +94,20 @@ export default {
       router.push('/login')
     }
 
+    const getUserInitials = () => {
+      const user = authStore.getUser
+      if (user && user.username) {
+        return user.username.substring(0, 2).toUpperCase()
+      }
+      return 'U'
+    }
+
     return {
       navItems,
       isActive,
-      handleLogout
+      handleLogout,
+      getUserInitials,
+      authStore
     }
   }
 }
@@ -105,15 +115,10 @@ export default {
 
 <style scoped>
 .nav-item {
-  @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200;
-  @apply text-gray-600 hover:bg-gray-100;
+  @apply flex items-center gap-3 px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors;
 }
 
 .nav-item-active {
-  @apply bg-orange-500 text-white;
-}
-
-.nav-item-active:hover {
-  @apply bg-orange-600;
+  @apply bg-orange-100 text-orange-700 font-medium;
 }
 </style>

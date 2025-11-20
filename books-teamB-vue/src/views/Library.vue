@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-[#F5F1ED]">
-    <Header />
+    <HeaderComponent />
     <Sidebar />
     <div class="ml-44 pt-20 px-6 py-8">
       <div class="mb-8">
@@ -78,11 +78,11 @@ import { useBooksStore } from '@/stores/booksStore'
 import BookCard from '@/components/BookCard.vue'
 import BookModal from '@/components/BookModal.vue'
 import Sidebar from '@/components/Sidebar.vue'
-import Header from '@/components/Header.vue'
+import HeaderComponent from '@/components/HeaderComponent.vue'
 
 export default {
   name: 'LibraryPage',
-  components: { BookCard, BookModal, Sidebar, Header },
+  components: { BookCard, BookModal, Sidebar, HeaderComponent },
   setup() {
     const router = useRouter()
     const booksStore = useBooksStore()

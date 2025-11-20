@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-[#F5F1ED]">
-    <Header />
+    <HeaderComponent />
     <Sidebar />
     <div class="ml-44 pt-20 px-6 py-8">
       <!-- Header -->
@@ -203,14 +203,14 @@
 <script>
 import ProgressBar from '@/components/ProgressBar.vue'
 import Sidebar from '@/components/Sidebar.vue'
-import Header from '@/components/Header.vue'
+import HeaderComponent from '@/components/HeaderComponent.vue'
 
 export default {
   name: 'MyLibraryPage',
   components: {
     ProgressBar,
     Sidebar,
-    Header
+    HeaderComponent
   },
   data() {
     return {
