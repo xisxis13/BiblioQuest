@@ -3,7 +3,7 @@
     <!-- Header -->
     <header class="bg-white border-b border-gray-200 py-4 px-6">
       <div class="flex items-center justify-center">
-        <span class="text-2xl font-bold text-[#8B4513]">Browser</span>
+        <span class="text-2xl font-bold text-[#8B4513]">BiblioQuest</span>
       </div>
     </header>
 

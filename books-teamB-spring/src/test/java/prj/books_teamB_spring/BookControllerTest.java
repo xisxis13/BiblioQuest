@@ -23,7 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import prj.books_teamB_spring.controller.BookController;
+import prj.books_teamB_spring.controller.CatalogController;
 import prj.books_teamB_spring.dto.AuthorDto;
 import prj.books_teamB_spring.dto.BookDetailDto;
 import prj.books_teamB_spring.dto.BookSummaryDto;
@@ -34,7 +34,7 @@ import prj.books_teamB_spring.service.BookService;
  * Tests pour BookController - Catalogue public
  * Teste les endpoints /api/catalog/search et /api/catalog/{id}
  */
-@WebMvcTest(controllers = BookController.class)
+@WebMvcTest(controllers = CatalogController.class)
 @WithMockUser
 class BookControllerTest {
 

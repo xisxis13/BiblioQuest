@@ -1,43 +1,22 @@
 package prj.books_teamB_spring.service;
 
-<<<<<<< HEAD
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import prj.books_teamB_spring.model.Book;
-import prj.books_teamB_spring.repository.BookRepository;
-
-import java.util.List;
-
-@Service
-@RequiredArgsConstructor
-public class BookService {
-    private final BookRepository bookRepository;
-
-    public List<Book> searchBooks(String query) {
-        // Pour l'instant recherche simple par titre, peut être étendu plus tard
-        return (List<Book>) bookRepository.findAll();
-    }
-
-    public List<Book> getAllBooks() {
-        return (List<Book>) bookRepository.findAll();
-    }
-
-    public Book getBookById(Long id) {
-        return bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Livre introuvable"));
-    }
-
-    public Book addBook(Book book) {
-        return bookRepository.save(book);
-=======
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import prj.books_teamB_spring.dto.BookDetailDto;
+import prj.books_teamB_spring.dto.BookSearchFilters;
+import prj.books_teamB_spring.dto.BookSummaryDto;
+import prj.books_teamB_spring.dto.AuthorDto;
+import prj.books_teamB_spring.dto.SubjectDto;
+import prj.books_teamB_spring.exception.BookNotFoundException;
 import prj.books_teamB_spring.model.Book;
 import prj.books_teamB_spring.model.User;
 import prj.books_teamB_spring.repository.BookRepository;
@@ -98,6 +77,86 @@ public class BookService {
         }
         user.getMyBooks().remove(book);
         userRepository.save(user);
->>>>>>> a76d254ab4455776398815b3844f2de757eeac8d
     }
+
+    // === MÉTHODES POUR LE CATALOGUE PUBLIC ===
+
+    /**
+     * Recherche de livres dans le catalogue public avec filtres et pagination
+     */
+    public Page<BookSummaryDto> searchBooks(BookSearchFilters filters, Pageable pageable) {
+        // Pour l'instant, on retourne tous les livres sans filtrage
+        // TODO: Implémenter le filtrage avec Specifications JPA
+        Page<Book> books = bookRepository.findAll(pageable);
+        return books.map(this::convertToSummaryDto);
+    }
+
+    /**
+     * Récupère les détails d'un livre par son ID
+     */
+    public BookDetailDto findBookById(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new BookNotFoundException(id));
+        return convertToDetailDto(book);
+    }
+
+    // === MÉTHODES DE CONVERSION DTO ===
+
+    private BookSummaryDto convertToSummaryDto(Book book) {
+        BookSummaryDto dto = new BookSummaryDto();
+        dto.setId(book.getId());
+        dto.setTitle(book.getTitle());
+        dto.setCover(book.getCover());
+        
+        // Conversion du subject
+        if (book.getSubject() != null) {
+            SubjectDto subjectDto = new SubjectDto();
+            subjectDto.setId(book.getSubject().getId());
+            subjectDto.setText(book.getSubject().getText());
+            dto.setSubject(subjectDto);
+        }
+        
+        // Conversion des auteurs en liste de noms
+        List<String> authorNames = book.getAuthors().stream()
+                .map(author -> author.getFirstName() + " " + author.getLastName())
+                .collect(Collectors.toList());
+        dto.setAuthorsNames(authorNames);
+        
+        return dto;
+    }
+
+    private BookDetailDto convertToDetailDto(Book book) {
+        BookDetailDto dto = new BookDetailDto();
+        dto.setId(book.getId());
+        dto.setTitle(book.getTitle());
+        dto.setDesc_txt(book.getDesc_txt());
+        dto.setCover(book.getCover());
+        dto.setSerie_id(book.getSerie_id());
+        dto.setSerie_pos(book.getSerie_pos());
+        dto.setCreated_at(book.getCreated_at());
+        dto.setUpdated_at(book.getUpdated_at());
+        
+        // Conversion du subject
+        if (book.getSubject() != null) {
+            SubjectDto subjectDto = new SubjectDto();
+            subjectDto.setId(book.getSubject().getId());
+            subjectDto.setText(book.getSubject().getText());
+            dto.setSubject(subjectDto);
+        }
+        
+        // Conversion des auteurs
+        List<AuthorDto> authorDtos = book.getAuthors().stream()
+                .map(author -> {
+                    AuthorDto authorDto = new AuthorDto();
+                    authorDto.setId(author.getId());
+                    authorDto.setFirstName(author.getFirstName());
+                    authorDto.setLastName(author.getLastName());
+                    return authorDto;
+                })
+                .collect(Collectors.toList());
+        dto.setAuthors(authorDtos);
+        
+        return dto;
+    }
+
 }
