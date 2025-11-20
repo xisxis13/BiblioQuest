@@ -50,8 +50,6 @@ public class Edition {
     @Column(name = "updated_at")
     private LocalDateTime updated_at;
 
-    private Set<User> users = new HashSet<>();
-
     @jakarta.persistence.PrePersist
     public void onCreate() {
         LocalDateTime now = LocalDateTime.now();
