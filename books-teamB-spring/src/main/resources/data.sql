@@ -79,3 +79,13 @@ INSERT INTO book_author (book_id, author_id) VALUES
 (201, 2), -- In Other Lands -> Sarah Rees Brennan
 (202, 3), -- Strange the Dreamer -> Laini Taylor
 (203, 3); -- Muse of Nightmares -> Laini Taylor
+
+
+-- ============================================================================
+-- 6. INSERTION DES SERIES 
+-- ============================================================================
+INSERT INTO serie (id, name) VALUES 
+(1, 'Harry Potter'),
+(2, 'Star wars'),
+(3, 'Seigneur des anneaux'),
+(4, 'Cendrillon');

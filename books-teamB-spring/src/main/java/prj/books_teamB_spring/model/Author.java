@@ -4,6 +4,8 @@ package prj.books_teamB_spring.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,6 +30,7 @@ public class Author {
     // 'mappedBy' doit pointer vers le nom du champ
     // dans la classe 'Book' : "authors"
     @ManyToMany(mappedBy = "authors") // Corrigé (au lieu de "books")
+    @JsonIgnore 
     private Set<Book> books = new HashSet<>();
     
 }

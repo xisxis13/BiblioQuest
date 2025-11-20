@@ -8,13 +8,14 @@
         </div>
         <h2 class="text-3xl font-bold text-gray-900 mb-2">Modifier</h2>
         <p class="text-gray-600">Modifier les informations du livre</p>
+
       </div>
 
       <!-- Formulaire -->
       <div class="card">
         <div class="card-body">
           <form @submit.prevent="handleEdit" class="space-y-6">
-            <!-- Titre (BOOK) -->
+            <!-- Titre -->
             <div>
               <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
                 Titre
@@ -32,7 +33,31 @@
               <p v-if="titleError" class="mt-1 text-sm text-red-600">{{ titleError }}</p>
             </div>
 
-            <!-- ISBN (EDITION) -->
+            <!-- Auteurs -->
+            <div>
+              <label for="authors" class="block text-sm font-medium text-gray-700 mb-2">
+                Auteurs
+              </label>
+              <select
+                id="authors"
+                v-model="form.authorIds"
+                multiple
+                class="input"
+              >
+                <option
+                  v-for="author in authors"
+                  :key="author.id"
+                  :value="author.id"
+                >
+                  {{ author.firstName }} {{ author.lastName }}
+                </option>
+              </select>
+              <p class="mt-1 text-xs text-gray-500">
+                Maintenez Ctrl/Cmd pour sélectionner plusieurs auteurs
+              </p>
+            </div>
+
+            <!-- ISBN (10) -->
             <div>
               <label for="isbn" class="block text-sm font-medium text-gray-700 mb-2">
                 ISBN
@@ -43,7 +68,7 @@
                 type="text"
                 inputmode="numeric"
                 pattern="[0-9]*"
-                maxlength="13"
+                maxlength="10"
                 class="input"
                 :class="{ 'input-error': isbnError }"
                 placeholder="ISBN"
@@ -52,7 +77,24 @@
               <p v-if="isbnError" class="mt-1 text-sm text-red-600">{{ isbnError }}</p>
             </div>
 
-            <!-- Résumé (BOOK.desc_txt) -->
+            <!-- ISBN-13 -->
+            <div>
+              <label for="isbn13" class="block text-sm font-medium text-gray-700 mb-2">
+                ISBN-13
+              </label>
+              <input
+                id="isbn13"
+                v-model="form.isbn13"
+                type="text"
+                inputmode="numeric"
+                maxlength="13"
+                class="input"
+                placeholder="ISBN-13"
+                autocomplete="off"
+              />
+            </div>
+
+            <!-- Résumé -->
             <div>
               <label for="summary" class="block text-sm font-medium text-gray-700 mb-2">
                 Résumé
@@ -72,7 +114,7 @@
               </p>
             </div>
 
-            <!-- Série (BOOK.serie_id, dropdown sur SERIES) -->
+            <!-- Série -->
             <div>
               <label for="serie" class="block text-sm font-medium text-gray-700 mb-2">
                 Série
@@ -97,7 +139,7 @@
               </p>
             </div>
 
-            <!-- Position dans la série (BOOK.serie_pos) -->
+            <!-- Position dans la série -->
             <div>
               <label for="seriePos" class="block text-sm font-medium text-gray-700 mb-2">
                 Position dans la série
@@ -116,7 +158,7 @@
               </p>
             </div>
 
-            <!-- Nombre de pages (EDITION.number_of_pages) -->
+            <!-- Nombre de pages -->
             <div>
               <label for="pageCount" class="block text-sm font-medium text-gray-700 mb-2">
                 Nombre de pages
@@ -136,7 +178,7 @@
               </p>
             </div>
 
-            <!-- Format physique (EDITION.physical_format) -->
+            <!-- Format physique -->
             <div>
               <label for="physicalFormat" class="block text-sm font-medium text-gray-700 mb-2">
                 Format physique
@@ -161,7 +203,7 @@
               </p>
             </div>
 
-            <!-- Sujet (BOOK.subject_id, dropdown sur SUBJECTS) -->
+            <!-- Sujet -->
             <div>
               <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
                 Sujet
@@ -186,25 +228,24 @@
               </p>
             </div>
 
-            <!-- Année / date de publication (EDITION.publish_date, readonly ou pas selon ton choix) -->
+            <!-- Date de publication -->
             <div>
-              <label for="publicationYear" class="block text-sm font-medium text-gray-700 mb-2">
-                Année de publication
+              <label for="publishDate" class="block text-sm font-medium text-gray-700 mb-2">
+                Date de publication
               </label>
               <input
-                id="publicationYear"
-                v-model="form.publicationYear"
-                type="text"
-                class="input bg-gray-100 cursor-not-allowed"
-                :class="{ 'input-error': publicationYearError }"
-                readonly
+                id="publishDate"
+                v-model="form.publishDate"
+                type="date"
+                class="input"
+                :class="{ 'input-error': publishDateError }"
               />
-              <p v-if="publicationYearError" class="mt-1 text-sm text-red-600">
-                {{ publicationYearError }}
+              <p v-if="publishDateError" class="mt-1 text-sm text-red-600">
+                {{ publishDateError }}
               </p>
             </div>
 
-            <!-- Image de couverture (on suppose stockée côté BOOK.cover) -->
+            <!-- Image de couverture BOOK.cover-->
             <div>
               <label for="coverImage" class="block text-sm font-medium text-gray-700 mb-2">
                 Image de couverture du livre
@@ -282,15 +323,17 @@ export default {
         serieId: '',
         seriePos: '',
         subjectId: '',
+        authorIds: [],           // BOOK.authors
         coverImageFile: null,
         coverImageUrl: null,
 
         // EDITION
-        editionId: null,        // on la récupère pour le PUT
+        editionId: null,
         isbn: '',
+        isbn13: '',
         pageCount: '',
         physicalFormat: '',
-        publicationYear: '',
+        publishDate: '',
       },
 
       physicalFormatOptions: [
@@ -305,14 +348,15 @@ export default {
         'Digital Audiobook',
       ],
 
-      series: [],    // pour le dropdown série
-      subjects: [],  // pour le dropdown sujet
+      series: [],    // dropdown séries (TABLE Serie)
+      subjects: [],  // dropdown sujets (TABLE Subject)
+      authors: [],   // dropdown auteurs (TABLE Author)
 
       // erreurs
       titleError: '',
       isbnError: '',
       summaryError: '',
-      publicationYearError: '',
+      publishDateError: '',
       coverImageUrlError: '',
       serieIdError: '',
       seriePosError: '',
@@ -343,7 +387,7 @@ export default {
       this.titleError = ''
       this.isbnError = ''
       this.summaryError = ''
-      this.publicationYearError = ''
+      this.publishDateError = ''
       this.coverImageUrlError = ''
       this.serieIdError = ''
       this.seriePosError = ''
@@ -392,8 +436,8 @@ export default {
         return false
       }
 
-      if (!this.form.publicationYear) {
-        this.publicationYearError = "L'année de publication est requise"
+      if (!this.form.publishDate) {
+        this.publishDateError = 'La date de publication est requise'
         return false
       }
 
@@ -401,26 +445,34 @@ export default {
     },
 
     async fetchSubjects() {
-      const res = await axios.get('/api/subjects')
+      const res = await axios.get('/api/subject')
       this.subjects = res.data
     },
 
     async fetchSeries() {
-      const res = await axios.get('/api/series')
+      const res = await axios.get('/api/serie')
       this.series = res.data
+    },
+
+    async fetchAuthors() {
+      const res = await axios.get('/api/authors')
+      this.authors = res.data
     },
 
     async fetchBook() {
       const id = this.route.params.id
-      const res = await axios.get(`/api/books/${id}`)
+      const res = await axios.get(`/api/book/${id}`)
       const book = res.data
 
-      // BOOK -> form
+      // Formulaire
       this.form.title = book.title
       this.form.summary = book.desc_txt || ''
       this.form.serieId = book.serie_id || ''
       this.form.seriePos = book.serie_pos || ''
       this.form.subjectId = book.subject ? book.subject.id : ''
+
+      // auteurs
+      this.form.authorIds = book.authors ? book.authors.map(a => a.id) : []
 
       // cover si présente
       if (book.cover) {
@@ -436,14 +488,12 @@ export default {
 
       this.form.editionId = edition.id
       this.form.isbn = edition.isbn || ''
-      this.form.pageCount = edition.number_of_pages ? edition.number_of_pages.toString() : ''
-      this.form.physicalFormat = edition.physical_format || ''
-      this.form.publicationYear = edition.publish_date || ''
-
-      // si tu décides que la cover est sur Edition et pas Book :
-      // if (!this.form.coverImageUrl && edition.cover) {
-      //   this.form.coverImageUrl = edition.cover
-      // }
+      this.form.isbn13 = edition.isbn13 || ''
+      this.form.pageCount = edition.numberOfPages
+        ? edition.numberOfPages.toString()
+        : ''
+      this.form.physicalFormat = edition.physicalFormat || ''
+      this.form.publishDate = edition.publishDate || ''
     },
 
     async handleEdit() {
@@ -452,13 +502,20 @@ export default {
       try {
         const bookId = this.route.params.id
 
-        // ---------- UPDATE BOOK ----------
+        //UPDATE BOOK
         const bookFormData = new FormData()
         bookFormData.append('title', this.form.title)
         bookFormData.append('desc_txt', this.form.summary)
         bookFormData.append('serie_id', this.form.serieId)
         bookFormData.append('serie_pos', this.form.seriePos)
         bookFormData.append('subjectId', this.form.subjectId)
+
+        // auteurs -> ids envoyés au backend
+        if (this.form.authorIds && this.form.authorIds.length > 0) {
+          this.form.authorIds.forEach(id => {
+            bookFormData.append('authorIds', id)
+          })
+        }
 
         if (this.form.coverImageFile) {
           bookFormData.append('coverFile', this.form.coverImageFile)
@@ -471,18 +528,19 @@ export default {
           },
         })
 
-        // ---------- UPDATE EDITION ----------
+        //UPDATE EDITION
         if (!this.form.editionId) {
-          // au cas où aucune édition n'aurait été trouvée
           this.globalError = "Impossible de trouver l'édition associée à ce livre."
           return
         }
 
         const editionPayload = {
+          // Champs alignés sur l'entité Edition
           isbn: this.form.isbn,
-          number_of_pages: this.form.pageCount,
-          physical_format: this.form.physicalFormat,
-          publish_date: this.form.publicationYear,
+          isbn13: this.form.isbn13,
+          numberOfPages: this.form.pageCount,
+          physicalFormat: this.form.physicalFormat,
+          publishDate: this.form.publishDate,
           bookId: bookId,
         }
 
@@ -505,25 +563,24 @@ export default {
     // Initialiser l'authentification au montage
     this.authStore.initializeAuth()
 
-    // Rediriger si pas connecté
-    //if (!this.authStore.isAuthenticated) {
-    //  this.router.push('/login')
-    //  return
-    //}
-
-    // Correction de la condition: && pour "ni bibliothécaire ni admin"
-    //if (
-    //  this.authStore.getUser.role !== 'BIBLIOTHECAIRE' &&
-    //  this.authStore.getUser.role !== 'ADMIN'
-    //) {
-    //  this.router.push('/login')
-    //  return
-    //}
+    // if (!this.authStore.isAuthenticated) {
+    //   this.router.push('/login')
+    //   return
+    // }
+    //
+    // if (
+    //   this.authStore.getUser.role !== 'BIBLIOTHECAIRE' &&
+    //   this.authStore.getUser.role !== 'ADMIN'
+    // ) {
+    //   this.router.push('/login')
+    //   return
+    // }
 
     try {
       await Promise.all([
         this.fetchSubjects(),
         this.fetchSeries(),
+        this.fetchAuthors(),
         this.fetchBook(),
         this.fetchEdition(),
       ])
