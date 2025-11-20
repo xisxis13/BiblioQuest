@@ -57,25 +57,6 @@
               </p>
             </div>
 
-            <!-- ISBN (10) -->
-            <div>
-              <label for="isbn" class="block text-sm font-medium text-gray-700 mb-2">
-                ISBN
-              </label>
-              <input
-                id="isbn"
-                v-model="form.isbn"
-                type="text"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                maxlength="10"
-                class="input"
-                :class="{ 'input-error': isbnError }"
-                placeholder="ISBN"
-                autocomplete="off"
-              />
-              <p v-if="isbnError" class="mt-1 text-sm text-red-600">{{ isbnError }}</p>
-            </div>
 
             <!-- ISBN-13 -->
             <div>
@@ -329,7 +310,6 @@ export default {
 
         // EDITION
         editionId: null,
-        isbn: '',
         isbn13: '',
         pageCount: '',
         physicalFormat: '',

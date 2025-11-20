@@ -9,8 +9,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,48 +31,36 @@ public class Edition {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User librarian;
 
     @Column(name = "publish_date")
-    private LocalDate publishDate;
+    private LocalDate publish_date;
 
     @Column(name = "number_of_pages")
-    private Integer numberOfPages;
-
-    @Column(name = "physical_format")
-    private String physicalFormat;
-
-    @Column(length = 10)
-    private String isbn;
+    private Integer pages;
 
     @Column(length = 13)
-    private String isbn13;
+    private String isbn;
 
     private String cover;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime created_at;
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private LocalDateTime updated_at;
 
-    @ManyToMany
-    @JoinTable(
-        name = "EDITION_PUBLISHER",
-        joinColumns = @JoinColumn(name = "edition_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
     private Set<User> users = new HashSet<>();
 
     @jakarta.persistence.PrePersist
     public void onCreate() {
         LocalDateTime now = LocalDateTime.now();
-        this.createdAt = now;
-        this.updatedAt = now;
+        this.created_at = now;
+        this.updated_at = now;
     }
 
     @jakarta.persistence.PreUpdate
     public void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updated_at = LocalDateTime.now();
     }
 }
