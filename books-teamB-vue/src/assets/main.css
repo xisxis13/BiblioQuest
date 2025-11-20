@@ -1,97 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+@theme {
+  --font-sans: "Lexend Deca", system-ui, sans-serif;
 
-@layer base {
-  :root {
-    --background: 32 30% 95%;
-    --foreground: 20 25% 20%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 20 25% 20%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 25% 20%;
-
-    --primary: 33 100% 50%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 32 40% 90%;
-    --secondary-foreground: 20 25% 20%;
-
-    --muted: 32 30% 92%;
-    --muted-foreground: 20 15% 45%;
-
-    --accent: 33 100% 96%;
-    --accent-foreground: 33 100% 40%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 32 20% 85%;
-    --input: 32 20% 90%;
-    --ring: 33 100% 50%;
-
-    --radius: 1rem;
-  }
-
-  .dark {
-    --background: 25 20% 10%;
-    --foreground: 0 0% 98%;
-
-    --card: 25 20% 12%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 25 20% 12%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 33 100% 50%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 25 20% 18%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 25 20% 18%;
-    --muted-foreground: 30 20% 70%;
-
-    --accent: 25 20% 18%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 25 20% 30%;
-    --input: 25 20% 30%;
-    --ring: 33 100% 50%;
-  }
+  --color-background: #FFF5EB;
+  --color-box: #FFFCF8;
+  --color-border: #FFDAB9;
+  --color-primary-text: #4A2C00;
+  --color-secondary-text: #A68060;
+  --color-accent: #FF8C00;
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
   body {
-    @apply bg-background text-foreground;
+    @apply font-sans bg-background text-primary-text;
   }
-}
-
-/* Animation scaleIn */
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.animate-scaleIn {
-  animation: scaleIn 0.3s ease-out;
 }
