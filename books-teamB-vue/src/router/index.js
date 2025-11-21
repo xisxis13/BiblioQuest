@@ -27,7 +27,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Home,
-      //   meta: { requiresAuth: true }
+      meta: { requiresAuth: true }
     },
     // {
     //   path: '/library',
@@ -75,10 +75,10 @@ const router = createRouter({
     //   component: Register,
     //   meta: { requiresGuest: true }
     // },
-    {
-      path: '/:pathMatch(.*)*',
-      redirect: '/'
-    }
+    // {
+    //   path: '/:pathMatch(.*)*',
+    //   redirect: '/'
+    // }
   ]
 })
 

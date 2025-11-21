@@ -66,8 +66,6 @@
 </template>
 
 <script>
-import biblioQuestIcon from '@/assets/BCO.png';
-
 export default {
   name: 'Login',
   components: {
@@ -75,7 +73,7 @@ export default {
   },
   data() {
     return {
-      biblioQuestIcon,
+
     };
   },
 };
