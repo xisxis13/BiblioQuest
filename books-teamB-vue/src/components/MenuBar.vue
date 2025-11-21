@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-box border border-border rounded-2xl w-56 h-full flex flex-col p-4 gap-3">
+  <div class="w-56 h-full flex flex-col p-2 gap-3">
     <!-- Navigation -->
     <nav class="flex-1 space-y-1">
       <MenuBarItem
@@ -12,20 +12,20 @@
     </nav>
 
     <!-- Logout -->
-    <!-- <div class="pt-3 border-t border-border">
+    <div class="pt-3 border-t border-border">
       <button 
         @click="handleLogout"
-        class="flex items-center w-full px-4 py-3 gap-2 rounded-2xl transition-colors duration-200 text-secondary-text hover:bg-red-50 hover:text-red-600 group"
+        class="flex items-center w-full px-4 py-3 gap-2 rounded-2xl transition-colors duration-200 text-secondary-text hover:bg-accent/10 hover:text-primary-text group"
       >
-        <LogOut class="w-5 h-5 group-hover:stroke-red-600" />
+        <LogOut class="w-5 h-5 hover:stroke-primary-text" />
         <span>Se déconnecter</span>
       </button>
-    </div> -->
+    </div>
   </div>
 </template>
 
 <script>
-// import { useAuthStore } from '@/stores/authStore'
+import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
 import MenuBarItem from './MenuBarItem.vue'
 import { 
@@ -44,7 +44,7 @@ export default {
     LogOut
   },
   setup() {
-    // const authStore = useAuthStore()
+    const authStore = useAuthStore()
     const router = useRouter()
 
     const navItems = [
@@ -55,15 +55,15 @@ export default {
       { path: '/profile', label: 'Profile', icon: User }
     ]
 
-    // const handleLogout = async () => {
-    //   await authStore.logout()
-    //   router.push('/login')
-    // }
+    const handleLogout = async () => {
+      await authStore.logout()
+      router.push('/login')
+    }
 
     return {
       navItems,
-      // handleLogout,
-      // authStore
+      handleLogout,
+      authStore
     }
   }
 }
