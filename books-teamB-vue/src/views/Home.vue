@@ -3,9 +3,6 @@
     <AppHeader />
 
     <main class="w-full flex-1 flex justify-center items-center gap-3">
-      <!-- <div class="bg-box border border-border rounded-2xl w-56 h-full flex items-center justify-center">
-        <span>Menu Bar</span>
-      </div> -->
       <MenuBar />
 
       <div class="bg-box border border-border rounded-2xl flex-1 h-full flex flex-col gap-1 items-center justify-center p-6">
