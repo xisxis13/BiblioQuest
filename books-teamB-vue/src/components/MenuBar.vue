@@ -15,7 +15,7 @@
     <div class="pt-3 border-t border-border">
       <button 
         @click="handleLogout"
-        class="flex items-center w-full px-4 py-3 gap-2 rounded-2xl transition-colors duration-200 text-secondary-text hover:bg-accent/10 hover:text-primary-text group"
+        class="flex items-center w-full px-4 py-3 gap-2 rounded-2xl transition-colors duration-200 text-secondary-text hover:bg-accent/10 hover:text-primary-text group cursor-pointer"
       >
         <LogOut class="w-5 h-5 hover:stroke-primary-text" />
         <span>Se déconnecter</span>
