@@ -7,6 +7,7 @@ import Library from '../views/Library.vue'
 import MyLibrary from '../views/MyLibrary.vue'
 import ReadingTracker from '../views/ReadingTracker.vue'
 import Catalogue from '../views/Catalogue.vue'
+import Edit from '../views/EditInfoBook.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,6 +53,12 @@ const router = createRouter({
       redirect: '/library'
     },
     {
+      path: '/edit/:id',
+      name: 'edit-book',
+      component: Edit,
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/login',
       name: 'login',
       component: Login,
@@ -73,14 +80,14 @@ const router = createRouter({
 // Navigation guards
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  
+
   // Initialiser l'état d'authentification
   authStore.initializeAuth()
-  
+
   const isAuthenticated = authStore.isAuthenticated
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const requiresGuest = to.matched.some(record => record.meta.requiresGuest)
-  
+
   if (requiresAuth && !isAuthenticated) {
     // Rediriger vers login si authentification requise
     next({ name: 'login', query: { redirect: to.fullPath } })

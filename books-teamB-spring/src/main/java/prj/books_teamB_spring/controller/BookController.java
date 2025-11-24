@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,6 +57,16 @@ public class BookController {
             @PathVariable Long id) {
         Book dto = bookService.getBookForUser(username, id);
         return ResponseEntity.ok(dto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Book> updateBook(
+            @RequestHeader(name = "X-Username", required = false) String username,
+            @PathVariable Long id,
+            @Valid @RequestBody Book dto) {
+
+        Book updated = bookService.updateBookForUser(username, id, dto);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")

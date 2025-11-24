@@ -52,6 +52,40 @@ public class BookService {
         return saved;
     }
 
+    public Book updateBookForUser(String username, Long id, Book dto) {
+        User user = requireUser(username);
+
+        Book existing = bookRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found"));
+
+        if (!user.getMyBooks().contains(existing)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not owner of this book");
+        }
+
+        // 4. Mettre à jour les champs simples
+        existing.setTitle(dto.getTitle());
+        existing.setDesc_txt(dto.getDesc_txt());
+        existing.setCover(dto.getCover());
+        existing.setSerie_id(dto.getSerie_id());
+        existing.setSerie_pos(dto.getSerie_pos());
+
+        // Mettre à jour le sujet
+        if (dto.getSubject() != null) {
+            existing.setSubject(dto.getSubject());
+        } else {
+            existing.setSubject(null);
+        }
+
+        // Mettre à jour les auteurs
+        if (dto.getAuthors() != null) {
+            existing.getAuthors().clear();
+            existing.getAuthors().addAll(dto.getAuthors());
+        }
+
+        return bookRepository.save(existing);
+    }
+
+
     public List<Book> listBooksForUser(String username) {
         User user = requireUser(username);
         Set<Book> books = user.getMyBooks();
