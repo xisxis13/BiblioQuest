@@ -84,6 +84,7 @@
             :book="book"
             :status-class="getStatusBagdeClass(book.status)"
             :status-label="getStatusLabel(book.status)"
+            :show-actions="true"
             @update-status="updateBookStatus"
           />
         </div>
@@ -182,7 +183,7 @@ export default {
         {
           id: 1,
           title: 'In Other Lands',
-          author: 'Sarah Rees Brennan',
+          authors: 'Sarah Rees Brennan',
           status: 'reading',
           coverUrl: 'https://covers.openlibrary.org/a/id/12354250-L.jpg#',
           progress: {
@@ -193,7 +194,7 @@ export default {
         {
           id: 2,
           title: 'The Gentleman\'s Guide to Vice and Virtue',
-          author: 'Mackenzi Lee',
+          authors: 'Mackenzi Lee',
           status: 'read',
           coverUrl: 'https://covers.openlibrary.org/a/id/8367802-L.jpg#',
           progress: {
@@ -204,7 +205,7 @@ export default {
         {
           id: 3,
           title: 'Anger is a Gift',
-          author: 'Mark Oshiro',
+          authors: 'Mark Oshiro',
           status: 'to-read',
           coverUrl: 'https://covers.openlibrary.org/a/id/12366752-L.jpg#',
           progress: {
@@ -215,7 +216,7 @@ export default {
         {
           id: 4,
           title: 'The Lady\'s Guide to Petticoats and Piracy',
-          author: 'Mackenzi Lee',
+          authors: 'Mackenzi Lee',
           status: 'reading',
           coverUrl: 'https://covers.openlibrary.org/a/id/8754386-L.jpg#',
           progress: {
@@ -226,7 +227,7 @@ export default {
         {
           id: 5,
           title: 'Zachary Ying and the Dragon Emperor',
-          author: 'Leigh Bardugo',
+          authors: 'Leigh Bardugo',
           status: 'read',
           coverUrl: '',
           progress: {

@@ -3,8 +3,8 @@
     <!-- Cover -->
     <div class="relative aspect-2/3 bg-accent/20 rounded-3xl overflow-hidden">
       <img 
-        v-if="book.coverUrl"
-        :src="book.coverUrl" 
+        v-if="coverImage"
+        :src="coverImage" 
         :alt="title + ' cover'"
         class="w-full h-full object-cover"
       >
@@ -13,7 +13,7 @@
       </div>
 
       <!-- Status badge -->
-      <div class="absolute top-3 right-3">
+      <div v-if="statusLabel" class="absolute top-3 right-3">
         <span
           :class="[
             'px-3 py-1 rounded-full text-xs font-medium',
@@ -28,7 +28,10 @@
     <!-- Book infos -->
     <div class="flex flex-col px-1">
       <span class="text-primary-text font-medium text-lg">{{ book.title }}</span>
-      <span class="text-secondary-text text-sm">{{ book.author }}</span>
+      <div class="flex items-center gap-2">
+        <span v-if="book.year" class="text-primary-text text-xs bg-border px-2 py-0.5 rounded-full">{{ book.year }}</span>
+        <span class="text-secondary-text text-sm line-clamp-1" :title="getAuthorsNames(book.authors)">{{ getAuthorsNames(book.authors) }}</span>
+      </div>
     </div>
 
     <!-- Progress Bar for books in progress -->
@@ -41,7 +44,7 @@
     />
 
     <!-- Action button -->
-    <div class="flex gap-2 mt-4">
+    <div v-if="showActions" class="flex gap-2 mt-4">
       <button
         @click="$emit('update-status', book.id, 'read')"
         :class="[
@@ -80,8 +83,9 @@
 </template>
 
 <script>
-import { BookOpen } from 'lucide-vue-next';
+import { BookOpen, List } from 'lucide-vue-next';
 import ProgressBar from './ProgressBar.vue';
+import { type } from 'happy-dom/lib/PropertySymbol';
 
 export default {
   name: 'BookCard',
@@ -97,11 +101,31 @@ export default {
     },
     statusClass: {
       type: String,
-      required: true,
+      default: '',
     },
     statusLabel: {
       type: String,
+      default: '',
+    },
+    showActions: {
+      type: Boolean,
       required: true,
+      default: true,
+    },
+  },
+  computed: {
+    coverImage() {
+      return this.book.coverUrl || this.book.cover;
+    }
+  },
+  methods: {
+    getAuthorsNames(authors) {
+      if (!authors) return 'Auteur inconnu';
+      if (typeof authors === 'string') return authors;
+      if (Array.isArray(authors)) {
+        return authors.map(author => `${author.firstName} ${author.lastName}`).join(', ');
+      }
+      return 'Auteur inconnu';
     },
   },
 };

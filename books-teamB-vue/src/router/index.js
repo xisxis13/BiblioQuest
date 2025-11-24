@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import Login from '../views/Login.vue'
-import Home from '../views/Home.vue'
 import Register from '../views/Register.vue'
+import Home from '../views/Home.vue'
+import Catalog from '../views/Catalog.vue'
 import MyLibrary from '@/views/MyLibrary.vue'
 // import Library from '../views/Library.vue'
 // import ReadingTracker from '../views/ReadingTracker.vue'
-// import Catalogue from '../views/Catalogue.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +27,12 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Home,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/catalog',
+      name: 'catalog',
+      component: Catalog,
       meta: { requiresAuth: true }
     },
     {
