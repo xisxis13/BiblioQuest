@@ -19,8 +19,15 @@ import prj.books_teamB_spring.dto.SubjectDto;
 import prj.books_teamB_spring.exception.BookNotFoundException;
 import prj.books_teamB_spring.model.Book;
 import prj.books_teamB_spring.model.User;
+import prj.books_teamB_spring.repository.AuthorRepository;
 import prj.books_teamB_spring.repository.BookRepository;
+import prj.books_teamB_spring.repository.SubjectRepository;
 import prj.books_teamB_spring.repository.UserRepository;
+import prj.books_teamB_spring.model.Author;
+import prj.books_teamB_spring.model.Subject;
+import prj.books_teamB_spring.repository.AuthorRepository;
+import prj.books_teamB_spring.repository.SubjectRepository;
+
 
 @Service
 @Transactional
@@ -28,10 +35,17 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
+    private final AuthorRepository authorRepository;
+    private final SubjectRepository subjectRepository;
 
-    public BookService(BookRepository bookRepository, UserRepository userRepository) {
+    public BookService(BookRepository bookRepository,
+                       UserRepository userRepository,
+                       AuthorRepository authorRepository,
+                       SubjectRepository subjectRepository) {
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
+        this.authorRepository = authorRepository;
+        this.subjectRepository = subjectRepository;
     }
 
     private User requireUser(String username) {
@@ -99,6 +113,82 @@ public class BookService {
                 .orElseThrow(() -> new BookNotFoundException(id));
         return convertToDetailDto(book);
     }
+
+        /**
+     * Met à jour les informations d'un livre du catalogue public
+     */
+    public BookDetailDto updateBook(Long id, BookDetailDto updatedBookDto) {
+        // Récupération du livre existant
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new BookNotFoundException(id));
+
+        // === Champs simples ===
+        book.setTitle(updatedBookDto.getTitle());
+        book.setDesc_txt(updatedBookDto.getDesc_txt());
+        book.setCover(updatedBookDto.getCover());
+        book.setSerie_id(updatedBookDto.getSerie_id());
+        book.setSerie_pos(updatedBookDto.getSerie_pos());
+
+        // === Subject (genre / catégorie) ===
+        SubjectDto subjectDto = updatedBookDto.getSubject();
+        if (subjectDto != null && subjectDto.getText() != null && !subjectDto.getText().isBlank()) {
+            Subject subject;
+
+            if (subjectDto.getId() != null) {
+                // On essaie de retrouver le subject existant
+                subject = subjectRepository.findById(subjectDto.getId())
+                        .orElseGet(Subject::new);
+            } else {
+                subject = new Subject();
+            }
+
+            subject.setText(subjectDto.getText());
+            subject = subjectRepository.save(subject);
+            book.setSubject(subject);
+        } else {
+            // Si aucun subject fourni → on enlève le sujet
+            book.setSubject(null);
+        }
+
+        // === Auteurs ===
+        // On vide la liste actuelle et on la remplit à partir du DTO
+        book.getAuthors().clear();
+
+        List<AuthorDto> authorDtos = updatedBookDto.getAuthors();
+        if (authorDtos != null) {
+            for (AuthorDto authorDto : authorDtos) {
+                boolean hasFirstName = authorDto.getFirstName() != null && !authorDto.getFirstName().isBlank();
+                boolean hasLastName = authorDto.getLastName() != null && !authorDto.getLastName().isBlank();
+
+                // On ignore les lignes vides dans le formulaire
+                if (!hasFirstName && !hasLastName) {
+                    continue;
+                }
+
+                Author author;
+                if (authorDto.getId() != null) {
+                    // On essaie de récupérer l'auteur existant
+                    author = authorRepository.findById(authorDto.getId())
+                            .orElseGet(Author::new);
+                } else {
+                    author = new Author();
+                }
+
+                author.setFirstName(authorDto.getFirstName());
+                author.setLastName(authorDto.getLastName());
+                author = authorRepository.save(author);
+
+                book.getAuthors().add(author);
+            }
+        }
+
+        // Sauvegarde finale du livre
+        Book saved = bookRepository.save(book);
+
+        // On renvoie un DTO détaillé, comme pour findBookById
+        return convertToDetailDto(saved);
+    }
+
 
     // === MÉTHODES DE CONVERSION DTO ===
 

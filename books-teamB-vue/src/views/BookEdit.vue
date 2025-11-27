@@ -140,6 +140,7 @@
                   type="text"
                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B4513] focus:border-transparent"
                   placeholder="ex. 978-2-1234-5678-9"
+                  maxlength="13"
                 />
               </div>
 
@@ -366,12 +367,7 @@ export default {
 
         // À adapter selon ton service (par ex. updateBook(id, payload))
         await booksService.updateBook(bookId, updatedBook)
-
         this.successMessage = 'Les informations du livre ont bien été mises à jour.'
-        // Optionnel : recharger le livre en base
-        // await this.loadBook()
-        // Optionnel : rediriger vers la page de détail
-        // this.$router.push({ name: 'book-detail', params: { id: bookId } })
       } catch (error) {
         console.error('Erreur lors de la mise à jour du livre :', error)
         this.error = 'Impossible de mettre à jour le livre. Vérifiez que le serveur est démarré.'
