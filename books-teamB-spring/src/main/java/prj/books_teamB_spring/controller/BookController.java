@@ -1,33 +1,18 @@
 package prj.books_teamB_spring.controller;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import prj.books_teamB_spring.dto.BookDetailDto;
 import prj.books_teamB_spring.dto.BookSearchFilters;
 import prj.books_teamB_spring.dto.BookSummaryDto;
-import prj.books_teamB_spring.model.Book;
 import prj.books_teamB_spring.service.BookService;
 
 @RestController
 @RequestMapping("/api/books")
-@Validated
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
 public class BookController {
 
     private final BookService bookService;
@@ -36,32 +21,35 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    // Header X-Username used to identify user (simple approach for assignment)
+    /**
+     * Endpoint Public : Recherche de livres
+     * GET /api/books/search?author=Tolkien
+     */
+    @GetMapping("/search")
+    public ResponseEntity<Page<BookSummaryDto>> searchBooks(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false) String subject,
+            Pageable pageable) {
+        
+        // Construction du filtre (DTO)
+        BookSearchFilters filters = new BookSearchFilters();
+        filters.setTitle(title);
+        filters.setAuthor(author);
+        filters.setSubject(subject);
 
-    @PostMapping
-    public ResponseEntity<Book> addBook(@RequestHeader(name = "X-Username", required = false) String username,
-            @Valid @RequestBody Book dto) {
-        Book created = bookService.addBookForUser(username, dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        Page<BookSummaryDto> results = bookService.searchBooks(filters, pageable);
+        return ResponseEntity.ok(results);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Book>> listBooks(@RequestHeader(name = "X-Username", required = false) String username) {
-        List<Book> list = bookService.listBooksForUser(username);
-        return ResponseEntity.ok(list);
-    }
-
+    /**
+     * Endpoint Public : Détail d'un livre
+     * GET /api/books/{id}
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBook(@RequestHeader(name = "X-Username", required = false) String username,
-            @PathVariable Long id) {
-        Book dto = bookService.getBookForUser(username, id);
-        return ResponseEntity.ok(dto);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBook(@RequestHeader(name = "X-Username", required = false) String username,
-            @PathVariable Long id) {
-        bookService.deleteBookForUser(username, id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<BookDetailDto> getBook(@PathVariable Long id) {
+        // Utilise la méthode publique findBookById qui retourne un DTO
+        BookDetailDto bookDto = bookService.findBookById(id);
+        return ResponseEntity.ok(bookDto);
     }
 }
