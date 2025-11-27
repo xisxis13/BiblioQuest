@@ -62,4 +62,54 @@ public interface UserBookRepository extends JpaRepository<UserBook, Long> {
      * Statistiques: nombre total de livres dans la bibliothèque
      */
     Long countByUserId(Long userId);
+
+    
+    /**
+     * Récupère tous les avis d'un livre (UserBooks avec rating non null)
+     * @param bookId ID du livre
+     * @return Liste des UserBook avec avis
+     */
+    @Query("SELECT ub FROM UserBook ub WHERE ub.book.id = :bookId AND ub.rating IS NOT NULL")
+    List<UserBook> findByBookIdAndRatingIsNotNull(@Param("bookId") Long bookId);
+    
+    /**
+     * Compte le nombre d'avis pour un livre
+     * @param bookId ID du livre
+     * @return Nombre d'avis
+     */
+    @Query("SELECT COUNT(ub) FROM UserBook ub WHERE ub.book.id = :bookId AND ub.rating IS NOT NULL")
+    Long countReviewsByBookId(@Param("bookId") Long bookId);
+    
+    /**
+     * Calcule la note moyenne d'un livre
+     * @param bookId ID du livre
+     * @return Note moyenne (null si aucun avis)
+     */
+    @Query("SELECT AVG(ub.rating) FROM UserBook ub WHERE ub.book.id = :bookId AND ub.rating IS NOT NULL")
+    Double getAverageRatingByBookId(@Param("bookId") Long bookId);
+    
+    /**
+     * Récupère la distribution des notes pour un livre
+     * @param bookId ID du livre
+     * @return Liste d'objets [rating, count]
+     */
+    @Query("SELECT ub.rating, COUNT(ub) FROM UserBook ub WHERE ub.book.id = :bookId AND ub.rating IS NOT NULL GROUP BY ub.rating ORDER BY ub.rating DESC")
+    List<Object[]> getRatingDistributionByBookId(@Param("bookId") Long bookId);
+    
+    /**
+     * Récupère tous les avis d'un utilisateur
+     * @param userId ID de l'utilisateur
+     * @return Liste des UserBook avec avis
+     */
+    @Query("SELECT ub FROM UserBook ub WHERE ub.user.id = :userId AND ub.rating IS NOT NULL ORDER BY ub.endDate DESC")
+    List<UserBook> findUserReviews(@Param("userId") Long userId);
+    
+    /**
+     * Vérifie si un utilisateur a déjà laissé un avis sur un livre
+     * @param userId ID de l'utilisateur
+     * @param bookId ID du livre
+     * @return true si un avis existe
+     */
+    @Query("SELECT CASE WHEN COUNT(ub) > 0 THEN true ELSE false END FROM UserBook ub WHERE ub.user.id = :userId AND ub.book.id = :bookId AND ub.rating IS NOT NULL")
+    boolean hasUserReviewedBook(@Param("userId") Long userId, @Param("bookId") Long bookId);
 }
