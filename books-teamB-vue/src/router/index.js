@@ -7,6 +7,9 @@ import Library from '../views/Library.vue'
 import MyLibrary from '../views/MyLibrary.vue'
 import ReadingTracker from '../views/ReadingTracker.vue'
 import Catalogue from '../views/Catalogue.vue'
+import Profile from '../views/Profile.vue'
+import Chat from '../views/Chat.vue'
+import Users from '../views/Users.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,9 +50,22 @@ const router = createRouter({
       redirect: '/library'
     },
     {
-      path: '/profile',
+      path: '/profile/:id?',
       name: 'profile',
-      redirect: '/library'
+      component: Profile,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/chat/:id?',
+      name: 'chat',
+      component: Chat,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: Users,
+      meta: { requiresAuth: true }
     },
     {
       path: '/login',
