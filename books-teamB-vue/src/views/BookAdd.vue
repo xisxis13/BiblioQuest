@@ -4,12 +4,7 @@
     <Sidebar />
 
     <div class="ml-44 pt-20 px-6 py-8">
-      <!-- Loading State -->
-      <div v-if="loading" class="flex justify-center items-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B4513]"></div>
-      </div>
-
-      <div v-else class="max-w-4xl mx-auto">
+      <div class="max-w-4xl mx-auto">
         <!-- Back Button -->
         <button
           @click="$router.go(-1)"
@@ -289,7 +284,6 @@ export default {
           }))
 
         const createdBook = {
-          ...this.book,
           title: this.form.title,
           authors: cleanedAuthors,
           subject: this.form.subject,
@@ -301,7 +295,7 @@ export default {
         }
 
         // À adapter selon ton service (par ex. updateBook(id, payload))
-        await booksService.createBook(createdBook)
+        await booksService.addBook(createdBook)
         this.successMessage = 'Les informations du livre ont bien été enregistrées.'
       } catch (error) {
         console.error('Erreur lors de la création du livre :', error)
