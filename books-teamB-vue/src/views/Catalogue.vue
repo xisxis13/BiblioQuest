@@ -35,8 +35,30 @@
         </button>
       </div>
 
+      <!-- Loading State -->
+      <div v-if="loading" class="flex justify-center items-center py-12">
+        <div class="text-center">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p class="text-gray-600">Chargement des livres...</p>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="flex justify-center items-center py-12">
+        <div class="text-center">
+          <svg class="h-12 w-12 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p class="text-red-600 mb-2">Erreur lors du chargement</p>
+          <p class="text-sm text-gray-400">{{ error }}</p>
+          <button @click="loadBooks()" class="mt-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600">
+            Réessayer
+          </button>
+        </div>
+      </div>
+
       <!-- Books Grid -->
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         <!-- Empty State -->
         <div v-if="filteredBooks.length === 0" class="col-span-full flex justify-center items-center py-12">
           <div class="text-center">
@@ -48,53 +70,77 @@
           </div>
         </div>
 
-        <!-- Books Grid -->
-        <div
-          v-else
-          v-for="book in filteredBooks"
-          :key="book.id"
-          class="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-        >
-          <!-- Book Cover -->
-          <div class="aspect-[3/4] rounded-lg mb-3 overflow-hidden">
-            <img 
-              v-if="book.cover" 
-              :src="book.cover" 
-              :alt="book.title"
-              class="w-full h-full object-cover"
-              @error="$event.target.style.display='none'"
-            />
-            <div 
-              v-else
-              class="w-full h-full bg-gradient-to-br from-orange-400 to-red-600 flex items-center justify-center text-white text-center p-2"
-            >
-              <div>
-                <h3 class="font-bold text-xs mb-1 leading-tight">{{ book.title }}</h3>
-                <p class="text-xs opacity-90">{{ getAuthorsNames(book) }}</p>
+        <!-- Book Cards -->
+        <div v-for="book in filteredBooks" :key="book.id" class="group cursor-pointer" @click="goToBookDetail(book.id)">
+          <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 group-hover:scale-[1.02]">
+            <!-- Book Cover -->
+            <div class="aspect-[2/3] bg-gray-100 overflow-hidden">
+              <img 
+                :src="book.cover || '/placeholder-book.jpg'" 
+                :alt="`Couverture de ${book.title}`"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                @error="$event.target.src = '/placeholder-book.jpg'"
+              />
+            </div>
+            
+            <!-- Book Info -->
+            <div class="p-4">
+              <h3 class="font-semibold text-sm text-gray-900 mb-1 line-clamp-2 group-hover:text-orange-600 transition-colors">
+                {{ book.title }}
+              </h3>
+              <p class="text-xs text-gray-500 mb-2">{{ getAuthorsNames(book) }}</p>
+              <div class="flex items-center justify-between">
+                <span v-if="book.publishedDate" class="text-xs text-gray-400">{{ book.publishedDate }}</span>
+                <span v-if="book.subject" class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full">
+                  {{ book.subject }}
+                </span>
               </div>
             </div>
           </div>
-          
-          <!-- Book Info -->
-          <div class="space-y-1">
-            <h3 class="font-semibold text-xs text-gray-900 line-clamp-2 leading-tight">{{ book.title }}</h3>
-            <p class="text-xs text-gray-600">{{ getAuthorsNames(book) }}</p>
-            <div class="flex items-center gap-2">
-              <span v-if="book.subject" class="inline-block px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full">
-                {{ book.subject.text }}
-              </span>
-              <span v-if="book.created_at" class="text-xs text-gray-500">
-                {{ new Date(book.created_at).getFullYear() }}
-              </span>
+        </div>
+      </div>
+        <!-- Empty State -->
+        <div v-if="filteredBooks.length === 0" class="col-span-full flex justify-center items-center py-12">
+          <div class="text-center">
+            <svg class="h-12 w-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <p class="text-gray-500 mb-2">Aucun livre trouvé</p>
+            <p class="text-sm text-gray-400">Essayez de modifier vos filtres de recherche</p>
+          </div>
+        </div>
+
+        <!-- Book Cards -->
+        <div v-for="book in filteredBooks" :key="book.id" class="group cursor-pointer" @click="goToBookDetail(book.id)">
+          <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 group-hover:scale-[1.02]">
+            <!-- Book Cover -->
+            <div class="aspect-[2/3] bg-gray-100 overflow-hidden">
+              <img 
+                :src="book.cover || '/placeholder-book.jpg'" 
+                :alt="`Couverture de ${book.title}`"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                @error="$event.target.src = '/placeholder-book.jpg'"
+              />
             </div>
-            <p v-if="book.desc_txt" class="text-xs text-gray-500 line-clamp-2 mt-1">
-              {{ book.desc_txt }}
-            </p>
+            
+            <!-- Book Info -->
+            <div class="p-4">
+              <h3 class="font-semibold text-sm text-gray-900 mb-1 line-clamp-2 group-hover:text-orange-600 transition-colors">
+                {{ book.title }}
+              </h3>
+              <p class="text-xs text-gray-500 mb-2">{{ getAuthorsNames(book) }}</p>
+              <div class="flex items-center justify-between">
+                <span v-if="book.publishedDate" class="text-xs text-gray-400">{{ book.publishedDate }}</span>
+                <span v-if="book.subject" class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full">
+                  {{ book.subject }}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Filters Sidebar (Fixed Right) -->
+      <!-- Filters Sidebar -->
       <div 
         v-if="showFilters"
         class="fixed top-16 right-0 bottom-0 w-80 bg-white border-l border-gray-200 z-30 p-6 overflow-y-auto"
@@ -166,16 +212,82 @@
             </label>
           </div>
         </div>
+      <!-- Filters Sidebar -->
+      <div 
+        v-if="showFilters"
+        class="fixed top-16 right-0 bottom-0 w-80 bg-white border-l border-gray-200 z-30 p-6 overflow-y-auto"
+      >
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+            </svg>
+            <h2 class="text-lg font-semibold text-gray-900">Filtres</h2>
+          </div>
+          <button @click="showFilters = false" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Genre Filter -->
+        <div class="mb-6">
+          <h3 class="text-sm font-semibold text-gray-900 mb-3">Genre</h3>
+          <div class="space-y-2">
+            <label class="flex items-center">
+              <input type="radio" v-model="selectedGenre" value="tous" class="text-orange-500 focus:ring-orange-500">
+              <span class="ml-2 text-sm text-gray-700">Tous</span>
+            </label>
+            <label v-for="genre in availableGenres" :key="genre" class="flex items-center">
+              <input type="radio" v-model="selectedGenre" :value="genre" class="text-orange-500 focus:ring-orange-500">
+              <span class="ml-2 text-sm text-gray-700">{{ genre }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Year Filter -->
+        <div class="mb-6">
+          <h3 class="text-sm font-semibold text-gray-900 mb-3">Année de publication</h3>
+          <div class="space-y-2">
+            <label class="flex items-center">
+              <input type="radio" v-model="selectedYear" value="toutes" class="text-orange-500 focus:ring-orange-500">
+              <span class="ml-2 text-sm text-gray-700">Toutes</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" v-model="selectedYear" value="2025-2020" class="text-orange-500 focus:ring-orange-500">
+              <span class="ml-2 text-sm text-gray-700">2020-2025</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" v-model="selectedYear" value="2019-2010" class="text-orange-500 focus:ring-orange-500">
+              <span class="ml-2 text-sm text-gray-700">2010-2019</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" v-model="selectedYear" value="2009-2000" class="text-orange-500 focus:ring-orange-500">
+              <span class="ml-2 text-sm text-gray-700">2000-2009</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" v-model="selectedYear" value="avant 2000" class="text-orange-500 focus:ring-orange-500">
+              <span class="ml-2 text-sm text-gray-700">Avant 2000</span>
+            </label>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- Filters Overlay -->
+    <div 
+      v-if="showFilters"
+      @click="showFilters = false"
+      class="fixed inset-0 bg-black bg-opacity-50 z-20"
+    ></div>
   </div>
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue'
 import Sidebar from '@/components/Sidebar.vue'
 import HeaderComponent from '@/components/HeaderComponent.vue'
-import { useBooksStore } from '@/stores/booksStore'
+import booksService from '@/services/booksService'
 
 export default {
   name: 'CataloguePage',
@@ -189,75 +301,13 @@ export default {
       selectedGenre: 'tous',
       selectedYear: 'toutes',
       showFilters: false,
-      books: [
-        { 
-          id: 1, 
-          title: 'Bloodmarked', 
-          authors: [{ firstName: 'Tracy', lastName: 'Deonn' }],
-          year: '2010', 
-          genre: 'Fantasy',
-          subject: { text: 'Fantasy' },
-          desc_txt: 'The Legendborn Cycle, Book 2. Bree wants to heal, but the war has just begun.',
-          cover: 'https://covers.openlibrary.org/a/id/12617874-L.jpg',
-          created_at: '2010-03-02T03:44:17'
-        },
-        { 
-          id: 2, 
-          title: 'In Other Lands', 
-          authors: [{ firstName: 'Sarah', lastName: 'Rees Brennan' }],
-          year: '2017', 
-          genre: 'Young Adult',
-          subject: { text: 'Young Adult' },
-          desc_txt: 'The Borderlands aren\'t like anywhere else. Don\'t try to smuggle a phone... Elliot is thirteen years old. He\'s smart and just a tiny bit obnoxious.',
-          cover: 'https://covers.openlibrary.org/a/id/12354250-L.jpg',
-          created_at: '2017-10-20T01:27:09'
-        },
-        { 
-          id: 3, 
-          title: 'Strange the Dreamer', 
-          authors: [{ firstName: 'Laini', lastName: 'Taylor' }],
-          year: '2018', 
-          genre: 'Fantasy',
-          subject: { text: 'Fantasy' },
-          desc_txt: 'The dream chooses the dreamer, not the other way around. Lazlo Strange, war orphan and junior librarian, has always feared that his dream chose poorly.',
-          cover: 'https://covers.openlibrary.org/a/id/8367802-L.jpg',
-          created_at: '2018-05-15T01:36:29'
-        },
-        { 
-          id: 4, 
-          title: 'Muse of Nightmares', 
-          authors: [{ firstName: 'Laini', lastName: 'Taylor' }],
-          year: '2018', 
-          genre: 'Fantasy',
-          subject: { text: 'Fantasy' },
-          desc_txt: 'In the wake of tragedy, neither Lazlo nor Sarai are who they were before. One a god, the other a ghost, they struggle to grasp the new boundaries of their selves.',
-          cover: 'https://covers.openlibrary.org/a/id/12366752-L.jpg',
-          created_at: '2018-10-18T01:40:34'
-        },
-        { 
-          id: 5, 
-          title: "The Gentleman's Guide to Vice and Virtue", 
-          authors: [{ firstName: 'Mackenzi', lastName: 'Lee' }],
-          year: '2018', 
-          genre: 'Romance',
-          subject: { text: 'Romance' },
-          desc_txt: 'A young bisexual British lord embarks on an unforgettable Grand Tour of Europe with his best friend/secret crush.',
-          cover: 'https://covers.openlibrary.org/b/id/8225261-L.jpg',
-          created_at: '2018-01-15T10:20:30'
-        },
-        { 
-          id: 6, 
-          title: 'The Darkest Minds', 
-          authors: [{ firstName: 'Alexandra', lastName: 'Bracken' }],
-          year: '2012', 
-          genre: 'Young Adult',
-          subject: { text: 'Young Adult' },
-          desc_txt: 'When Ruby woke up on her tenth birthday, something about her had changed. Something alarming enough to make her parents lock her in the garage.',
-          cover: 'https://covers.openlibrary.org/b/id/7572080-L.jpg',
-          created_at: '2012-12-18T14:30:45'
-        }
-      ]
+      books: [],
+      loading: true,
+      error: null
     }
+  },
+  async mounted() {
+    await this.loadBooks()
   },
   computed: {
     filteredBooks() {
@@ -265,27 +315,28 @@ export default {
 
       // Filter by search query
       if (this.searchQuery) {
-        filtered = filtered.filter(book =>
-          book.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          (book.authors && book.authors.some(author => 
-            `${author.firstName} ${author.lastName}`.toLowerCase().includes(this.searchQuery.toLowerCase())
-          )) ||
-          (book.desc_txt && book.desc_txt.toLowerCase().includes(this.searchQuery.toLowerCase()))
-        )
+        const query = this.searchQuery.toLowerCase()
+        filtered = filtered.filter(book => {
+          return book.title?.toLowerCase().includes(query) ||
+                 book.authors?.some(author => 
+                   `${author.firstName} ${author.lastName}`.toLowerCase().includes(query)
+                 ) ||
+                 book.subject?.toLowerCase().includes(query)
+        })
       }
 
-      // Filter by genre (using subject)
+      // Filter by genre
       if (this.selectedGenre !== 'tous') {
         filtered = filtered.filter(book => 
-          book.subject && book.subject.text === this.selectedGenre
+          book.subject && book.subject === this.selectedGenre
         )
       }
 
-      // Filter by year (using created_at)
+      // Filter by year
       if (this.selectedYear !== 'toutes') {
         filtered = filtered.filter(book => {
-          if (!book.created_at) return false
-          const year = new Date(book.created_at).getFullYear()
+          if (!book.publishedDate) return false
+          const year = parseInt(book.publishedDate)
           switch (this.selectedYear) {
             case '2025-2020':
               return year >= 2020 && year <= 2025
@@ -302,14 +353,53 @@ export default {
       }
 
       return filtered
+    },
+    
+    availableGenres() {
+      const genres = new Set()
+      this.books.forEach(book => {
+        if (book.subject) {
+          genres.add(book.subject)
+        }
+      })
+      return Array.from(genres).sort()
     }
   },
   methods: {
+    async loadBooks() {
+      try {
+        this.loading = true
+        this.error = null
+        
+        const response = await booksService.getCatalogBooks()
+        this.books = response.content || response || []
+        
+      } catch (error) {
+        console.error('Erreur lors du chargement des livres:', error)
+        this.error = 'Impossible de charger les livres. Vérifiez que le serveur est démarré.'
+      } finally {
+        this.loading = false
+      }
+    },
+    
     getAuthorsNames(book) {
       if (!book.authors || book.authors.length === 0) {
         return 'Auteur inconnu'
       }
-      return book.authors.map(author => `${author.firstName} ${author.lastName}`).join(', ')
+      if (typeof book.authors === 'string') {
+        return book.authors
+      }
+      if (Array.isArray(book.authors)) {
+        return book.authors.map(author => {
+          if (typeof author === 'string') return author
+          return `${author.firstName || ''} ${author.lastName || ''}`.trim()
+        }).join(', ')
+      }
+      return 'Auteur inconnu'
+    },
+    
+    goToBookDetail(bookId) {
+      this.$router.push({ name: 'book-detail', params: { id: bookId } })
     }
   }
 }

@@ -7,6 +7,7 @@ import Library from '../views/Library.vue'
 import MyLibrary from '../views/MyLibrary.vue'
 import ReadingTracker from '../views/ReadingTracker.vue'
 import Catalogue from '../views/Catalogue.vue'
+import BookDetail from '../views/BookDetail.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +40,12 @@ const router = createRouter({
       path: '/catalogue',
       name: 'catalogue',
       component: Catalogue,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/books/:id',
+      name: 'book-detail',
+      component: BookDetail,
       meta: { requiresAuth: true }
     },
     {
