@@ -1,5 +1,6 @@
 package prj.books_teamB_spring.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -189,6 +190,43 @@ public class BookService {
         return convertToDetailDto(saved);
     }
 
+    public BookDetailDto createBook(BookDetailDto newBookDto) {
+        Book book = new Book();
+        book.setTitle(newBookDto.getTitle());
+        book.setDesc_txt(newBookDto.getDesc_txt());
+        book.setCover(newBookDto.getCover());
+        book.setSerie_id(newBookDto.getSerie_id());
+        book.setSerie_pos(newBookDto.getSerie_pos());
+        book.setCreated_at(LocalDateTime.now());
+        book.setUpdated_at(LocalDateTime.now());
+
+        // === Subject ===
+        SubjectDto subjectDto = newBookDto.getSubject();
+        if (subjectDto != null && subjectDto.getText() != null && !subjectDto.getText().isBlank()) {
+            Subject subject = new Subject();
+            subject.setText(subjectDto.getText());
+            subject = subjectRepository.save(subject);
+            book.setSubject(subject);
+        }
+
+        // === Auteurs ===
+        if (newBookDto.getAuthors() != null) {
+            for (AuthorDto authorDto : newBookDto.getAuthors()) {
+                if ((authorDto.getFirstName() == null || authorDto.getFirstName().isBlank()) &&
+                    (authorDto.getLastName() == null || authorDto.getLastName().isBlank())) {
+                    continue;
+                }
+                Author author = new Author();
+                author.setFirstName(authorDto.getFirstName());
+                author.setLastName(authorDto.getLastName());
+                author = authorRepository.save(author);
+                book.getAuthors().add(author);
+            }
+        }
+
+        Book saved = bookRepository.save(book);
+        return convertToDetailDto(saved);
+    }
 
     // === MÉTHODES DE CONVERSION DTO ===
 

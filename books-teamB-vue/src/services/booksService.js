@@ -68,9 +68,9 @@ export default {
     return response.data
   },
 
-  // Ajouter un nouveau livre (admin)
-  async addBook(bookData) {
-    const response = await apiClient.post('/books', bookData)
+  // Ajouter un nouveau livre (auteur)
+  async createBook(bookData) {
+    const response = await apiClient.post('/books/add', bookData)
     return response.data
   }
 }
