@@ -283,10 +283,15 @@ export default {
             lastName: a.lastName.trim()
           }))
 
+        const subject =
+          this.form.subject && this.form.subject.trim()
+            ? { text: this.form.subject.trim() }
+            : null
+
         const createdBook = {
-          title: this.form.title,
+          title: this.form.title.trim(),
           authors: cleanedAuthors,
-          subject: this.form.subject,
+          subject,
           totalPages: this.form.totalPages,
           isbn: this.form.isbn,
           publishedDate: this.form.publishedDate,
@@ -294,12 +299,11 @@ export default {
           cover: this.form.cover
         }
 
-        // À adapter selon ton service (par ex. updateBook(id, payload))
-        await booksService.addBook(createdBook)
+        await booksService.addBook(createdBook)   // <= ici, PAS createBook
         this.successMessage = 'Les informations du livre ont bien été enregistrées.'
       } catch (error) {
         console.error('Erreur lors de la création du livre :', error)
-        this.error = "Impossible d'ajouter le livre. Vérifiez que le serveur est démarré."
+        this.error = "Impossible d'ajouter le livre."
       } finally {
         this.saving = false
       }

@@ -24,7 +24,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()  // Routes publiques
                 .requestMatchers("/api/catalog/**").permitAll()  // Catalogue public
-                .requestMatchers("/api/books/**").authenticated()  // Routes protégées
+                .requestMatchers("/api/books/**").permitAll()  // Routes protégées
+                .requestMatchers("/api/books/add").hasRole("AUTEUR")  // Routes protégées
                 .anyRequest().denyAll()
             )
             .httpBasic(basic -> {});  // HTTP Basic pour l'instant
