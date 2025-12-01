@@ -9,6 +9,7 @@ import ReadingTracker from '../views/ReadingTracker.vue'
 import Catalogue from '../views/Catalogue.vue'
 import BookDetail from '../views/BookDetail.vue'
 import BookAdd from '../views/BookAdd.vue'
+import BookEdit from '../views/BookEdit.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +48,12 @@ const router = createRouter({
       path: '/books/add',
       name: 'book-add',
       component: BookAdd,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/books/:id/edit',
+      name: 'book-edit',
+      component: BookEdit,
       meta: { requiresAuth: true }
     },
     {

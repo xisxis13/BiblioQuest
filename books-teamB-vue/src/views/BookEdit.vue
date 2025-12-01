@@ -356,8 +356,15 @@ export default {
         const updatedBook = {
           ...this.book,
           title: this.form.title,
-          authors: cleanedAuthors,
-          subject: this.form.subject,
+          authors: cleanedAuthors.map(a => ({
+            id: a.id || null,
+            firstName: a.firstName,
+            lastName: a.lastName
+          })),
+          subject: this.form.subject ? {
+            id: this.book.subject?.id || null,
+            text: this.form.subject
+          } : null,
           totalPages: this.form.totalPages,
           isbn: this.form.isbn,
           publishedDate: this.form.publishedDate,
@@ -365,12 +372,11 @@ export default {
           cover: this.form.cover
         }
 
-        // À adapter selon ton service (par ex. updateBook(id, payload))
         await booksService.updateBook(bookId, updatedBook)
         this.successMessage = 'Les informations du livre ont bien été mises à jour.'
       } catch (error) {
         console.error('Erreur lors de la mise à jour du livre :', error)
-        this.error = 'Impossible de mettre à jour le livre. Vérifiez que le serveur est démarré.'
+        this.error = 'Impossible de mettre à jour le livre.'
       } finally {
         this.saving = false
       }

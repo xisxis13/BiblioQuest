@@ -299,7 +299,7 @@ export default {
           cover: this.form.cover
         }
 
-        await booksService.addBook(createdBook)   // <= ici, PAS createBook
+        await booksService.addBook(createdBook)
         this.successMessage = 'Les informations du livre ont bien été enregistrées.'
       } catch (error) {
         console.error('Erreur lors de la création du livre :', error)

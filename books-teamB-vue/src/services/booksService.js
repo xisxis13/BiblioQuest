@@ -51,7 +51,7 @@ export default {
     if (filters.year) params.append('year', filters.year)
     params.append('page', filters.page || 0)
     params.append('size', filters.size || 100)
-    
+
     const response = await apiClient.get(`/catalog/search?${params.toString()}`)
     return response.data
   },
@@ -71,6 +71,11 @@ export default {
   // Ajouter un nouveau livre (auteur)
   async addBook(bookData) {
     const response = await apiClient.post('/books/add', bookData)
+    return response.data
+  },
+
+  async updateBook(bookId, bookData) {
+    const response = await apiClient.put(`/books/${bookId}`, bookData)
     return response.data
   }
 }

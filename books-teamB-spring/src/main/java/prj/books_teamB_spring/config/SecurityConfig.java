@@ -23,9 +23,10 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()  // Routes publiques
-                .requestMatchers("/api/catalog/**").permitAll()  // Catalogue public
-                .requestMatchers("/api/books/**").permitAll()  // Routes protégées
+                .requestMatchers("/api/catalog/**").permitAll()
+                .requestMatchers("/api/books/**").permitAll()
                 .requestMatchers("/api/books/add").hasRole("AUTEUR")  // Routes protégées
+                .requestMatchers("/api/books/${id}/edit").hasRole("BIBLIOTHECAIRE")
                 .anyRequest().denyAll()
             )
             .httpBasic(basic -> {});  // HTTP Basic pour l'instant
