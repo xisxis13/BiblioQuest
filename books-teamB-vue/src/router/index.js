@@ -8,7 +8,10 @@ import MyLibrary from '../views/MyLibrary.vue'
 import ReadingTracker from '../views/ReadingTracker.vue'
 import Catalogue from '../views/Catalogue.vue'
 import Profile from '../views/Profile.vue'
+import EditProfile from '../views/EditProfile.vue'
+import EditProfileSimple from '../views/EditProfileSimple.vue'
 import Chat from '../views/Chat.vue'
+import Messages from '../views/Messages.vue'
 import Users from '../views/Users.vue'
 
 const router = createRouter({
@@ -56,9 +59,21 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/edit-profile',
+      name: 'edit-profile',
+      component: EditProfileSimple,
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/chat/:id?',
       name: 'chat',
       component: Chat,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/messages',
+      name: 'messages',
+      component: Messages,
       meta: { requiresAuth: true }
     },
     {

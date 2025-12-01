@@ -42,8 +42,24 @@
         </div>
       </div>
 
+      <!-- Message d'erreur -->
+      <div v-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+          <p class="text-red-800">{{ error }}</p>
+        </div>
+      </div>
+
+      <!-- Indicateur de chargement -->
+      <div v-if="loading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+        <p class="ml-3 text-gray-600">Chargement des utilisateurs...</p>
+      </div>
+
       <!-- Liste des utilisateurs -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div 
           v-for="user in filteredUsers" 
           :key="user.id"
@@ -72,24 +88,24 @@
             </div>
           </div>
 
-          <!-- Statistiques -->
+          <!-- Statistiques (toujours affichées) -->
           <div class="grid grid-cols-3 gap-4 mb-4">
             <div class="text-center">
-              <p class="text-xl font-bold text-gray-900">{{ user.booksCount }}</p>
+              <p class="text-xl font-bold text-gray-900">{{ user.booksCount || 0 }}</p>
               <p class="text-xs text-gray-600">Livres</p>
             </div>
             <div class="text-center">
-              <p class="text-xl font-bold text-gray-900">{{ user.readBooks }}</p>
+              <p class="text-xl font-bold text-gray-900">{{ user.readBooks || 0 }}</p>
               <p class="text-xs text-gray-600">Lus</p>
             </div>
             <div class="text-center">
-              <p class="text-xl font-bold text-gray-900">{{ user.followers }}</p>
-              <p class="text-xs text-gray-600">Abonnés</p>
+              <p class="text-xl font-bold text-gray-900">{{ user.followers || 0 }}</p>
+              <p class="text-xs text-gray-600">{{ user.followers === 1 ? 'Abonné' : 'Abonnés' }}</p>
             </div>
           </div>
 
-          <!-- Livres récents -->
-          <div class="mb-4">
+          <!-- Livres récents (masqués si aucun livre) -->
+          <div v-if="user.recentBooks && user.recentBooks.length > 0" class="mb-4">
             <h4 class="text-sm font-medium text-gray-900 mb-2">Livres récents</h4>
             <div class="flex gap-2">
               <div 
@@ -138,15 +154,25 @@
             </button>
             
             <button 
+              v-if="!isCurrentUser(user)"
               @click="toggleFollow(user)"
-              class="flex items-center justify-center px-3 py-2 rounded-lg transition-colors"
+              :disabled="user.followLoading"
+              class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium min-w-[100px]"
               :class="user.isFollowing 
-                ? 'bg-orange-50 border border-orange-300 text-orange-700 hover:bg-orange-100' 
-                : 'border border-gray-300 text-gray-700 hover:bg-gray-50'"
+                ? 'bg-orange-500 text-white hover:bg-orange-600' 
+                : 'border border-orange-500 text-orange-500 hover:bg-orange-50'"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-if="user.followLoading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <svg v-else-if="user.isFollowing" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
+              <span>{{ user.isFollowing ? 'Suivi' : 'Suivre' }}</span>
             </button>
           </div>
         </div>
@@ -203,6 +229,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useChatStore } from '@/stores/chatStore'
+import { useAuthStore } from '@/stores/authStore'
+import userService from '@/services/userService'
 import Sidebar from '@/components/Sidebar.vue'
 import HeaderComponent from '@/components/HeaderComponent.vue'
 
@@ -215,6 +243,7 @@ export default {
   setup() {
     const router = useRouter()
     const chatStore = useChatStore()
+    const authStore = useAuthStore()
     
     const searchQuery = ref('')
     const selectedFilter = ref('all')
@@ -228,103 +257,89 @@ export default {
       { value: 'following', label: 'Suivis' }
     ]
 
-    // Données fictives d'utilisateurs
-    const users = ref([
-      {
-        id: 1,
-        username: 'Alice Martin',
-        email: 'alice@example.com',
-        isOnline: true,
-        lastSeen: new Date(Date.now() - 5 * 60 * 1000),
-        booksCount: 42,
-        readBooks: 28,
-        followers: 156,
-        isFollowing: false,
-        recentBooks: [
-          { id: 1, title: 'Le Petit Prince', cover: null },
-          { id: 2, title: '1984', cover: null },
-          { id: 3, title: 'L\'Étranger', cover: null },
-          { id: 4, title: 'Harry Potter', cover: null }
-        ]
-      },
-      {
-        id: 2,
-        username: 'Bob Dupont',
-        email: 'bob@example.com',
-        isOnline: false,
-        lastSeen: new Date(Date.now() - 30 * 60 * 1000),
-        booksCount: 38,
-        readBooks: 22,
-        followers: 89,
-        isFollowing: true,
-        recentBooks: [
-          { id: 5, title: 'Dune', cover: null },
-          { id: 6, title: 'Foundation', cover: null }
-        ]
-      },
-      {
-        id: 3,
-        username: 'Claire Moreau',
-        email: 'claire@example.com',
-        isOnline: true,
-        lastSeen: new Date(),
-        booksCount: 67,
-        readBooks: 45,
-        followers: 234,
-        isFollowing: false,
-        recentBooks: [
-          { id: 7, title: 'Pride and Prejudice', cover: null },
-          { id: 8, title: 'Jane Eyre', cover: null },
-          { id: 9, title: 'Wuthering Heights', cover: null }
-        ]
-      },
-      {
-        id: 4,
-        username: 'David Chen',
-        email: 'david@example.com',
-        isOnline: false,
-        lastSeen: new Date(Date.now() - 2 * 60 * 60 * 1000),
-        booksCount: 29,
-        readBooks: 18,
-        followers: 67,
-        isFollowing: false,
-        recentBooks: [
-          { id: 10, title: 'The Hobbit', cover: null },
-          { id: 11, title: 'LOTR', cover: null }
-        ]
-      },
-      {
-        id: 5,
-        username: 'Emma Wilson',
-        email: 'emma@example.com',
-        isOnline: true,
-        lastSeen: new Date(),
-        booksCount: 53,
-        readBooks: 31,
-        followers: 178,
-        isFollowing: true,
-        recentBooks: [
-          { id: 12, title: 'The Great Gatsby', cover: null },
-          { id: 13, title: 'To Kill a Mockingbird', cover: null },
-          { id: 14, title: 'Brave New World', cover: null }
-        ]
-      },
-      {
-        id: 6,
-        username: 'François Dubois',
-        email: 'francois@example.com',
-        isOnline: false,
-        lastSeen: new Date(Date.now() - 24 * 60 * 60 * 1000),
-        booksCount: 71,
-        readBooks: 52,
-        followers: 298,
-        isFollowing: false,
-        recentBooks: [
-          { id: 15, title: 'Les Misérables', cover: null },
-          { id: 16, title: 'Notre-Dame de Paris', cover: null }
-        ]
+    // Données des utilisateurs (chargées depuis l'API)
+    const users = ref([])
+    const loading = ref(false)
+    const error = ref(null)
+
+    // Fonction pour déterminer si un utilisateur est en ligne (actif dans les 5 dernières minutes)
+    const isUserOnline = (lastActivityAt) => {
+      if (!lastActivityAt) return false
+      const lastActivity = new Date(lastActivityAt)
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
+      return lastActivity > fiveMinutesAgo
+    }
+
+    // Charger le statut d'abonnement pour tous les utilisateurs
+    const loadFollowingStatus = async () => {
+      const currentUserId = authStore.getUser?.id
+      if (!currentUserId) return
+      
+      for (const user of users.value) {
+        try {
+          const response = await fetch(`http://localhost:8080/api/follow/status?followerId=${currentUserId}&followedId=${user.id}`)
+          if (response.ok) {
+            const result = await response.json()
+            user.isFollowing = result.isFollowing
+            user.followers = result.followersCount || 0
+          }
+        } catch (error) {
+          console.error('Erreur lors du chargement du statut d\'abonnement:', error)
+        }
       }
-    ])
+    }
+
+    // Charger les utilisateurs depuis l'API
+    const loadUsers = async () => {
+      try {
+        loading.value = true
+        error.value = null
+        const response = await userService.getAllUsers()
+        
+        // Transformer les données et filtrer l'utilisateur connecté + admin
+        const currentUserId = authStore.getUser?.id
+        users.value = response
+          .filter(user => user.id !== currentUserId && user.username !== 'admin') // Exclure l'utilisateur connecté et admin
+          .map(user => ({
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          isOnline: user.lastActivityAt ? isUserOnline(user.lastActivityAt) : false,
+          lastSeen: user.lastActivityAt ? new Date(user.lastActivityAt) : new Date(Date.now() - 24 * 60 * 60 * 1000),
+          booksCount: user.booksCount || 0,
+          readBooks: 0, // À implémenter plus tard
+          followers: user.followersCount || 0,
+          following: user.followingCount || 0,
+          isFollowing: false, // Sera chargé après
+          followLoading: false, // Pour l'état de chargement du bouton
+          recentBooks: [], // À implémenter plus tard
+          avatar_url: user.avatarUrl || null
+        }))
+        
+        // Charger le statut d'abonnement pour chaque utilisateur
+        await loadFollowingStatus()
+      } catch (err) {
+        console.error('Erreur lors du chargement des utilisateurs:', err)
+        error.value = 'Impossible de charger les utilisateurs'
+        // En cas d'erreur, utiliser des données de fallback
+        users.value = [
+          {
+            id: 1,
+            username: 'Utilisateur de test',
+            email: 'test@example.com',
+            isOnline: false,
+            lastSeen: new Date(),
+            booksCount: 0,
+            readBooks: 0,
+            followers: 0,
+            isFollowing: false,
+            recentBooks: []
+          }
+        ]
+      } finally {
+        loading.value = false
+      }
+    }
 
     const filteredUsers = computed(() => {
       let filtered = users.value
@@ -419,34 +434,86 @@ export default {
     }
 
     const openChat = async (user) => {
-      // Créer ou obtenir la conversation avec cet utilisateur
-      await chatStore.getOrCreateConversation(user.id, {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        avatar: null
-      })
+      console.log('Ouverture du chat privé avec:', user.username)
       
-      // Rediriger vers la page de chat
-      router.push(`/chat/${user.id}`)
+      // Rediriger vers la messagerie avec l'utilisateur sélectionné
+      router.push({
+        name: 'messages',
+        query: { userId: user.id, username: user.username }
+      })
     }
 
     const viewProfile = (user) => {
       router.push(`/profile/${user.id}`)
     }
 
-    const toggleFollow = (user) => {
-      user.isFollowing = !user.isFollowing
-      if (user.isFollowing) {
-        user.followers++
-      } else {
-        user.followers--
+    const toggleFollow = async (user) => {
+      // Empêcher l'auto-abonnement
+      if (isCurrentUser(user)) {
+        return
       }
+      
+      user.followLoading = true
+      
+      try {
+        const currentUserId = authStore.getUser?.id
+        if (!currentUserId) {
+          console.error('Utilisateur non connecté')
+          return
+        }
+        
+        const url = user.isFollowing 
+          ? `http://localhost:8080/api/follow/${user.id}?followerId=${currentUserId}`
+          : `http://localhost:8080/api/follow/${user.id}?followerId=${currentUserId}`
+        
+        const method = user.isFollowing ? 'DELETE' : 'POST'
+        
+        const response = await fetch(url, {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        
+        const result = await response.json()
+        
+        if (result.success) {
+          user.isFollowing = result.isFollowing
+          // Mettre à jour le compteur si nécessaire
+          if (result.isFollowing) {
+            user.followers++
+          } else {
+            user.followers--
+          }
+        } else {
+          // Si l'utilisateur suit déjà, on met à jour l'état local
+          if (result.message && result.message.includes('déjà')) {
+            user.isFollowing = true
+          } else {
+            console.error('Erreur:', result.message)
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors de l\'abonnement:', error)
+      } finally {
+        user.followLoading = false
+      }
+    }
+    
+    // Fonction pour vérifier si c'est l'utilisateur actuel
+    const isCurrentUser = (user) => {
+      const currentUser = authStore.getUser
+      return currentUser && currentUser.id === user.id
     }
 
     // Initialiser le store de chat
     onMounted(() => {
-      chatStore.initializeChat()
+      // Temporairement désactivé pour éviter les erreurs 401
+      // chatStore.initializeChat()
+      console.log('Chat initialization disabled to prevent logout')
+      
+      // Charger les utilisateurs depuis l'API
+      loadUsers()
     })
 
     return {
@@ -457,11 +524,15 @@ export default {
       filteredUsers,
       totalPages,
       visiblePages,
+      loading,
+      error,
+      loadUsers,
       getUserInitials,
       formatLastSeen,
       openChat,
       viewProfile,
-      toggleFollow
+      toggleFollow,
+      isCurrentUser
     }
   }
 }

@@ -1,29 +1,59 @@
 package prj.books_teamB_spring.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private CorsConfigurationSource corsConfigurationSource;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> 
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()  // Routes publiques
-                .requestMatchers("/api/books/**").authenticated()  // Routes protégées
+                // Routes publiques
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/profile/**").permitAll()
+                .requestMatchers("/api/users/**").permitAll()
+                .requestMatchers("/api/follow/**").permitAll()
+                
+                // WebSocket et STOMP (tous publics)
+                .requestMatchers("/ws/**").permitAll()
+                .requestMatchers("/app/**").permitAll()
+                .requestMatchers("/topic/**").permitAll()
+                .requestMatchers("/queue/**").permitAll()
+                
+                // API Chat (tous publics pour le développement)
+                .requestMatchers("/api/chat/**").permitAll()
+                
+                // Routes protégées
+                .requestMatchers("/api/books/**").authenticated()
+                
+                // Tout le reste est refusé
                 .anyRequest().denyAll()
             )
             .httpBasic(basic -> {});  // HTTP Basic pour l'instant
 
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

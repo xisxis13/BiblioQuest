@@ -45,16 +45,14 @@ export const authService = {
         username: credentials.email,
         password: credentials.password
       }
-      console.log('AuthService: Calling backend with:', loginData)
       const response = await api.post('/auth/login', loginData)
-      console.log('AuthService: Backend response:', response.data)
       
       const user = response.data
       
-      // Créer un token de session qui expire dans 15 minutes
+      // Créer un token de session qui expire dans 24 heures
       const sessionToken = {
         token: 'session_' + Date.now(),
-        expiresAt: Date.now() + (15 * 60 * 1000) // 15 minutes
+        expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 heures
       }
       
       // Stocker les données d'authentification
@@ -88,10 +86,10 @@ export const authService = {
       const response = await api.post('/auth/register', userData)
       const user = response.data
       
-      // Créer un token de session qui expire dans 15 minutes
+      // Créer un token de session qui expire dans 24 heures
       const sessionToken = {
         token: 'session_' + Date.now(),
-        expiresAt: Date.now() + (15 * 60 * 1000) // 15 minutes
+        expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 heures
       }
       
       // Stocker les données d'authentification
@@ -121,17 +119,32 @@ export const authService = {
 
   // Déconnexion
   logout() {
+    console.log('=== LOGOUT ===')
+    console.log('Removing auth_token and auth_user from localStorage')
     localStorage.removeItem('auth_token')
     localStorage.removeItem('auth_user')
+    
+    // Nettoyer aussi les anciennes clés Supabase si elles existent
+    const keysToRemove = Object.keys(localStorage).filter(key => 
+      key.includes('supabase') || key.includes('sb-')
+    )
+    keysToRemove.forEach(key => {
+      console.log('Removing old key:', key)
+      localStorage.removeItem(key)
+    })
   },
 
   // Vérifier l'authentification
   isAuthenticated() {
     const tokenData = this.getToken()
-    if (!tokenData) return false
+    
+    if (!tokenData) {
+      return false
+    }
     
     // Vérifier si le token n'est pas expiré
     if (tokenData.expiresAt && Date.now() > tokenData.expiresAt) {
+      console.log('Token expired:', new Date(tokenData.expiresAt), 'vs now:', new Date())
       this.logout()
       return false
     }
@@ -146,7 +159,7 @@ export const authService = {
     
     try {
       return JSON.parse(token)
-    } catch {
+    } catch (e) {
       return null
     }
   },
@@ -154,6 +167,12 @@ export const authService = {
   // Récupérer l'utilisateur
   getUser() {
     const user = localStorage.getItem('auth_user')
-    return user ? JSON.parse(user) : null
+    if (!user) return null
+    
+    try {
+      return JSON.parse(user)
+    } catch (e) {
+      return null
+    }
   }
 }

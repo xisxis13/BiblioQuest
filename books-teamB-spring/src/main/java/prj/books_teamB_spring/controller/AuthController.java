@@ -3,69 +3,82 @@ package prj.books_teamB_spring.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import prj.books_teamB_spring.model.User;
-import prj.books_teamB_spring.model.Role;
-import prj.books_teamB_spring.repository.UserRepository;
+import prj.books_teamB_spring.service.UserService;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "http://localhost:5174", "http://localhost:5175"})
 public class AuthController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        // Vérifier si l'email existe
-        User user = userRepository.findByEmail(request.getUsername()).orElse(null);
-        
-        if (user == null) {
-            return ResponseEntity.status(401).body(new ErrorResponse("EMAIL_NOT_FOUND", "Aucun compte associé à cette adresse email"));
+        try {
+            User user = userService.authenticateUser(request.getUsername(), request.getPassword());
+            
+            // Mettre à jour la dernière activité
+            user.setLastActivityAt(java.time.LocalDateTime.now());
+            userService.updateUser(user);
+            
+            return ResponseEntity.ok(new LoginResponse(
+                "dummy-jwt-token", 
+                user.getId(),
+                user.getUsername(), 
+                user.getEmail(),
+                user.getRole().toString(),
+                user.getAvatarUrl()
+            ));
+        } catch (ResponseStatusException e) {
+            // Gestion spécifique des erreurs d'authentification
+            if (e.getStatusCode().value() == 401) {
+                return ResponseEntity.status(401)
+                    .body(new ErrorResponse("INVALID_CREDENTIALS", "Email ou mot de passe incorrect"));
+            }
+            return ResponseEntity.status(e.getStatusCode())
+                .body(new ErrorResponse("AUTH_ERROR", e.getReason()));
+        } catch (Exception e) {
+            System.err.println("Erreur de connexion: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                .body(new ErrorResponse("LOGIN_ERROR", "Erreur interne du serveur"));
         }
-        
-        // Vérifier le mot de passe
-        if (!user.getPassword().equals(request.getPassword())) {
-            return ResponseEntity.status(401).body(new ErrorResponse("INVALID_PASSWORD", "Mot de passe incorrect"));
-        }
-        
-        return ResponseEntity.ok(new LoginResponse(user.getUsername(), user.getRole().toString()));
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        // Vérifier si l'email existe déjà
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity.status(400).body(new ErrorResponse("EMAIL_EXISTS", "Cette adresse email est déjà utilisée"));
+        try {
+            User savedUser = userService.createUser(
+                request.getUsername(), 
+                request.getEmail(), 
+                request.getPassword()
+            );
+            
+            return ResponseEntity.ok(new LoginResponse(
+                "dummy-jwt-token",
+                savedUser.getId(),
+                savedUser.getUsername(), 
+                savedUser.getEmail(),
+                savedUser.getRole().toString(),
+                savedUser.getAvatarUrl()
+            ));
+        } catch (ResponseStatusException e) {
+            // Gestion spécifique des erreurs d'authentification
+            if (e.getStatusCode().value() == 401) {
+                return ResponseEntity.status(401)
+                    .body(new ErrorResponse("INVALID_CREDENTIALS", "Email ou mot de passe incorrect"));
+            }
+            return ResponseEntity.status(e.getStatusCode())
+                .body(new ErrorResponse("AUTH_ERROR", e.getReason()));
+        } catch (Exception e) {
+            System.err.println("Erreur de connexion: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                .body(new ErrorResponse("REGISTER_ERROR", "Erreur interne du serveur"));
         }
-        
-        // Vérifier si le nom d'utilisateur existe déjà
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            return ResponseEntity.status(400).body(new ErrorResponse("USERNAME_EXISTS", "Ce nom d'utilisateur est déjà pris"));
-        }
-        
-        // Validation des champs
-        if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
-            return ResponseEntity.status(400).body(new ErrorResponse("INVALID_USERNAME", "Le nom d'utilisateur est requis"));
-        }
-        
-        if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
-            return ResponseEntity.status(400).body(new ErrorResponse("INVALID_EMAIL", "L'adresse email est requise"));
-        }
-        
-        if (request.getPassword() == null || request.getPassword().length() < 6) {
-            return ResponseEntity.status(400).body(new ErrorResponse("INVALID_PASSWORD", "Le mot de passe doit contenir au moins 6 caractères"));
-        }
-        
-        // Créer nouveau user
-        User newUser = new User();
-        newUser.setUsername(request.getUsername());
-        newUser.setEmail(request.getEmail());
-        newUser.setPassword(request.getPassword());
-        newUser.setRole(Role.USER);
-        
-        User savedUser = userRepository.save(newUser);
-        return ResponseEntity.ok(new LoginResponse(savedUser.getUsername(), savedUser.getRole().toString()));
     }
 
     static class LoginRequest {
@@ -92,16 +105,28 @@ public class AuthController {
     }
 
     static class LoginResponse {
+        private String token;
+        private Long id;
         private String username;
+        private String email;
         private String role;
+        private String avatarUrl;
         
-        public LoginResponse(String username, String role) {
+        public LoginResponse(String token, Long id, String username, String email, String role, String avatarUrl) {
+            this.token = token;
+            this.id = id;
             this.username = username;
+            this.email = email;
             this.role = role;
+            this.avatarUrl = avatarUrl;
         }
         
+        public String getToken() { return token; }
+        public Long getId() { return id; }
         public String getUsername() { return username; }
+        public String getEmail() { return email; }
         public String getRole() { return role; }
+        public String getAvatarUrl() { return avatarUrl; }
     }
 
     static class ErrorResponse {

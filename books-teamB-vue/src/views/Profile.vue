@@ -15,25 +15,35 @@
               <div class="flex items-end gap-4">
                 <!-- Avatar -->
                 <div class="w-24 h-24 bg-white rounded-full border-4 border-white shadow-lg flex items-center justify-center">
-                  <span class="text-2xl font-bold text-orange-600">{{ getUserInitials() }}</span>
+                  <span v-if="user" class="text-2xl font-bold text-orange-600">{{ getUserInitials() }}</span>
+                  <div v-else class="w-6 h-6 bg-gray-300 rounded-full animate-pulse"></div>
                 </div>
                 
                 <!-- Infos utilisateur -->
                 <div class="mb-2">
-                  <h1 class="text-2xl font-bold text-gray-900">{{ user.username }}</h1>
-                  <p class="text-gray-600">{{ user.email }}</p>
-                  <div class="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                  <div v-if="loading" class="animate-pulse">
+                    <div class="h-8 bg-gray-200 rounded w-48 mb-2"></div>
+                    <div class="h-4 bg-gray-200 rounded w-64"></div>
+                  </div>
+                  <div v-else-if="user">
+                    <h1 class="text-2xl font-bold text-gray-900">{{ user.username }}</h1>
+                    <p class="text-gray-600">{{ user.email }}</p>
+                  </div>
+                  <div v-else-if="error" class="text-red-600">
+                    {{ error }}
+                  </div>
+                  <div v-if="user" class="flex items-center gap-4 mt-2 text-sm text-gray-500">
                     <span class="flex items-center gap-1">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                       </svg>
-                      {{ user.booksCount || 0 }} livres
+                      {{ user?.booksCount || 0 }} livres
                     </span>
                     <span class="flex items-center gap-1">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      Membre depuis {{ formatDate(user.createdAt) }}
+                      Membre depuis {{ user ? formatDate(user.createdAt) : '' }}
                     </span>
                   </div>
                 </div>
@@ -82,7 +92,7 @@
         </div>
 
         <!-- Statistiques -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
           <div class="bg-white rounded-xl p-6 border border-gray-200">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
@@ -91,7 +101,7 @@
                 </svg>
               </div>
               <div>
-                <p class="text-2xl font-bold text-gray-900">{{ user.booksCount || 0 }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ user?.booksCount || 0 }}</p>
                 <p class="text-sm text-gray-600">Livres possédés</p>
               </div>
             </div>
@@ -105,7 +115,7 @@
                 </svg>
               </div>
               <div>
-                <p class="text-2xl font-bold text-gray-900">{{ user.readBooks || 0 }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ user?.readBooks || 0 }}</p>
                 <p class="text-sm text-gray-600">Livres lus</p>
               </div>
             </div>
@@ -119,8 +129,22 @@
                 </svg>
               </div>
               <div>
-                <p class="text-2xl font-bold text-gray-900">{{ user.followers || 0 }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ user?.followersCount || 0 }}</p>
                 <p class="text-sm text-gray-600">Abonnés</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl p-6 border border-gray-200">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-900">{{ user?.followingCount || 0 }}</p>
+                <p class="text-sm text-gray-600">Abonnements</p>
               </div>
             </div>
           </div>
@@ -166,6 +190,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import userService from '@/services/userService'
 import Sidebar from '@/components/Sidebar.vue'
 import HeaderComponent from '@/components/HeaderComponent.vue'
 
@@ -180,16 +205,9 @@ export default {
     const router = useRouter()
     const authStore = useAuthStore()
     
-    const user = ref({
-      id: 1,
-      username: 'JohnDoe',
-      email: 'john.doe@example.com',
-      booksCount: 42,
-      readBooks: 28,
-      followers: 156,
-      createdAt: '2024-01-15'
-    })
-    
+    const user = ref(null)
+    const loading = ref(false)
+    const error = ref(null)
     const isFollowing = ref(false)
     const recentBooks = ref([
       { id: 1, title: 'Le Petit Prince', author: 'Antoine de Saint-Exupéry', cover: null },
@@ -232,42 +250,58 @@ export default {
     }
 
     const editProfile = () => {
-      // Logique pour éditer le profil
-      console.log('Éditer le profil')
+      router.push('/edit-profile')
+    }
+
+    // Fonction pour charger les données utilisateur
+    const loadUserProfile = async (userId) => {
+      try {
+        loading.value = true
+        error.value = null
+        
+        let userData
+        if (userId) {
+          // Charger un utilisateur spécifique
+          userData = await userService.getUserById(userId)
+        } else {
+          // Utiliser les données de l'utilisateur connecté
+          userData = authStore.getUser
+        }
+        
+        user.value = {
+          id: userData.id,
+          username: userData.username,
+          email: userData.email,
+          booksCount: userData.booksCount || 0,
+          readBooks: 0, // À implémenter plus tard
+          followers: 0, // À implémenter plus tard
+          following: 0, // À implémenter plus tard
+          joinedDate: new Date(), // À implémenter plus tard
+          bio: '', // À implémenter plus tard
+          favoriteGenres: [], // À implémenter plus tard
+          currentlyReading: [], // À implémenter plus tard
+          recentlyFinished: [], // À implémenter plus tard
+          avatarUrl: userData.avatarUrl || null,
+          lastActivityAt: userData.lastActivityAt
+        }
+      } catch (err) {
+        console.error('Erreur lors du chargement du profil:', err)
+        error.value = 'Impossible de charger le profil utilisateur'
+      } finally {
+        loading.value = false
+      }
     }
 
     // Charger les données du profil
     onMounted(() => {
       const userId = route.params.id
-      if (userId) {
-        // Charger les données de l'utilisateur spécifique
-        // Pour l'instant, on utilise des données fictives
-        user.value = {
-          id: parseInt(userId),
-          username: `Utilisateur${userId}`,
-          email: `user${userId}@example.com`,
-          booksCount: Math.floor(Math.random() * 100),
-          readBooks: Math.floor(Math.random() * 50),
-          followers: Math.floor(Math.random() * 500),
-          createdAt: '2024-01-15'
-        }
-      } else {
-        // Utiliser les données de l'utilisateur connecté
-        const currentUser = authStore.getUser
-        if (currentUser) {
-          user.value = {
-            ...currentUser,
-            booksCount: 42,
-            readBooks: 28,
-            followers: 156,
-            createdAt: '2024-01-15'
-          }
-        }
-      }
+      loadUserProfile(userId)
     })
 
     return {
       user,
+      loading,
+      error,
       isFollowing,
       recentBooks,
       isOwnProfile,
@@ -275,7 +309,8 @@ export default {
       formatDate,
       openChat,
       toggleFollow,
-      editProfile
+      editProfile,
+      loadUserProfile
     }
   }
 }

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { chatService } from '@/services/chatService'
 
 export const useChatStore = defineStore('chat', {
   state: () => ({
@@ -49,9 +50,36 @@ export const useChatStore = defineStore('chat', {
   },
 
   actions: {
-    // Initialiser le store avec des données fictives
-    initializeChat() {
-      // Données fictives pour le développement
+    // Initialiser le store en chargeant les conversations depuis le backend
+    async initializeChat() {
+      this.loading = true
+      this.error = null
+      
+      try {
+        // Charger les conversations depuis le backend
+        const conversations = await chatService.getConversations()
+        this.conversations = conversations
+        
+        // Charger le nombre total de messages non lus
+        const totalUnread = await chatService.getTotalUnreadCount()
+        this.updateUnreadCounts(conversations, totalUnread)
+        
+        // Mettre le statut en ligne
+        await chatService.setOnlineStatus(true)
+        
+      } catch (error) {
+        console.error('Erreur lors de l\'initialisation du chat:', error)
+        this.error = error.message
+        
+        // Fallback avec données fictives en cas d'erreur
+        this.initializeFallbackData()
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // Données fictives en fallback
+    initializeFallbackData() {
       this.conversations = [
         {
           id: 1,
@@ -161,28 +189,51 @@ export const useChatStore = defineStore('chat', {
 
     // Créer ou obtenir une conversation avec un utilisateur
     async getOrCreateConversation(userId, userInfo = null) {
-      let conversation = this.getConversationByUserId(userId)
-      
-      if (!conversation) {
-        // Créer une nouvelle conversation
-        conversation = {
-          id: Date.now(),
-          user: userInfo || {
-            id: userId,
-            username: `Utilisateur ${userId}`,
-            email: `user${userId}@example.com`,
-            avatar: null
-          },
-          lastMessage: null,
-          createdAt: new Date()
+      try {
+        // Essayer de créer/obtenir la conversation via le backend
+        const conversation = await chatService.getOrCreateDirectConversation(userId)
+        
+        // Ajouter à la liste locale si pas déjà présente
+        const existingIndex = this.conversations.findIndex(conv => conv.id === conversation.id)
+        if (existingIndex === -1) {
+          this.conversations.unshift(conversation)
         }
         
-        this.conversations.unshift(conversation)
-        this.messages[conversation.id] = []
-        this.unreadCounts[conversation.id] = 0
+        // Initialiser les messages et compteurs si nécessaire
+        if (!this.messages[conversation.id]) {
+          this.messages[conversation.id] = []
+        }
+        if (!this.unreadCounts[conversation.id]) {
+          this.unreadCounts[conversation.id] = 0
+        }
+        
+        return conversation
+      } catch (error) {
+        console.error('Erreur lors de la création de conversation:', error)
+        
+        // Fallback avec données locales
+        let conversation = this.getConversationByUserId(userId)
+        
+        if (!conversation) {
+          conversation = {
+            id: Date.now(),
+            user: userInfo || {
+              id: userId,
+              username: `Utilisateur ${userId}`,
+              email: `user${userId}@example.com`,
+              avatar: null
+            },
+            lastMessage: null,
+            createdAt: new Date()
+          }
+          
+          this.conversations.unshift(conversation)
+          this.messages[conversation.id] = []
+          this.unreadCounts[conversation.id] = 0
+        }
+        
+        return conversation
       }
-      
-      return conversation
     },
 
     // Sélectionner une conversation active
@@ -196,42 +247,69 @@ export const useChatStore = defineStore('chat', {
     },
 
     // Envoyer un message
-    async sendMessage(conversationId, content, currentUserId = 'current_user') {
+    async sendMessage(conversationId, content) {
       if (!content.trim()) return
 
-      const message = {
-        id: Date.now(),
-        content: content.trim(),
-        timestamp: new Date(),
-        senderId: currentUserId,
-        conversationId: conversationId
-      }
-
-      // Ajouter le message à la conversation
-      if (!this.messages[conversationId]) {
-        this.messages[conversationId] = []
-      }
-      this.messages[conversationId].push(message)
-
-      // Mettre à jour le dernier message de la conversation
-      const conversation = this.conversations.find(conv => conv.id === conversationId)
-      if (conversation) {
-        conversation.lastMessage = {
+      try {
+        // Envoyer le message via le backend
+        const message = await chatService.sendMessage(conversationId, content.trim())
+        
+        // Ajouter le message à la conversation locale
+        if (!this.messages[conversationId]) {
+          this.messages[conversationId] = []
+        }
+        this.messages[conversationId].push({
           id: message.id,
           content: message.content,
-          timestamp: message.timestamp,
-          senderId: currentUserId
+          timestamp: new Date(message.createdAt),
+          senderId: message.sender.id,
+          conversationId: conversationId,
+          isOwn: true
+        })
+
+        // Mettre à jour le dernier message de la conversation
+        const conversation = this.conversations.find(conv => conv.id === conversationId)
+        if (conversation) {
+          conversation.lastMessage = {
+            id: message.id,
+            content: message.content,
+            timestamp: new Date(message.createdAt),
+            senderId: message.sender.id
+          }
+          conversation.lastMessageAt = new Date(message.createdAt)
         }
-      }
 
-      // Simuler une réponse automatique (pour le développement)
-      if (currentUserId === 'current_user') {
-        setTimeout(() => {
-          this.simulateIncomingMessage(conversationId)
-        }, 2000)
-      }
+        return message
+      } catch (error) {
+        console.error('Erreur lors de l\'envoi du message:', error)
+        
+        // Fallback avec message local
+        const message = {
+          id: Date.now(),
+          content: content.trim(),
+          timestamp: new Date(),
+          senderId: 'current_user',
+          conversationId: conversationId,
+          isOwn: true
+        }
 
-      return message
+        if (!this.messages[conversationId]) {
+          this.messages[conversationId] = []
+        }
+        this.messages[conversationId].push(message)
+
+        const conversation = this.conversations.find(conv => conv.id === conversationId)
+        if (conversation) {
+          conversation.lastMessage = {
+            id: message.id,
+            content: message.content,
+            timestamp: message.timestamp,
+            senderId: 'current_user'
+          }
+        }
+
+        return message
+      }
     },
 
     // Simuler un message entrant (pour le développement)
@@ -275,8 +353,22 @@ export const useChatStore = defineStore('chat', {
     },
 
     // Marquer une conversation comme lue
-    markAsRead(conversationId) {
-      this.unreadCounts[conversationId] = 0
+    async markAsRead(conversationId) {
+      try {
+        await chatService.markAsRead(conversationId)
+        this.unreadCounts[conversationId] = 0
+      } catch (error) {
+        console.error('Erreur lors du marquage comme lu:', error)
+        // Marquer localement même en cas d'erreur
+        this.unreadCounts[conversationId] = 0
+      }
+    },
+
+    // Mettre à jour les compteurs de messages non lus
+    updateUnreadCounts(conversations, totalUnread) {
+      conversations.forEach(conv => {
+        this.unreadCounts[conv.id] = conv.unreadCount || 0
+      })
     },
 
     // Définir l'état de frappe

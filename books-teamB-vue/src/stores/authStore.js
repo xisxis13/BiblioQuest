@@ -23,6 +23,11 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     // Initialiser avec les données localStorage
     initializeAuth() {
+      // Si on a déjà des données dans le store, ne pas les écraser
+      if (this.token && this.user) {
+        return
+      }
+      
       // Vérifier si la session est toujours valide
       if (authService.isAuthenticated()) {
         const tokenData = authService.getToken()
@@ -32,27 +37,22 @@ export const useAuthStore = defineStore('auth', {
           this.token = tokenData.token
           this.user = user
         }
-      } else {
-        // Session expirée, nettoyer
-        this.logout()
       }
+      // Ne pas appeler logout() automatiquement pour éviter les boucles
     },
 
     // Connexion
     async login(credentials) {
-      console.log('AuthStore login called with:', credentials)
       this.loading = true
       this.error = null
       
       try {
         const result = await authService.login(credentials)
-        console.log('AuthService result:', result)
         
         const { user, token } = result
         this.token = token
         this.user = user
         
-        console.log('User set in store:', this.user)
         return { success: true }
       } catch (error) {
         console.error('Login error in authStore:', error)

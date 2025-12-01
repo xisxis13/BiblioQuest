@@ -46,7 +46,7 @@
             </div>
             <div class="hidden sm:block">
               <div class="text-sm font-medium text-gray-900">{{ authStore.getUser?.username || 'Utilisateur' }}</div>
-              <div class="text-xs text-gray-500">Administrateur</div>
+              <div class="text-xs text-gray-500">{{ getRoleDisplay() }}</div>
             </div>
             <svg 
               class="h-4 w-4 text-gray-400 transition-transform duration-200"
@@ -117,11 +117,11 @@
               </router-link>
             </div>
 
-            <!-- Séparateur -->
-            <div class="border-t border-gray-100 my-1"></div>
+            <!-- Séparateur (seulement si admin) -->
+            <div v-if="isAdmin()" class="border-t border-gray-100 my-1"></div>
 
-            <!-- Section Administration -->
-            <div class="py-1">
+            <!-- Section Administration (seulement pour les admins) -->
+            <div v-if="isAdmin()" class="py-1">
               <div class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 Administration
               </div>
@@ -169,6 +169,18 @@
                 Paramètres
               </div>
               
+              <!-- Modifier le profil -->
+              <router-link 
+                to="/edit-profile"
+                @click="closeDropdown"
+                class="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Modifier le profil
+              </router-link>
+
               <!-- Préférences -->
               <button 
                 class="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
@@ -291,6 +303,27 @@ export default {
       } catch (error) {
         console.error('Erreur lors de la déconnexion:', error)
       }
+    },
+
+
+    getRoleDisplay() {
+      const role = this.authStore.getUser?.role
+      switch (role) {
+        case 'USER':
+          return 'Utilisateur'
+        case 'ADMIN':
+          return 'Administrateur'
+        case 'AUTEUR':
+          return 'Auteur'
+        case 'BIBLIOTHECAIRE':
+          return 'Bibliothécaire'
+        default:
+          return 'Utilisateur'
+      }
+    },
+
+    isAdmin() {
+      return this.authStore.getUser?.role === 'ADMIN'
     }
   }
 }

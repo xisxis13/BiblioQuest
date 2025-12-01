@@ -25,7 +25,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "users")
+@Table(name = "\"user\"")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -64,6 +64,30 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "book_id")
     )
     private Set<Book> myBooks = new HashSet<>();
+
+    // Nouvelles colonnes pour le chat
+    @Column(name = "avatar_url", columnDefinition = "TEXT")
+    private String avatarUrl;
+
+    @Column(name = "last_activity_at")
+    private java.time.LocalDateTime lastActivityAt;
+
+    @Column(name = "followers_count")
+    private Integer followersCount = 0;
+
+    @Column(name = "following_count")
+    private Integer followingCount = 0;
+
+    @Column(name = "books_count")
+    private Integer booksCount = 0;
+    
+    // Méthode pour déterminer si l'utilisateur est en ligne (actif dans les 5 dernières minutes)
+    public boolean isOnline() {
+        if (lastActivityAt == null) {
+            return false;
+        }
+        return lastActivityAt.isAfter(java.time.LocalDateTime.now().minusMinutes(5));
+    }
 
     // Méthodes helper pour gérer les livres avec synchronisation bidirectionnelle
     
