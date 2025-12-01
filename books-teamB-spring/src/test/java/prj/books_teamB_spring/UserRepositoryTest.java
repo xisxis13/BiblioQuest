@@ -14,7 +14,12 @@ import prj.books_teamB_spring.model.User;
 import prj.books_teamB_spring.repository.UserRepository;
 
 @DataJpaTest
-@TestPropertySource(properties = "spring.jpa.defer-datasource-initialization=true")
+@TestPropertySource(properties = {
+        "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
+        "spring.datasource.driverClassName=org.h2.Driver",
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "spring.sql.init.mode=never"
+})
 class UserRepositoryTest {
 
     @Autowired
@@ -22,17 +27,14 @@ class UserRepositoryTest {
 
     @Test
     void testSaveAndFindUser() {
-        // 1. Création (Arrange)
         User user = new User();
         user.setUsername("batman");
         user.setEmail("batman@gotham.city");
         user.setPassword("secret123");
         user.setRole(Role.ADMIN);
 
-        // 2. Action (Act)
         User savedUser = userRepository.save(user);
 
-        // 3. Vérification (Assert)
         assertThat(savedUser).isNotNull();
         assertThat(savedUser.getId()).isGreaterThan(0);
         assertThat(savedUser.getRole()).isEqualTo(Role.ADMIN);
@@ -40,36 +42,30 @@ class UserRepositoryTest {
 
     @Test
     void testFindByUsername() {
-        // Arrange
-        User user = new User();  // ✅ Utiliser le constructeur vide
+        User user = new User();
         user.setUsername("joker");
         user.setEmail("joker@arkham.com");
         user.setPassword("haha");
         user.setRole(Role.USER);
         userRepository.save(user);
 
-        // Act
         Optional<User> found = userRepository.findByUsername("joker");
 
-        // Assert
         assertThat(found).isPresent();
         assertThat(found.get().getEmail()).isEqualTo("joker@arkham.com");
     }
 
     @Test
     void testFindByEmail() {
-        // Arrange
-        User user = new User();  // ✅ Utiliser le constructeur vide
+        User user = new User();
         user.setUsername("robin");
         user.setEmail("robin@sidekick.com");
         user.setPassword("batcave");
         user.setRole(Role.USER);
         userRepository.save(user);
 
-        // Act
         Optional<User> found = userRepository.findByEmail("robin@sidekick.com");
 
-        // Assert
         assertThat(found).isPresent();
         assertThat(found.get().getUsername()).isEqualTo("robin");
     }
