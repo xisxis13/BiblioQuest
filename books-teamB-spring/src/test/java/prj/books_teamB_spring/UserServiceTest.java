@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.server.ResponseStatusException;
 
 import prj.books_teamB_spring.model.Role;
@@ -16,12 +17,14 @@ import prj.books_teamB_spring.model.User;
 import prj.books_teamB_spring.repository.UserRepository;
 import prj.books_teamB_spring.service.UserService;
 
-/**
- * Tests pour UserService
- * Teste la méthode requireUser avec différents scénarios
- */
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@TestPropertySource(properties = {
+        "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
+        "spring.datasource.driverClassName=org.h2.Driver",
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "spring.sql.init.mode=never"
+})
 class UserServiceTest {
 
     @Autowired
@@ -34,10 +37,8 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Nettoyer la base de données
         userRepository.deleteAll();
 
-        // Créer un utilisateur de test
         testUser = new User();
         testUser.setUsername("alice");
         testUser.setEmail("alice@example.com");
@@ -48,10 +49,8 @@ class UserServiceTest {
 
     @Test
     void requireUser_withValidUsername_returnsUser() {
-        // Act
         User result = userService.requireUser("alice");
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getUsername()).isEqualTo("alice");
         assertThat(result.getEmail()).isEqualTo("alice@example.com");
@@ -60,11 +59,9 @@ class UserServiceTest {
 
     @Test
     void requireUser_withNullUsername_throws401() {
-        // Act & Assert
         ResponseStatusException exception = assertThrows(
-            ResponseStatusException.class,
-            () -> userService.requireUser(null)
-        );
+                ResponseStatusException.class,
+                () -> userService.requireUser(null));
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(exception.getReason()).isEqualTo("Missing X-Username header");
@@ -72,11 +69,9 @@ class UserServiceTest {
 
     @Test
     void requireUser_withEmptyUsername_throws401() {
-        // Act & Assert
         ResponseStatusException exception = assertThrows(
-            ResponseStatusException.class,
-            () -> userService.requireUser("")
-        );
+                ResponseStatusException.class,
+                () -> userService.requireUser(""));
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(exception.getReason()).isEqualTo("Missing X-Username header");
@@ -84,11 +79,9 @@ class UserServiceTest {
 
     @Test
     void requireUser_withBlankUsername_throws401() {
-        // Act & Assert
         ResponseStatusException exception = assertThrows(
-            ResponseStatusException.class,
-            () -> userService.requireUser("   ")
-        );
+                ResponseStatusException.class,
+                () -> userService.requireUser("   "));
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(exception.getReason()).isEqualTo("Missing X-Username header");
@@ -96,11 +89,9 @@ class UserServiceTest {
 
     @Test
     void requireUser_withNonExistentUsername_throws401() {
-        // Act & Assert
         ResponseStatusException exception = assertThrows(
-            ResponseStatusException.class,
-            () -> userService.requireUser("unknown")
-        );
+                ResponseStatusException.class,
+                () -> userService.requireUser("unknown"));
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(exception.getReason()).isEqualTo("Unknown user");
@@ -108,7 +99,6 @@ class UserServiceTest {
 
     @Test
     void requireUser_withAdminUser_returnsAdminUser() {
-        // Arrange
         User admin = new User();
         admin.setUsername("admin");
         admin.setEmail("admin@example.com");
@@ -116,10 +106,8 @@ class UserServiceTest {
         admin.setRole(Role.ADMIN);
         userRepository.save(admin);
 
-        // Act
         User result = userService.requireUser("admin");
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getUsername()).isEqualTo("admin");
         assertThat(result.getRole()).isEqualTo(Role.ADMIN);
@@ -127,7 +115,6 @@ class UserServiceTest {
 
     @Test
     void requireUser_withAuteurUser_returnsAuteurUser() {
-        // Arrange
         User auteur = new User();
         auteur.setUsername("author");
         auteur.setEmail("author@example.com");
@@ -135,17 +122,14 @@ class UserServiceTest {
         auteur.setRole(Role.AUTEUR);
         userRepository.save(auteur);
 
-        // Act
         User result = userService.requireUser("author");
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getRole()).isEqualTo(Role.AUTEUR);
     }
 
     @Test
     void requireUser_withBibliothecaireUser_returnsBibliothecaireUser() {
-        // Arrange
         User bibliothecaire = new User();
         bibliothecaire.setUsername("librarian");
         bibliothecaire.setEmail("librarian@example.com");
@@ -153,33 +137,26 @@ class UserServiceTest {
         bibliothecaire.setRole(Role.BIBLIOTHECAIRE);
         userRepository.save(bibliothecaire);
 
-        // Act
         User result = userService.requireUser("librarian");
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getRole()).isEqualTo(Role.BIBLIOTHECAIRE);
     }
 
     @Test
     void requireUser_caseSensitiveUsername_findsExactMatch() {
-        // Arrange - Username "alice" existe déjà (créé dans setUp)
-        
-        // Act - Chercher avec la bonne casse
+
         User result = userService.requireUser("alice");
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getUsername()).isEqualTo("alice");
     }
 
     @Test
     void requireUser_caseSensitiveUsername_failsWithWrongCase() {
-        // Act & Assert - Chercher avec une casse différente
         ResponseStatusException exception = assertThrows(
-            ResponseStatusException.class,
-            () -> userService.requireUser("ALICE")
-        );
+                ResponseStatusException.class,
+                () -> userService.requireUser("ALICE"));
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(exception.getReason()).isEqualTo("Unknown user");
@@ -187,7 +164,6 @@ class UserServiceTest {
 
     @Test
     void requireUser_multipleUsers_findsCorrectUser() {
-        // Arrange
         User bob = new User();
         bob.setUsername("bob");
         bob.setEmail("bob@example.com");
@@ -202,12 +178,10 @@ class UserServiceTest {
         charlie.setRole(Role.USER);
         userRepository.save(charlie);
 
-        // Act
         User resultAlice = userService.requireUser("alice");
         User resultBob = userService.requireUser("bob");
         User resultCharlie = userService.requireUser("charlie");
 
-        // Assert
         assertThat(resultAlice.getUsername()).isEqualTo("alice");
         assertThat(resultBob.getUsername()).isEqualTo("bob");
         assertThat(resultCharlie.getUsername()).isEqualTo("charlie");
@@ -215,7 +189,6 @@ class UserServiceTest {
 
     @Test
     void requireUser_withSpecialCharactersInUsername_returnsUser() {
-        // Arrange
         User specialUser = new User();
         specialUser.setUsername("user_123");
         specialUser.setEmail("user123@example.com");
@@ -223,17 +196,14 @@ class UserServiceTest {
         specialUser.setRole(Role.USER);
         userRepository.save(specialUser);
 
-        // Act
         User result = userService.requireUser("user_123");
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getUsername()).isEqualTo("user_123");
     }
 
     @Test
     void requireUser_withLongUsername_returnsUser() {
-        // Arrange
         String longUsername = "a".repeat(50);
         User longUser = new User();
         longUser.setUsername(longUsername);
@@ -242,21 +212,17 @@ class UserServiceTest {
         longUser.setRole(Role.USER);
         userRepository.save(longUser);
 
-        // Act
         User result = userService.requireUser(longUsername);
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getUsername()).isEqualTo(longUsername);
     }
 
     @Test
     void requireUser_consecutiveCalls_returnsSameUserData() {
-        // Act
         User result1 = userService.requireUser("alice");
         User result2 = userService.requireUser("alice");
 
-        // Assert
         assertThat(result1.getId()).isEqualTo(result2.getId());
         assertThat(result1.getUsername()).isEqualTo(result2.getUsername());
         assertThat(result1.getEmail()).isEqualTo(result2.getEmail());
@@ -264,14 +230,11 @@ class UserServiceTest {
 
     @Test
     void requireUser_afterUserDeletion_throws401() {
-        // Arrange - Supprimer l'utilisateur
         userRepository.deleteAll();
 
-        // Act & Assert
         ResponseStatusException exception = assertThrows(
-            ResponseStatusException.class,
-            () -> userService.requireUser("alice")
-        );
+                ResponseStatusException.class,
+                () -> userService.requireUser("alice"));
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(exception.getReason()).isEqualTo("Unknown user");
@@ -279,11 +242,9 @@ class UserServiceTest {
 
     @Test
     void requireUser_withWhitespaceOnlyUsername_throws401() {
-        // Act & Assert
         ResponseStatusException exception = assertThrows(
-            ResponseStatusException.class,
-            () -> userService.requireUser("\t\n ")
-        );
+                ResponseStatusException.class,
+                () -> userService.requireUser("\t\n "));
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(exception.getReason()).isEqualTo("Missing X-Username header");
@@ -291,11 +252,9 @@ class UserServiceTest {
 
     @Test
     void requireUser_withTabsInUsername_throws401() {
-        // Act & Assert
         ResponseStatusException exception = assertThrows(
-            ResponseStatusException.class,
-            () -> userService.requireUser("\t\t")
-        );
+                ResponseStatusException.class,
+                () -> userService.requireUser("\t\t"));
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(exception.getReason()).isEqualTo("Missing X-Username header");

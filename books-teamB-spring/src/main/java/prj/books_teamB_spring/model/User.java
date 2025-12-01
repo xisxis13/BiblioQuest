@@ -2,27 +2,13 @@ package prj.books_teamB_spring.model;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @Table(name = "users")
@@ -30,14 +16,14 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)  // Utiliser seulement l'ID
-@ToString(exclude = { "myBooks" })                  // Exclure la collection
+@ToString(exclude = { "userBooks" })
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
-    
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @EqualsAndHashCode.Include  // Inclure seulement l'ID pour equals/hashCode
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
+    private Long id;
 
     @NotBlank(message = "Username is required")
     @Column(unique = true, nullable = false)
@@ -57,41 +43,32 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    @ManyToMany
-    @JoinTable(
-        name = "user_books", 
-        joinColumns = @JoinColumn(name = "user_id"), 
-        inverseJoinColumns = @JoinColumn(name = "book_id")
-    )
-    private Set<Book> myBooks = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<UserBook> userBooks = new HashSet<>();
 
-    // Méthodes helper pour gérer les livres avec synchronisation bidirectionnelle
-    
     public void addBook(Book book) {
-        if (book != null) {
-            this.myBooks.add(book);
-            book.getOwners().add(this); // Synchronisation bidirectionnelle
+        if (book != null && !hasBook(book)) {
+            UserBook userBook = new UserBook(this, book);
+            this.userBooks.add(userBook);
         }
     }
 
     public void removeBook(Book book) {
         if (book != null) {
-            this.myBooks.remove(book);
-            book.getOwners().remove(this); // Synchronisation bidirectionnelle
+            this.userBooks.removeIf(ub -> ub.getBook().equals(book));
         }
     }
 
     public boolean hasBook(Book book) {
-        return book != null && this.myBooks.contains(book);
+        if (book == null)
+            return false;
+        return this.userBooks.stream()
+                .anyMatch(ub -> ub.getBook().getId().equals(book.getId()));
     }
-    
-    public int getBooksCount() {
-        return this.myBooks.size();
-    }
-    
-    public void clearBooks() {
-        // Copie pour éviter ConcurrentModificationException
-        Set<Book> booksCopy = new HashSet<>(this.myBooks);
-        booksCopy.forEach(this::removeBook);
+
+    public Set<Book> getMyBooks() {
+        return this.userBooks.stream()
+                .map(UserBook::getBook)
+                .collect(Collectors.toSet());
     }
 }

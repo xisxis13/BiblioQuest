@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import prj.books_teamB_spring.model.Author;
@@ -26,6 +27,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@TestPropertySource(properties = {
+        "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
+        "spring.datasource.driverClassName=org.h2.Driver",
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "spring.sql.init.mode=never"
+})
 class BookControllerAuthTest {
 
     @Autowired
@@ -42,7 +49,6 @@ class BookControllerAuthTest {
 
     @BeforeEach
     void setUp() {
-        // Nettoyer la base de données
         bookRepository.deleteAll();
         authorRepository.deleteAll();
         subjectRepository.deleteAll();
@@ -74,9 +80,10 @@ class BookControllerAuthTest {
     @Test
     @WithMockUser
     void searchBooks_withAuth_returns200() throws Exception {
-        mockMvc.perform(get("/api/books/search?author=Tolkien"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.content").isArray());
+        mockMvc.perform(get("/api/books/search")
+                .param("author", "Tolkien"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
     }
 
     @Test
@@ -85,14 +92,14 @@ class BookControllerAuthTest {
         Book book = bookRepository.findAll().iterator().next();
 
         mockMvc.perform(get("/api/books/" + book.getId()))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.title").value("The Hobbit"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("The Hobbit"));
     }
 
     @Test
     @WithMockUser
     void getBookById_withInvalidId_returns404() throws Exception {
         mockMvc.perform(get("/api/books/99999"))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 }
