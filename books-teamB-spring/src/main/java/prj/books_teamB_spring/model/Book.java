@@ -40,23 +40,23 @@ public class Book {
     @ManyToMany
     @JoinTable(
         name = "book_author",
-        joinColumns = @JoinColumn(name = "book_id"), 
-        inverseJoinColumns = @JoinColumn(name = "author_id") 
+        joinColumns = @JoinColumn(name = "book"), 
+        inverseJoinColumns = @JoinColumn(name = "author") 
     )
     private Set<Author> authors = new HashSet<>();
    
     @ManyToOne
     @JoinColumn(name = "subject_id")
-    private Subject subject; 
+    private Subject subject;
 
     @ManyToMany(mappedBy = "myBooks")  // Relation inverse avec User
     private Set<User> owners = new HashSet<>();
 
     @Column(length = 2000)
-    private String desc_txt; 
+    private String desc_txt;
     private String cover;
-    private String serie_id;
-    private String serie_pos;
+    private int serie_id;
+    private int serie_pos;
     
     /**
      * Nombre total de pages du livre (pour calculs de progression)
