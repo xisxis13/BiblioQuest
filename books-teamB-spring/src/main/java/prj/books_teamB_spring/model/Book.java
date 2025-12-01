@@ -56,8 +56,8 @@ public class Book {
     @Column(length = 2000)
     private String desc_txt;
     private String cover;
-    private String serie_id;
-    private String serie_pos;
+    private Integer serie_id;
+    private Integer serie_pos;
     
     /**
      * Nombre total de pages du livre (pour calculs de progression)

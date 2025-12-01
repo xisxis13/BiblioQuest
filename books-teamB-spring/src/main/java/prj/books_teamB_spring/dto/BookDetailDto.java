@@ -13,8 +13,8 @@ public class BookDetailDto {
 
     private SubjectDto subject;  // DTO du sujet, pas javax.security.auth.Subject
 
-    private String serie_id;
-    private String serie_pos;
+    private int serie_id;
+    private int serie_pos;
 
     private List<AuthorDto> authors;
 
