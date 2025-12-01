@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import prj.books_teamB_spring.model.Post;
@@ -22,6 +23,12 @@ import prj.books_teamB_spring.service.PostService;
 @SpringBootTest
 @Transactional
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@TestPropertySource(properties = {
+        "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
+        "spring.datasource.driverClassName=org.h2.Driver",
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "spring.sql.init.mode=never"
+})
 class PostServiceTest {
 
     @Autowired
@@ -41,11 +48,11 @@ class PostServiceTest {
         userRepository.deleteAll();
 
         testUser = new User();
-    testUser.setUsername("testuser_" + System.currentTimeMillis());
-    testUser.setEmail("test_" + System.currentTimeMillis() + "@example.com");
-    testUser.setPassword("password");
-    testUser.setRole(Role.USER);
-    testUser = userRepository.save(testUser);
+        testUser.setUsername("testuser");
+        testUser.setEmail("test@example.com");
+        testUser.setPassword("password");
+        testUser.setRole(Role.USER);
+        testUser = userRepository.save(testUser);
     }
 
     @Test
