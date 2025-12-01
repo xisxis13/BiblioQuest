@@ -1,6 +1,5 @@
 package prj.books_teamB_spring;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
@@ -23,8 +22,12 @@ import prj.books_teamB_spring.repository.AuthorRepository;
 import prj.books_teamB_spring.repository.BookRepository;
 
 @DataJpaTest
-@TestPropertySource(properties = "spring.jpa.defer-datasource-initialization=true")
-// On nettoie tout entre chaque test pour éviter les effets de bord
+@TestPropertySource(properties = {
+        "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
+        "spring.datasource.driverClassName=org.h2.Driver",
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "spring.sql.init.mode=never"
+})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BookRepositoryTest {
 
@@ -42,7 +45,7 @@ class BookRepositoryTest {
 
     @BeforeEach
     void fixIds() {
-        
+
         try {
             jdbcTemplate.execute("ALTER SEQUENCE author_seq RESTART WITH 100");
             jdbcTemplate.execute("ALTER SEQUENCE book_seq RESTART WITH 1000");
@@ -66,14 +69,14 @@ class BookRepositoryTest {
 
         Subject subject = new Subject();
         subject.setText("Drame");
-        Subject savedSubject = entityManager.persistFlushFind(subject); 
+        Subject savedSubject = entityManager.persistFlushFind(subject);
 
         Book book = new Book();
         book.setTitle("Les Misérables");
-        book.setDesc_txt("Une histoire poignante..."); 
+        book.setDesc_txt("Une histoire poignante...");
         book.setCreated_at(LocalDateTime.now());
         book.setUpdated_at(LocalDateTime.now());
-        
+
         book.setSubject(savedSubject);
 
         Set<Author> authors = new HashSet<>();
@@ -82,7 +85,7 @@ class BookRepositoryTest {
 
         Book savedBook = bookRepository.save(book);
         assertThat(savedBook.getId()).isGreaterThan(0);
-        
+
         assertThat(savedBook.getSubject()).isNotNull();
         assertThat(savedBook.getSubject().getText()).isEqualTo("Drame");
 
@@ -90,5 +93,4 @@ class BookRepositoryTest {
         assertThat(savedBook.getAuthors().iterator().next().getLastName()).isEqualTo("Hugo");
     }
 
-    
 }
