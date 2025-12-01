@@ -8,6 +8,8 @@ import MyLibrary from '../views/MyLibrary.vue'
 import ReadingTracker from '../views/ReadingTracker.vue'
 import Catalogue from '../views/Catalogue.vue'
 import BookDetail from '../views/BookDetail.vue'
+import BookAdd from '../views/BookAdd.vue'
+import BookEdit from '../views/BookEdit.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,6 +42,18 @@ const router = createRouter({
       path: '/catalogue',
       name: 'catalogue',
       component: Catalogue,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/books/add',
+      name: 'book-add',
+      component: BookAdd,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/books/:id/edit',
+      name: 'book-edit',
+      component: BookEdit,
       meta: { requiresAuth: true }
     },
     {
@@ -80,14 +94,14 @@ const router = createRouter({
 // Navigation guards
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  
+
   // Initialiser l'état d'authentification
   authStore.initializeAuth()
-  
+
   const isAuthenticated = authStore.isAuthenticated
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const requiresGuest = to.matched.some(record => record.meta.requiresGuest)
-  
+
   if (requiresAuth && !isAuthenticated) {
     // Rediriger vers login si authentification requise
     next({ name: 'login', query: { redirect: to.fullPath } })

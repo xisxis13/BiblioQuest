@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import prj.books_teamB_spring.model.Subject;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
