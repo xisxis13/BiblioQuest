@@ -25,47 +25,44 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)  // Utiliser seulement l'ID
-@ToString(exclude = {"authors", "subject","owners"})         // Exclure les relations
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = { "authors", "subject", "userBooks" })
 public class Book {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @EqualsAndHashCode.Include  // Inclure seulement l'ID pour equals/hashCode
-    private long id;
-    
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
+    private Long id;
+
     private String title;
 
     @ManyToMany
     @JoinTable(
         name = "book_author",
-        joinColumns = @JoinColumn(name = "book_id"), 
-        inverseJoinColumns = @JoinColumn(name = "author_id") 
+        joinColumns = @JoinColumn(name = "book"),
+        inverseJoinColumns = @JoinColumn(name = "author")
     )
     private Set<Author> authors = new HashSet<>();
-   
+
     @ManyToOne
     @JoinColumn(name = "subject_id")
-    private Subject subject; 
+    private Subject subject;
 
-    @ManyToMany(mappedBy = "myBooks")  // Relation inverse avec User
-    private Set<User> owners = new HashSet<>();
+    @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE)
+    private Set<UserBook> userBooks = new HashSet<>();
 
     @Column(length = 2000)
-    private String desc_txt; 
+    private String desc_txt;
     private String cover;
-    private String serie_id;
-    private String serie_pos;
+    private int serie_id;
+    private int serie_pos;
     
     /**
      * Nombre total de pages du livre (pour calculs de progression)
      */
     private Integer totalPages;
-    
-    /**
-     * ISBN du livre (pour identification unique)
-     */
     private String isbn;
-    
+
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 }
