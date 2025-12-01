@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import prj.books_teamB_spring.service.BookService;
  */
 @RestController
 @RequestMapping("/api/catalog")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
 public class CatalogController {
 
     private final BookService bookService;
