@@ -273,8 +273,8 @@ class BookControllerTest {
         dto.setCover("https://example.com/hobbit.jpg");
         dto.setSubject(subjectDto);
         dto.setAuthors(List.of(authorDto));
-        dto.setSerie_id("LOTR");
-        dto.setSerie_pos("1");
+        dto.setSerie_id(14);
+        dto.setSerie_pos(1);
         dto.setCreated_at(LocalDateTime.of(1937, 9, 21, 0, 0));
         dto.setUpdated_at(LocalDateTime.now());
 
@@ -290,8 +290,8 @@ class BookControllerTest {
                 .andExpect(jsonPath("$.subject.text").value("Fantasy"))
                 .andExpect(jsonPath("$.authors[0].firstName").value("J.R.R."))
                 .andExpect(jsonPath("$.authors[0].lastName").value("Tolkien"))
-                .andExpect(jsonPath("$.serie_id").value("LOTR"))
-                .andExpect(jsonPath("$.serie_pos").value("1"));
+                .andExpect(jsonPath("$.serie_id").value(14))
+                .andExpect(jsonPath("$.serie_pos").value(1));
     }
 
     @Test

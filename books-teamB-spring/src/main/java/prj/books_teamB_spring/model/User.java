@@ -45,7 +45,7 @@ public class User {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
-    @Column(unique = true, nullable = false)
+
     private String email;
 
     @NotBlank(message = "Password is required")
