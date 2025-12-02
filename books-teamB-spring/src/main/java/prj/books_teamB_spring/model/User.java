@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
-@Table(name = "user")
+@Table(name = "\"user\"")
 @Getter
 @Setter
 @ToString(exclude = { "userBooks" })
