@@ -48,23 +48,22 @@ export const authService = {
       console.log('AuthService: Calling backend with:', loginData)
       const response = await api.post('/auth/login', loginData)
       console.log('AuthService: Backend response:', response.data)
-      
+
       const user = response.data
-      
+
       // Créer un token de session qui expire dans 15 minutes
       const sessionToken = {
         token: 'session_' + Date.now(),
         expiresAt: Date.now() + (15 * 60 * 1000) // 15 minutes
       }
-      
       // Stocker les données d'authentification
       localStorage.setItem('auth_token', JSON.stringify(sessionToken))
       localStorage.setItem('auth_user', JSON.stringify(user))
-      
+      localStorage.setItem('currentUsername', user.username)
       return { user, token: sessionToken.token }
     } catch (error) {
       console.error('AuthService login error:', error)
-      
+
       // Gérer les erreurs spécifiques du backend
       if (error.response?.status === 401 && error.response?.data) {
         const errorData = error.response.data
@@ -76,7 +75,7 @@ export const authService = {
           throw new Error(errorData)
         }
       }
-      
+
       // Erreur générique
       throw new Error('Erreur de connexion. Vérifiez vos identifiants.')
     }
@@ -87,21 +86,21 @@ export const authService = {
     try {
       const response = await api.post('/auth/register', userData)
       const user = response.data
-      
+
       // Créer un token de session qui expire dans 15 minutes
       const sessionToken = {
         token: 'session_' + Date.now(),
         expiresAt: Date.now() + (15 * 60 * 1000) // 15 minutes
       }
-      
+
       // Stocker les données d'authentification
       localStorage.setItem('auth_token', JSON.stringify(sessionToken))
       localStorage.setItem('auth_user', JSON.stringify(user))
-      
+
       return { user, token: sessionToken.token }
     } catch (error) {
       console.error('AuthService register error:', error)
-      
+
       // Gérer les erreurs spécifiques du backend
       if (error.response?.status === 400 && error.response?.data) {
         const errorData = error.response.data
@@ -113,7 +112,7 @@ export const authService = {
           throw new Error(errorData)
         }
       }
-      
+
       // Erreur générique
       throw new Error('Erreur lors de l\'inscription. Veuillez réessayer.')
     }
@@ -129,13 +128,13 @@ export const authService = {
   isAuthenticated() {
     const tokenData = this.getToken()
     if (!tokenData) return false
-    
+
     // Vérifier si le token n'est pas expiré
     if (tokenData.expiresAt && Date.now() > tokenData.expiresAt) {
       this.logout()
       return false
     }
-    
+
     return true
   },
 
@@ -143,7 +142,7 @@ export const authService = {
   getToken() {
     const token = localStorage.getItem('auth_token')
     if (!token) return null
-    
+
     try {
       return JSON.parse(token)
     } catch {

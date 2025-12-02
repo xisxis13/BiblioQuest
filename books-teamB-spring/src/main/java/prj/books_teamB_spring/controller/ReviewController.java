@@ -49,7 +49,7 @@ public class ReviewController {
             @PathVariable Long bookId,
             @RequestHeader("X-Username") String username,
             @RequestBody ReviewRequest request) {
-        
+                System.out.println("Username: " + username);
         ReviewDto review = reviewService.addOrUpdateReview(
                 username, 
                 bookId, 

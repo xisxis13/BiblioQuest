@@ -25,6 +25,7 @@ const reviewsService = {
   async addOrUpdateReview(bookId, reviewData) {
     try {
       const username = getCurrentUsername()
+      console.log("review username: ", username)
       const response = await axios.post(`${API_BASE_URL}/books/${bookId}/reviews`, reviewData, {
         headers: {
           'X-Username': username,
