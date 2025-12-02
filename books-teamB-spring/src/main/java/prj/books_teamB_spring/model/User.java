@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -42,6 +42,21 @@ public class User {
     @NotNull(message = "Role is required")
     @Column(nullable = false)
     private Role role;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    @Column(name = "last_activity_at")
+    private java.time.LocalDateTime lastActivityAt;
+
+    @Column(name = "books_count")
+    private Integer booksCount;
+
+    @Column(name = "followers_count")
+    private Integer followersCount;
+
+    @Column(name = "following_count")
+    private Integer followingCount;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<UserBook> userBooks = new HashSet<>();

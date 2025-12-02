@@ -91,7 +91,9 @@ public class ReviewService {
             userBook.setUser(user);
             userBook.setBook(book);
             userBook.setStatus(ReadingStatus.COMPLETED);
-            userBook.setProgress(book.getTotalPages());
+            // Définir le progrès : utiliser totalPages si disponible, sinon 0
+            Integer totalPages = book.getTotalPages();
+            userBook.setProgress(totalPages != null ? totalPages : 0);
         }
 
         // Mettre à jour la note et le commentaire
