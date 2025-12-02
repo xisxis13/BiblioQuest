@@ -58,11 +58,11 @@ public class UserBookRelationTest {
         book2.setCreated_at(LocalDateTime.now());
         book2.setUpdated_at(LocalDateTime.now());
 
-        user = new User();
-        user.setUsername("john_doe");
-        user.setEmail("john@example.com");
-        user.setPassword("password123");
-        user.setRole(Role.USER);
+        user = new User(
+            "john_doe",
+            "john@example.com",
+            "password123",
+            Role.USER);
     }
 
     @Test

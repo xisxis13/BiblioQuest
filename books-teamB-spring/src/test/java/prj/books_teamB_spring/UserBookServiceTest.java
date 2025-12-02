@@ -62,11 +62,11 @@ class UserBookServiceTest {
         testSubject.setText("Fantasy");
         testSubject = subjectRepository.save(testSubject);
 
-        testUser = new User();
-        testUser.setUsername("alice");
-        testUser.setEmail("alice@example.com");
-        testUser.setPassword("password123");
-        testUser.setRole(Role.USER);
+        testUser = new User(
+            "alice",
+            "alice@example.com",
+            "password123",
+            Role.USER);
         testUser = userRepository.save(testUser);
     }
 
@@ -263,11 +263,11 @@ class UserBookServiceTest {
 
     @Test
     void addBookForUser_multipleUsers_isolatesCollections() {
-        User bob = new User();
-        bob.setUsername("bob");
-        bob.setEmail("bob@example.com");
-        bob.setPassword("password456");
-        bob.setRole(Role.USER);
+        User bob = new User(
+            "bob",
+            "bob@example.com",
+            "password456",
+            Role.USER);
         bob = userRepository.save(bob);
 
         Book aliceBook = new Book();
@@ -297,11 +297,11 @@ class UserBookServiceTest {
 
     @Test
     void addBookForUser_sameBookToDifferentUsers_createsMultipleInstances() {
-        User bob = new User();
-        bob.setUsername("bob");
-        bob.setEmail("bob@example.com");
-        bob.setPassword("password456");
-        bob.setRole(Role.USER);
+         User bob = new User(
+            "bob",
+            "bob@example.com",
+            "password456",
+            Role.USER);
         userRepository.save(bob);
 
         Book book1 = new Book();

@@ -11,13 +11,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @ToString(exclude = { "userBooks" })
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -42,6 +41,13 @@ public class User {
     @NotNull(message = "Role is required")
     @Column(nullable = false)
     private Role role;
+
+    public User(String username, String email, String password, Role role){
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<UserBook> userBooks = new HashSet<>();

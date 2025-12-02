@@ -58,11 +58,12 @@ public class AuthController {
         }
         
         // Créer nouveau user
-        User newUser = new User();
-        newUser.setUsername(request.getUsername());
-        newUser.setEmail(request.getEmail());
-        newUser.setPassword(request.getPassword());
-        newUser.setRole(Role.USER);
+        User newUser = new User(
+            request.username,
+            request.email,
+            request.password,
+            Role.USER
+        );
         
         User savedUser = userRepository.save(newUser);
         return ResponseEntity.ok(new LoginResponse(savedUser.getUsername(), savedUser.getRole().toString()));
