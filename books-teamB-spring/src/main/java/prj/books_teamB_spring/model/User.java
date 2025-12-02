@@ -42,6 +42,21 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    @Column(name = "last_activity_at")
+    private java.time.LocalDateTime lastActivityAt;
+
+    @Column(name = "books_count")
+    private Integer booksCount;
+
+    @Column(name = "followers_count")
+    private Integer followersCount;
+
+    @Column(name = "following_count")
+    private Integer followingCount;
+
     public User(String username, String email, String password, Role role){
         this.username = username;
         this.email = email;
