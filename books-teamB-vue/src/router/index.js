@@ -3,7 +3,6 @@ import { useAuthStore } from '@/stores/authStore'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
-import Library from '../views/Library.vue'
 import MyLibrary from '../views/MyLibrary.vue'
 import ReadingTracker from '../views/ReadingTracker.vue'
 import Catalogue from '../views/Catalogue.vue'
@@ -23,8 +22,7 @@ const router = createRouter({
     {
       path: '/library',
       name: 'library',
-      component: Library,
-      meta: { requiresAuth: true }
+      redirect: '/my-library'
     },
     {
       path: '/my-library',
@@ -61,11 +59,6 @@ const router = createRouter({
       name: 'book-detail',
       component: BookDetail,
       meta: { requiresAuth: true }
-    },
-    {
-      path: '/marketplace',
-      name: 'marketplace',
-      redirect: '/library'
     },
     {
       path: '/profile',
