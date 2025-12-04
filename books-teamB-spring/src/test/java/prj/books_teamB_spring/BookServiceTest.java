@@ -38,12 +38,12 @@ class BookServiceTest {
 
     @BeforeEach
     void setUp() {
-        alice = new User();
-        alice.setId(1L);
-        alice.setUsername("alice");
-        alice.setEmail("alice@example.com");
-        alice.setPassword("pwd");
-        alice.setRole(Role.USER);
+        alice = new User(
+            "alice",
+            "alice@example.com",
+            "pwd",
+            Role.USER
+        );
         alice.setUserBooks(new HashSet<>());
     }
 

@@ -47,11 +47,12 @@ class PostServiceTest {
         postRepository.deleteAll();
         userRepository.deleteAll();
 
-        testUser = new User();
-        testUser.setUsername("testuser");
-        testUser.setEmail("test@example.com");
-        testUser.setPassword("password");
-        testUser.setRole(Role.USER);
+        testUser = new User(
+            "testuser",
+            "test@example.com",
+            "password",
+            Role.USER
+        );
         testUser = userRepository.save(testUser);
     }
 

@@ -31,13 +31,11 @@ class UserControllerTest {
 
         @Test
         void getCurrentUser_withValidUsername_returnsUserProfile() throws Exception {
-                User user = new User();
-                user.setId(1L);
-                user.setUsername("alice");
-                user.setEmail("alice@example.com");
-                user.setPassword("hashed_password");
-                user.setRole(Role.USER);
-
+                User user = new User(
+                        "alice",
+                        "alice@example.com",
+                        "hashed_password",
+                        Role.USER);
                 when(userService.requireUser("alice")).thenReturn(user);
 
                 mvc.perform(get("/api/users/me")
@@ -51,13 +49,11 @@ class UserControllerTest {
 
         @Test
         void getCurrentUser_withAdminRole_returnsAdminProfile() throws Exception {
-                User admin = new User();
-                admin.setId(2L);
-                admin.setUsername("admin");
-                admin.setEmail("admin@example.com");
-                admin.setPassword("admin_password");
-                admin.setRole(Role.ADMIN);
-
+                User admin = new User(
+                        "admin",
+                        "admin@example.com",
+                        "admin_password",
+                        Role.ADMIN);
                 when(userService.requireUser("admin")).thenReturn(admin);
 
                 mvc.perform(get("/api/users/me")
@@ -108,13 +104,11 @@ class UserControllerTest {
 
         @Test
         void getCurrentUser_withSpecialCharactersInUsername_returnsUser() throws Exception {
-                User user = new User();
-                user.setId(3L);
-                user.setUsername("user_123");
-                user.setEmail("user123@example.com");
-                user.setPassword("password");
-                user.setRole(Role.USER);
-
+                User user = new User(
+                        "user_123", 
+                        "user123@example.com", 
+                        "password", 
+                        Role.USER);
                 when(userService.requireUser("user_123")).thenReturn(user);
 
                 mvc.perform(get("/api/users/me")
@@ -125,12 +119,11 @@ class UserControllerTest {
 
         @Test
         void getCurrentUser_multipleRequests_returnsConsistentData() throws Exception {
-                User user = new User();
-                user.setId(4L);
-                user.setUsername("bob");
-                user.setEmail("bob@example.com");
-                user.setPassword("password");
-                user.setRole(Role.USER);
+                User user = new User(
+                        "bob", 
+                        "bob@example.com", 
+                        "password", 
+                        Role.USER);
 
                 when(userService.requireUser("bob")).thenReturn(user);
 
@@ -148,13 +141,11 @@ class UserControllerTest {
 
         @Test
         void getCurrentUser_caseInsensitiveUsername_shouldRespectExactCase() throws Exception {
-                User user = new User();
-                user.setId(5L);
-                user.setUsername("Alice");
-                user.setEmail("alice@example.com");
-                user.setPassword("password");
-                user.setRole(Role.USER);
-
+                User user = new User(
+                "Alice", 
+                "alice@example.com", 
+                "password", 
+                Role.USER);
                 when(userService.requireUser("Alice")).thenReturn(user);
 
                 mvc.perform(get("/api/users/me")
@@ -166,13 +157,11 @@ class UserControllerTest {
         @Test
         void getCurrentUser_longUsername_returnsUser() throws Exception {
                 String longUsername = "a".repeat(50);
-                User user = new User();
-                user.setId(6L);
-                user.setUsername(longUsername);
-                user.setEmail("long@example.com");
-                user.setPassword("password");
-                user.setRole(Role.USER);
-
+                User user = new User(
+                        longUsername,
+                        "long@example.com", 
+                        "password", 
+                        Role.USER);
                 when(userService.requireUser(longUsername)).thenReturn(user);
 
                 mvc.perform(get("/api/users/me")

@@ -23,11 +23,11 @@ class UserValidationTest {
 
   @Test
   void valid_user_should_pass() {
-    User u = new User();
-    u.setUsername("alice");
-    u.setEmail("alice@example.com");
-    u.setPassword("$2a$10$hash");
-    u.setRole(Role.USER);
+    User u = new User(
+      "alice",
+      "alice@example.com",
+      "$2a$10$hash",
+      Role.USER);
 
     Set<ConstraintViolation<User>> violations = validator.validate(u);
     assertTrue(violations.isEmpty(), () -> "Violations: " + violations);

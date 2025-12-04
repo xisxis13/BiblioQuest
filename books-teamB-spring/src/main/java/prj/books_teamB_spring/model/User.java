@@ -11,13 +11,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "\"user\"")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @ToString(exclude = { "userBooks" })
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -42,6 +41,28 @@ public class User {
     @NotNull(message = "Role is required")
     @Column(nullable = false)
     private Role role;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    @Column(name = "last_activity_at")
+    private java.time.LocalDateTime lastActivityAt;
+
+    @Column(name = "books_count")
+    private Integer booksCount;
+
+    @Column(name = "followers_count")
+    private Integer followersCount;
+
+    @Column(name = "following_count")
+    private Integer followingCount;
+
+    public User(String username, String email, String password, Role role){
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<UserBook> userBooks = new HashSet<>();

@@ -120,44 +120,15 @@
 
         <!-- Reviews Section -->
         <div class="bg-white rounded-xl shadow-lg p-8">
-          <div class="mb-6">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Avis des lecteurs</h2>
-            <p v-if="reviewStats" class="text-gray-600">
-              {{ reviewStats.totalReviews }} {{ reviewStats.totalReviews > 1 ? 'avis' : 'avis' }} sur ce livre
-            </p>
-          </div>
-
-          <!-- Reviews List Placeholder -->
-          <div class="space-y-6">
-            <!-- Sample Review (à remplacer par le composant ReviewsList) -->
-            <div class="border-b border-gray-200 pb-6 last:border-b-0">
-              <div class="flex items-start gap-4">
-                <div class="w-10 h-10 bg-[#8B4513] rounded-full flex items-center justify-center text-white font-medium text-sm">
-                  U
-                </div>
-                <div class="flex-1">
-                  <div class="flex items-center gap-2 mb-2">
-                    <span class="font-medium text-gray-900">Utilisateur</span>
-                    <div class="flex text-yellow-400 text-sm">
-                      <svg v-for="star in 5" :key="star" class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    </div>
-                    <span class="text-sm text-gray-500">Il y a 2 jours</span>
-                  </div>
-                  <p class="text-gray-700">
-                    Les avis des utilisateurs apparaîtront ici une fois le composant ReviewsList implémenté.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Add Review Form Placeholder -->
-          <div class="mt-8 pt-6 border-t border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Donnez votre avis</h3>
-            <p class="text-gray-600">Le formulaire d'avis sera implémenté ici avec le composant ReviewForm.</p>
-          </div>
+          <ReviewsList
+            :book-id="parseInt(book.id)"
+            :reviews="reviews"
+            :loading="reviewsLoading"
+            @add-review="handleAddReview"
+            @update-review="handleUpdateReview"
+            @delete-review="handleDeleteReview"
+            @refresh-reviews="loadReviews"
+          />
         </div>
       </div>
     </div>
@@ -167,20 +138,25 @@
 <script>
 import HeaderComponent from '@/components/HeaderComponent.vue'
 import Sidebar from '@/components/Sidebar.vue'
+import ReviewsList from '@/components/ReviewsList.vue'
 import booksService from '@/services/booksService'
+import reviewsService from '@/services/reviewsService'
 
 export default {
   name: 'BookDetail',
   components: {
     HeaderComponent,
-    Sidebar
+    Sidebar,
+    ReviewsList
   },
   data() {
     return {
       book: null,
       loading: true,
       error: null,
-      reviewStats: null
+      reviewStats: null,
+      reviews: [],
+      reviewsLoading: false
     }
   },
   async mounted() {
@@ -203,17 +179,62 @@ export default {
         const bookId = this.$route.params.id
         this.book = await booksService.getBookById(bookId)
         
-        // TODO: Charger les statistiques des avis
-        this.reviewStats = {
-          averageRating: 4.2,
-          totalReviews: 8
-        }
+        // Charger les avis
+        await this.loadReviews()
         
       } catch (error) {
         console.error('Erreur lors du chargement du livre:', error)
         this.error = 'Impossible de charger les détails du livre'
       } finally {
         this.loading = false
+      }
+    },
+
+    async loadReviews() {
+      try {
+        this.reviewsLoading = true
+        const bookId = parseInt(this.$route.params.id)
+        this.reviews = await reviewsService.getReviewsForBook(bookId)
+        this.reviewStats = reviewsService.calculateReviewStats(this.reviews)
+      } catch (error) {
+        console.error('Erreur lors du chargement des avis:', error)
+        this.reviews = []
+        this.reviewStats = { averageRating: 0, totalReviews: 0 }
+      } finally {
+        this.reviewsLoading = false
+      }
+    },
+
+    async handleAddReview(reviewData) {
+      try {
+        const bookId = parseInt(this.$route.params.id)
+        await reviewsService.addOrUpdateReview(bookId, reviewData)
+        await this.loadReviews() // Recharger les avis
+      } catch (error) {
+        console.error('Erreur lors de l\'ajout de l\'avis:', error)
+        alert('Erreur lors de l\'ajout de votre avis')
+      }
+    },
+
+    async handleUpdateReview(reviewData) {
+      try {
+        const bookId = parseInt(this.$route.params.id)
+        await reviewsService.addOrUpdateReview(bookId, reviewData)
+        await this.loadReviews() // Recharger les avis
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour de l\'avis:', error)
+        alert('Erreur lors de la mise à jour de votre avis')
+      }
+    },
+
+    async handleDeleteReview() {
+      try {
+        const bookId = parseInt(this.$route.params.id)
+        await reviewsService.deleteReview(bookId)
+        await this.loadReviews() // Recharger les avis
+      } catch (error) {
+        console.error('Erreur lors de la suppression de l\'avis:', error)
+        alert('Erreur lors de la suppression de votre avis')
       }
     },
     
