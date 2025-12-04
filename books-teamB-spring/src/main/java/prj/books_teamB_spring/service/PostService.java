@@ -2,13 +2,16 @@ package prj.books_teamB_spring.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import prj.books_teamB_spring.model.*;
+import prj.books_teamB_spring.model.Post;
+import prj.books_teamB_spring.model.User;
 import prj.books_teamB_spring.repository.PostRepository;
 
 @Service
 public class PostService {
+
     private final PostRepository postRepository;
     private final UserService userService;
 
@@ -16,9 +19,10 @@ public class PostService {
         this.postRepository = postRepository;
         this.userService = userService;
     }
-    public void addPost(Post post) {
+
+    public Post addPost(Post post) {
         post.setCreatedAt(LocalDateTime.now());
-        postRepository.save(post);
+        return postRepository.save(post);
     }
 
     public List<Post> getAllPosts() {
@@ -44,5 +48,4 @@ public class PostService {
         }
         postRepository.deleteById(postId);
     }
-
 }
