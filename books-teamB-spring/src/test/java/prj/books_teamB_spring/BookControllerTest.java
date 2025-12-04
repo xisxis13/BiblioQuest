@@ -273,8 +273,8 @@ class BookControllerTest {
         dto.setCover("https://example.com/hobbit.jpg");
         dto.setSubject(subjectDto);
         dto.setAuthors(List.of(authorDto));
-        dto.setSerie_id(14);
-        dto.setSerie_pos(1);
+        dto.setSerie_id("14");
+        dto.setSerie_pos("1");
         dto.setCreated_at(LocalDateTime.of(1937, 9, 21, 0, 0));
         dto.setUpdated_at(LocalDateTime.now());
 
