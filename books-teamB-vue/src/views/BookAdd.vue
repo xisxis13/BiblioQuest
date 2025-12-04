@@ -301,6 +301,11 @@ export default {
 
         await booksService.addBook(createdBook)
         this.successMessage = 'Les informations du livre ont bien été enregistrées.'
+        
+        // Rediriger vers le catalogue après un court délai pour montrer le message de succès
+        setTimeout(() => {
+          this.$router.push({ name: 'catalogue' })
+        }, 1500)
       } catch (error) {
         console.error('Erreur lors de la création du livre :', error)
         this.error = "Impossible d'ajouter le livre."

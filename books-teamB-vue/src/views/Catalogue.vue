@@ -4,9 +4,24 @@
     <Sidebar />
     <div class="ml-44 pt-20 px-6 py-8">
       <!-- Page Header -->
-      <div class="mb-8">
-        <h1 class="text-4xl font-bold text-[#8B4513] mb-2">Catalogue</h1>
-        <p class="text-gray-600">Explorer notre catalogue de plus de 70 livres</p>
+      <div class="mb-8 flex items-center justify-between">
+        <div>
+          <h1 class="text-4xl font-bold text-[#8B4513] mb-2">Catalogue</h1>
+          <p class="text-gray-600">Explorer notre catalogue de plus de 70 livres</p>
+        </div>
+        
+        <!-- Publish Book Button -->
+        <div class="flex items-center">
+          <button 
+            @click="goToPublishBook"
+            class="flex items-center gap-2 px-6 py-3 bg-[#8B4513] hover:bg-[#A0522D] text-white font-medium rounded-xl transition-colors duration-200 shadow-md hover:shadow-lg"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Publier un livre
+          </button>
+        </div>
       </div>
 
       <!-- Search Bar -->
@@ -59,17 +74,6 @@
 
       <!-- Books Grid -->
       <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        <!-- Empty State -->
-        <div v-if="filteredBooks.length === 0" class="col-span-full flex justify-center items-center py-12">
-          <div class="text-center">
-            <svg class="h-12 w-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-            <p class="text-gray-500 mb-2">Aucun livre trouvé</p>
-            <p class="text-sm text-gray-400">Essayez de modifier vos filtres de recherche</p>
-          </div>
-        </div>
-
         <!-- Empty State -->
         <div v-if="filteredBooks.length === 0" class="col-span-full flex justify-center items-center py-12">
           <div class="text-center">
@@ -284,6 +288,10 @@ export default {
     
     goToBookDetail(bookId) {
       this.$router.push({ name: 'book-detail', params: { id: bookId } })
+    },
+
+    goToPublishBook() {
+      this.$router.push({ name: 'book-add' })
     }
   }
 }
