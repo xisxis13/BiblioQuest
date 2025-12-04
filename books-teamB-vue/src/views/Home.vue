@@ -2,97 +2,127 @@
   <div class="min-h-screen bg-[#F5F1ED]">
     <HeaderComponent />
     <Sidebar />
+    <div class="ml-44 pt-20 px-6 py-8">
+      <div class="text-center py-12 mb-8">
+        <h1 class="text-4xl font-bold text-[#8B4513] mb-4">
+          Bienvenue <span class="text-orange-500">{{ authStore.getUser?.username || 'user' }}</span> !
+        </h1>
+        <p class="text-gray-600">Vous êtes maintenant connecté</p>
+      </div>
 
-    <div class="ml-44 pt-20 px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-        <div class="lg:col-span-2 flex flex-col h-[calc(100vh-7rem)]">
-
-          <div class="pb-4 bg-[#F5F1ED] sticky top-20 z-10">
-            <h2 class="text-3xl font-semibold text-[#8B4513] text-left">
-              Poste
-            </h2>
-          </div>
-
-          <div class="flex-1 overflow-y-auto pr-2 space-y-4">
-
-            <p v-if="loadingPosts" class="text-center text-gray-400">
-              Chargement des posts...
-            </p>
-
-            <p v-else-if="posts.length === 0" class="text-center text-gray-500">
-              les postes apparaîtront ici
-            </p>
-
-            <article
-              v-else
-              v-for="post in posts"
-              :key="post.id"
-              class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm"
-            >
-              <p class="text-gray-800 whitespace-pre-line">
-                {{ post.content }}
-              </p>
-              <p class="text-xs text-gray-400 mt-2">
-                Publié le {{ formatDate(post.createdAt || post.created_at) }}
-              </p>
-            </article>
-
-          </div>
-        </div>
-
-
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-md p-6 h-fit mt-16">
-          <h2 class="text-2xl font-semibold text-[#8B4513] mb-3 text-center">
-            Créer un post
-          </h2>
-
-          <p class="text-sm text-gray-600 mb-4 text-center">
-            Partagez votre avis ou expérience.
-          </p>
-
-          <form @submit.prevent="onSubmit" class="space-y-4">
-
-            <input
-              v-model="newPost.title"
-              type="text"
-              placeholder="Titre du post"
-              class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm
-                     focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
-            />
-
-            <textarea
-              v-model="newPost.content"
-              placeholder="Écrivez votre post ici..."
-              class="w-full h-40 border border-gray-300 rounded-xl px-3 py-2 text-sm
-                     resize-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
-            ></textarea>
-
-            <div class="text-right">
-              <button
-                type="submit"
-                class="px-6 py-2 rounded-full text-sm font-semibold text-white bg-orange-500
-                       hover:bg-orange-600 transition-all shadow-sm"
-                :disabled="!newPost.content || saving"
-              >
-                Publier
-              </button>
+      <!-- Quick Actions Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <router-link
+          to="/my-library"
+          class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-all group"
+        >
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+              <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
             </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-1">Ma Bibliothèque</h3>
+              <p class="text-sm text-gray-600">Gérez vos livres et progression</p>
+            </div>
+          </div>
+        </router-link>
 
-          </form>
-        </div>
+        <router-link
+          to="/reading-tracker"
+          class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-all group"
+        >
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+              <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-1">Suivi de Lecture</h3>
+              <p class="text-sm text-gray-600">Enregistrez vos sessions</p>
+            </div>
+          </div>
+        </router-link>
 
+        <router-link
+          to="/catalogue"
+          class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-all group"
+        >
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+              <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-1">Catalogue</h3>
+              <p class="text-sm text-gray-600">Explorez tous les livres</p>
+            </div>
+          </div>
+        </router-link>
+
+        <router-link
+          to="/library"
+          class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-all group"
+        >
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+              <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-1">Bibliothèque</h3>
+              <p class="text-sm text-gray-600">Tous les livres disponibles</p>
+            </div>
+          </div>
+        </router-link>
+
+        <router-link
+          to="/marketplace"
+          class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-all group"
+        >
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+              <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-1">Marketplace</h3>
+              <p class="text-sm text-gray-600">Achetez et vendez</p>
+            </div>
+          </div>
+        </router-link>
+
+        <router-link
+          to="/profile"
+          class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-all group"
+        >
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+              <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-1">Mon Profil</h3>
+              <p class="text-sm text-gray-600">Paramètres du compte</p>
+            </div>
+          </div>
+        </router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
+import { useRouter } from 'vue-router'
 import Sidebar from '@/components/Sidebar.vue'
 import HeaderComponent from '@/components/HeaderComponent.vue'
-import postService from '@/services/postService'
 
 export default {
   name: 'HomePage',
@@ -102,78 +132,11 @@ export default {
   },
   setup() {
     const authStore = useAuthStore()
-
-    const posts = ref([])
-    const loadingPosts = ref(false)
-    const saving = ref(false)
-
-    const newPost = ref({
-      title: '',
-      content: ''
-    })
-
-    const formatDate = (value) => {
-      if (!value) return ''
-      return new Date(value).toLocaleString('fr-FR', {
-        dateStyle: 'short',
-        timeStyle: 'short'
-      })
-    }
-
-    const loadPosts = async () => {
-      loadingPosts.value = true
-      try {
-        const res = await postService.list()
-        posts.value = res.data
-      } catch (err) {
-        console.error('Erreur lors du chargement des posts :', err)
-      } finally {
-        loadingPosts.value = false
-      }
-    }
-
-    const onSubmit = async () => {
-      if (!newPost.value.content) return
-
-      saving.value = true
-      try {
-        const user = authStore.getUser
-        const userId = user && user.id ? user.id : null
-
-        const payload = {
-          content: newPost.value.title
-            ? `${newPost.value.title} — ${newPost.value.content}`
-            : newPost.value.content,
-          userId
-        }
-
-        const res = await postService.add(payload)
-
-        posts.value.unshift(res.data)
-
-        newPost.value = {
-          title: '',
-          content: ''
-        }
-      } catch (err) {
-        console.error("Erreur lors de l'envoi du post :", err)
-      } finally {
-        saving.value = false
-      }
-    }
-
-    onMounted(() => {
-      loadPosts()
-    })
+    const router = useRouter()
 
     return {
-      posts,
-      loadingPosts,
-      saving,
-      newPost,
-      onSubmit,
-      formatDate,
-      authStore
+      authStore,
+      router
     }
   }
 }

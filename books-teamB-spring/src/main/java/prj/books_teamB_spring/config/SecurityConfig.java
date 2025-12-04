@@ -18,17 +18,12 @@ public class SecurityConfig {
             .sessionManagement(session -> 
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()  
-                .requestMatchers("/api/catalog/**").permitAll()
-                .requestMatchers("/api/books/**").permitAll()
-                .requestMatchers("/api/posts/**").permitAll()
-                .requestMatchers("/api/books/add").hasRole("AUTEUR")  
-                .requestMatchers("/api/books/${id}/edit").hasRole("BIBLIOTHECAIRE")
+                .requestMatchers("/api/auth/**").permitAll()  // Routes publiques
+                .requestMatchers("/api/books/**").authenticated()  // Routes protégées
                 .anyRequest().denyAll()
             )
-            .httpBasic(basic -> {});  
+            .httpBasic(basic -> {});  // HTTP Basic pour l'instant
 
         return http.build();
     }
-
 }

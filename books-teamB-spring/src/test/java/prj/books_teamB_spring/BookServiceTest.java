@@ -44,7 +44,7 @@ class BookServiceTest {
         alice.setEmail("alice@example.com");
         alice.setPassword("pwd");
         alice.setRole(Role.USER);
-        alice.setUserBooks(new HashSet<>());
+        alice.setMyBooks(new HashSet<>());
     }
 
     @Test
@@ -83,7 +83,7 @@ class BookServiceTest {
     @Test
     void deleteBookForUser_removesFromUser() {
         Book owned = new Book(); owned.setId(11L);
-        alice.addBook(owned);
+        alice.getMyBooks().add(owned);
         when(userRepository.findByUsername("alice")).thenReturn(Optional.of(alice));
         when(bookRepository.findById(11L)).thenReturn(Optional.of(owned));
 

@@ -26,7 +26,7 @@ class UserValidationTest {
     User u = new User();
     u.setUsername("alice");
     u.setEmail("alice@example.com");
-    u.setPassword("$2a$10$hash");
+    u.setPassword("$2a$10$hash"); 
     u.setRole(Role.USER);
 
     Set<ConstraintViolation<User>> violations = validator.validate(u);
@@ -51,6 +51,6 @@ class UserValidationTest {
     assertTrue(props.contains("username"));
     assertTrue(props.contains("email"));
     assertTrue(props.contains("password"));
-    assertTrue(props.contains("role"));
+    assertTrue(props.contains("role")); 
   }
 }

@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.TestPropertySource;
 
 import prj.books_teamB_spring.model.Book;
 import prj.books_teamB_spring.model.Role;
@@ -20,12 +19,6 @@ import prj.books_teamB_spring.repository.BookRepository;
 import prj.books_teamB_spring.repository.UserRepository;
 
 @DataJpaTest
-@TestPropertySource(properties = {
-        "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
-        "spring.datasource.driverClassName=org.h2.Driver",
-        "spring.jpa.hibernate.ddl-auto=create-drop",
-        "spring.sql.init.mode=never"
-})
 public class UserBookRelationTest {
 
     @Autowired
@@ -41,23 +34,26 @@ public class UserBookRelationTest {
 
     @BeforeEach
     void setUp() {
+        // Créer un sujet
         subject = new Subject();
         subject.setText("Science-Fiction");
 
+        // Créer des livres
         book1 = new Book();
         book1.setTitle("1984");
-        book1.setDesc_txt("A dystopian novel");
+        book1.setDesc_txt("Un roman dystopique");
         book1.setSubject(subject);
         book1.setCreated_at(LocalDateTime.now());
         book1.setUpdated_at(LocalDateTime.now());
 
         book2 = new Book();
         book2.setTitle("Brave New World");
-        book2.setDesc_txt("A novel about social control");
+        book2.setDesc_txt("Un roman de contrôle social");
         book2.setSubject(subject);
         book2.setCreated_at(LocalDateTime.now());
         book2.setUpdated_at(LocalDateTime.now());
 
+        // Créer un utilisateur
         user = new User();
         user.setUsername("john_doe");
         user.setEmail("john@example.com");
@@ -65,17 +61,19 @@ public class UserBookRelationTest {
         user.setRole(Role.USER);
     }
 
+    // Test 1: Test ajout d'un livre à un utilisateur
     @Test
     void testAddBookToUser() {
         bookRepository.save(book1);
         user.addBook(book1);
         User savedUser = userRepository.save(user);
 
-        assertNotNull(savedUser.getMyBooks(), "myBooks collection must not be null");
-        assertEquals(1, savedUser.getMyBooks().size(), "User must have 1 book");
-        assertTrue(savedUser.getMyBooks().contains(book1), "The book 1984 must be in the collection");
+        assertNotNull(savedUser.getMyBooks(), "La collection myBooks ne doit pas être null");
+        assertEquals(1, savedUser.getMyBooks().size(), "L'utilisateur doit avoir 1 livre");
+        assertTrue(savedUser.getMyBooks().contains(book1), "Le livre 1984 doit être dans la collection");
     }
 
+    // Test 2: Test ajout de plusieurs livres
     @Test
     void testAddMultipleBooksToUser() {
         bookRepository.save(book1);
@@ -85,11 +83,12 @@ public class UserBookRelationTest {
         user.addBook(book2);
         User savedUser = userRepository.save(user);
 
-        assertEquals(2, savedUser.getMyBooks().size(), "User must have 2 books");
-        assertTrue(savedUser.getMyBooks().contains(book1), "Book 1 must be present");
-        assertTrue(savedUser.getMyBooks().contains(book2), "Book 2 must be present");
+        assertEquals(2, savedUser.getMyBooks().size(), "L'utilisateur doit avoir 2 livres");
+        assertTrue(savedUser.getMyBooks().contains(book1), "Le livre 1 doit être présent");
+        assertTrue(savedUser.getMyBooks().contains(book2), "Le livre 2 doit être présent");
     }
 
+    // Test 3: Test suppression d'un livre d'un utilisateur
     @Test
     void testRemoveBookFromUser() {
         bookRepository.save(book1);
@@ -99,16 +98,17 @@ public class UserBookRelationTest {
         user.addBook(book2);
         User savedUser = userRepository.save(user);
 
-        assertEquals(2, savedUser.getMyBooks().size(), "User must have 2 books initially");
+        assertEquals(2, savedUser.getMyBooks().size(), "L'utilisateur doit avoir 2 livres initialement");
 
         user.removeBook(book1);
         savedUser = userRepository.save(user);
 
-        assertEquals(1, savedUser.getMyBooks().size(), "User must have 1 book after removal");
-        assertFalse(savedUser.getMyBooks().contains(book1), "Book 1984 must no longer be present");
-        assertTrue(savedUser.getMyBooks().contains(book2), "Book 2 must still be present");
+        assertEquals(1, savedUser.getMyBooks().size(), "L'utilisateur doit avoir 1 livre après suppression");
+        assertFalse(savedUser.getMyBooks().contains(book1), "Le livre 1984 ne doit plus être présent");
+        assertTrue(savedUser.getMyBooks().contains(book2), "Le livre 2 doit toujours être présent");
     }
 
+    // Test 4: Test vérification si l'utilisateur possède un livre
     @Test
     void testHasBook() {
         bookRepository.save(book1);
@@ -117,16 +117,18 @@ public class UserBookRelationTest {
         user.addBook(book1);
         User savedUser = userRepository.save(user);
 
-        assertTrue(savedUser.hasBook(book1), "User must have book 1");
-        assertFalse(savedUser.hasBook(book2), "User must not have book 2");
+        assertTrue(savedUser.hasBook(book1), "L'utilisateur doit avoir le livre 1");
+        assertFalse(savedUser.hasBook(book2), "L'utilisateur ne doit pas avoir le livre 2");
     }
 
+    // Test 5: Test hasBook avec null
     @Test
     void testHasBookWithNull() {
         User savedUser = userRepository.save(user);
-        assertFalse(savedUser.hasBook(null), "hasBook(null) must return false");
+        assertFalse(savedUser.hasBook(null), "hasBook(null) doit retourner false");
     }
 
+    // Test 6: Test récupération des livres d'un utilisateur
     @Test
     void testGetUserBooks() {
         bookRepository.save(book1);
@@ -139,15 +141,16 @@ public class UserBookRelationTest {
         long userId = savedUser.getId();
         Optional<User> retrievedUser = userRepository.findById(userId);
 
-        assertTrue(retrievedUser.isPresent(), "User must be found");
+        assertTrue(retrievedUser.isPresent(), "L'utilisateur doit être trouvé");
         Set<Book> userBooks = retrievedUser.get().getMyBooks();
-
-        assertNotNull(userBooks, "myBooks collection must not be null");
-        assertEquals(2, userBooks.size(), "User must have 2 books");
-        assertTrue(userBooks.contains(book1), "Book 1 must be in the collection");
-        assertTrue(userBooks.contains(book2), "Book 2 must be in the collection");
+        
+        assertNotNull(userBooks, "La collection myBooks ne doit pas être null");
+        assertEquals(2, userBooks.size(), "L'utilisateur doit avoir 2 livres");
+        assertTrue(userBooks.contains(book1), "Le livre 1 doit être dans la collection");
+        assertTrue(userBooks.contains(book2), "Le livre 2 doit être dans la collection");
     }
 
+    // Test 7: Test persistance de la relation en base de données
     @Test
     void testRelationPersistence() {
         bookRepository.save(book1);
@@ -155,49 +158,71 @@ public class UserBookRelationTest {
         User savedUser = userRepository.save(user);
         long userId = savedUser.getId();
 
+        // Récupérer l'utilisateur depuis la base
         Optional<User> retrievedUser = userRepository.findById(userId);
-        assertTrue(retrievedUser.isPresent(), "User must exist in database");
+        assertTrue(retrievedUser.isPresent(), "L'utilisateur doit exister en base");
 
         Set<Book> retrievedBooks = retrievedUser.get().getMyBooks();
-        assertEquals(1, retrievedBooks.size(), "User must have 1 book in database");
-
+        assertEquals(1, retrievedBooks.size(), "L'utilisateur doit avoir 1 livre en base");
+        
         Book retrievedBook = retrievedBooks.iterator().next();
-        assertEquals("1984", retrievedBook.getTitle(), "Book title must be '1984'");
+        assertEquals("1984", retrievedBook.getTitle(), "Le titre du livre doit être '1984'");
     }
 
+    // Test 8: Test ajout d'un livre null
     @Test
     void testAddNullBook() {
         User savedUser = userRepository.save(user);
-
+        
         savedUser.addBook(null);
         savedUser = userRepository.save(savedUser);
 
-        assertEquals(0, savedUser.getMyBooks().size(), "User must not have any books");
+        assertEquals(0, savedUser.getMyBooks().size(), "L'utilisateur ne doit avoir aucun livre");
     }
 
+    // Test 9: Test suppression d'un livre null
     @Test
     void testRemoveNullBook() {
         bookRepository.save(book1);
         user.addBook(book1);
         User savedUser = userRepository.save(user);
 
-        assertEquals(1, savedUser.getMyBooks().size(), "User must have 1 book");
+        assertEquals(1, savedUser.getMyBooks().size(), "L'utilisateur doit avoir 1 livre");
 
         savedUser.removeBook(null);
         savedUser = userRepository.save(savedUser);
 
-        assertEquals(1, savedUser.getMyBooks().size(), "User must still have 1 book");
+        assertEquals(1, savedUser.getMyBooks().size(), "L'utilisateur doit toujours avoir 1 livre");
     }
 
+    // Test 10: Test collections vides
     @Test
     void testEmptyBooksCollection() {
         User savedUser = userRepository.save(user);
 
-        assertNotNull(savedUser.getMyBooks(), "myBooks collection must not be null");
-        assertTrue(savedUser.getMyBooks().isEmpty(), "myBooks collection must be empty");
-        assertEquals(0, savedUser.getMyBooks().size(), "Size must be 0");
+        assertNotNull(savedUser.getMyBooks(), "La collection myBooks ne doit pas être null");
+        assertTrue(savedUser.getMyBooks().isEmpty(), "La collection myBooks doit être vide");
+        assertEquals(0, savedUser.getMyBooks().size(), "La taille doit être 0");
     }
 
+    // Test 11: Test relation bidirectionnelle
+    @Test
+    void testBidirectionalRelation() {
+        bookRepository.save(book1);
+        user.addBook(book1);
+        User savedUser = userRepository.save(user);
+
+        long bookId = book1.getId();
+        Optional<Book> retrievedBook = bookRepository.findById(bookId);
+
+        assertTrue(retrievedBook.isPresent(), "Le livre doit exister en base");
+        Set<User> bookOwners = retrievedBook.get().getOwners();
+
+        assertNotNull(bookOwners, "La collection owners ne doit pas être null");
+        assertEquals(1, bookOwners.size(), "Le livre doit être possédé par 1 utilisateur");
+    }
+
+    // Test 12: Test suppression d'un utilisateur avec livres
     @Test
     void testDeleteUserWithBooks() {
         bookRepository.save(book1);
@@ -208,17 +233,18 @@ public class UserBookRelationTest {
         User savedUser = userRepository.save(user);
 
         long userId = savedUser.getId();
-        assertEquals(2, savedUser.getMyBooks().size(), "User must have 2 books");
+        assertEquals(2, savedUser.getMyBooks().size(), "L'utilisateur doit avoir 2 livres");
 
         userRepository.deleteById(userId);
 
         Optional<User> deletedUser = userRepository.findById(userId);
-        assertTrue(deletedUser.isEmpty(), "User must be deleted");
-
+        assertTrue(deletedUser.isEmpty(), "L'utilisateur doit être supprimé");
+        
+        // Vérifier que les livres existent toujours
         Optional<Book> book1Check = bookRepository.findById(book1.getId());
         Optional<Book> book2Check = bookRepository.findById(book2.getId());
-
-        assertTrue(book1Check.isPresent(), "Book 1 must still exist");
-        assertTrue(book2Check.isPresent(), "Book 2 must still exist");
+        
+        assertTrue(book1Check.isPresent(), "Le livre 1 doit toujours exister");
+        assertTrue(book2Check.isPresent(), "Le livre 2 doit toujours exister");
     }
 }

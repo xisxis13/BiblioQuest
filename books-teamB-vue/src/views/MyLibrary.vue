@@ -190,10 +190,10 @@
         </svg>
         <p class="text-muted-foreground mb-4">Aucun livre dans cette catégorie</p>
         <router-link
-          to="/catalogue"
+          to="/library"
           class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-colors"
         >
-          Explorer le Catalogue
+          Explorer la Bibliothèque
         </router-link>
       </div>
     </div>

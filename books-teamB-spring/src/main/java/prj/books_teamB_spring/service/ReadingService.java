@@ -55,6 +55,7 @@ public class ReadingService {
         return sessionRepository.findByUserIdAndBookId(userId, bookId);
     }
 
+    // Statistiques
     public Long getTotalReadingTime(Long userId) {
         return sessionRepository.getTotalReadingTimeByUserId(userId);
     }

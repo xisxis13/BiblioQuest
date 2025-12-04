@@ -32,7 +32,6 @@ public class UserBookService {
 
     /**
      * Récupère un utilisateur par son username
-     * 
      * @throws ResponseStatusException si l'utilisateur n'existe pas
      */
     private User requireUser(String username) {
@@ -48,9 +47,7 @@ public class UserBookService {
      */
     public Book addBookForUser(String username, Book book) {
         User user = requireUser(username);
-
-        book.setId(null); // null force la création (INSERT) avec auto-incrément
-
+        book.setId(0L); // Force création d'une nouvelle entité
         Book saved = bookRepository.save(book);
         user.addBook(saved);
         userRepository.save(user);
