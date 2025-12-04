@@ -78,10 +78,8 @@ export default {
 
     const navItems = [
       { path: '/', label: 'Accueil', icon: 'home' },
-      { path: '/library', label: 'Library', icon: 'search' },
       { path: '/catalogue', label: 'Catalogue', icon: 'collection' },
-      { path: '/my-library', label: 'My Library', icon: 'library' },
-      { path: '/marketplace', label: 'Marketplace', icon: 'shopping' },
+      { path: '/my-library', label: 'Ma Bibliothèque', icon: 'library' },
       { path: '/profile', label: 'Profile', icon: 'user' }
     ]
 

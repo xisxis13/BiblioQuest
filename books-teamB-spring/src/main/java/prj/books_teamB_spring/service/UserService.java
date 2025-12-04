@@ -35,6 +35,11 @@ public class UserService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unknown user"));
     }
+
+    public User getUserById(long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    }
     
     // Ajoutez ici d'autres méthodes de gestion utilisateur si nécessaire :
     // - createUser(User user)

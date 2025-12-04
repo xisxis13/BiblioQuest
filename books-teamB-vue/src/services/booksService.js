@@ -42,6 +42,20 @@ export default {
     return response.data
   },
 
+  // Récupérer le catalogue public (sans authentification)
+  async getCatalogBooks(filters = {}) {
+    const params = new URLSearchParams()
+    if (filters.author) params.append('author', filters.author)
+    if (filters.subject) params.append('subject', filters.subject)
+    if (filters.title) params.append('title', filters.title)
+    if (filters.year) params.append('year', filters.year)
+    params.append('page', filters.page || 0)
+    params.append('size', filters.size || 100)
+
+    const response = await apiClient.get(`/catalog/search?${params.toString()}`)
+    return response.data
+  },
+
   // Rechercher des livres
   async searchBooks(query) {
     const response = await apiClient.get(`/books/search?query=${encodeURIComponent(query)}`)
@@ -50,13 +64,18 @@ export default {
 
   // Récupérer un livre par ID
   async getBookById(id) {
-    const response = await apiClient.get(`/books/${id}`)
+    const response = await apiClient.get(`/catalog/${id}`)
     return response.data
   },
 
-  // Ajouter un nouveau livre (admin)
+  // Ajouter un nouveau livre (auteur)
   async addBook(bookData) {
-    const response = await apiClient.post('/books', bookData)
+    const response = await apiClient.post('/books/add', bookData)
+    return response.data
+  },
+
+  async updateBook(bookId, bookData) {
+    const response = await apiClient.put(`/books/${bookId}`, bookData)
     return response.data
   }
 }
