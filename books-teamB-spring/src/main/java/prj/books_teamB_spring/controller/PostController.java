@@ -4,15 +4,14 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
-import prj.books_teamB_spring.model.*;
+import prj.books_teamB_spring.model.Post;
 import prj.books_teamB_spring.service.PostService;
 
+@RestController
+@RequestMapping("/api/posts")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
 public class PostController {
 
     private final PostService postService;
@@ -21,22 +20,30 @@ public class PostController {
         this.postService = postService;
     }
 
+    // POST /api/posts → crée un post et renvoie l'objet créé
     @PostMapping
     public ResponseEntity<Post> createPost(@RequestBody Post post) {
-        postService.addPost(post);
-        return new ResponseEntity<>(post, HttpStatus.CREATED);
+        Post saved = postService.addPost(post);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
+    // GET /api/posts → liste des posts
     @GetMapping
     public ResponseEntity<List<Post>> getAllPosts() {
         List<Post> posts = postService.getAllPosts();
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
+    // GET /api/posts/all → version simple pour debug
+    @GetMapping("/all")
+    public List<Post> getAll() {
+        return postService.getAllPosts();
+    }
+
+    // DELETE /api/posts/{id}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable("id") Long postId) {
         postService.deletePost(postId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 }
