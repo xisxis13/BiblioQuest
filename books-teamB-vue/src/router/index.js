@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
-// import Register from '../views/Register.vue'
+import Register from '../views/Register.vue'
 // import Library from '../views/Library.vue'
 // import MyLibrary from '../views/MyLibrary.vue'
 // import ReadingTracker from '../views/ReadingTracker.vue'
@@ -24,6 +24,12 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: Login,
+      meta: { requiresGuest: true }
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: Register,
       meta: { requiresGuest: true }
     },
     {
@@ -82,12 +88,6 @@ const router = createRouter({
     //   name: 'profile',
     //   redirect: '/library'
     // },
-    // {
-    //   path: '/register',
-    //   name: 'register',
-    //   component: Register,
-    //   meta: { requiresGuest: true }
-    // },    
   ]
 })
 
