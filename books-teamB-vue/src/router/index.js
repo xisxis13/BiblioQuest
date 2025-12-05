@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import Home from '../views/Home.vue'
-// import Login from '../views/Login.vue'
+import Login from '../views/Login.vue'
 // import Register from '../views/Register.vue'
 // import Library from '../views/Library.vue'
 // import MyLibrary from '../views/MyLibrary.vue'
@@ -18,7 +18,13 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Home,
-      // meta: { requiresAuth: true }
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login,
+      meta: { requiresGuest: true }
     },
     {
       path: '/:pathMatch(.*)*',
@@ -75,12 +81,6 @@ const router = createRouter({
     //   path: '/profile',
     //   name: 'profile',
     //   redirect: '/library'
-    // },
-    // {
-    //   path: '/login',
-    //   name: 'login',
-    //   component: Login,
-    //   meta: { requiresGuest: true }
     // },
     // {
     //   path: '/register',
