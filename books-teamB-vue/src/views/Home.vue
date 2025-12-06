@@ -10,7 +10,7 @@
         <div class="w-full flex items-center justify-between">
           <div class="w-full h-fit flex flex-col gap-1">
             <span class="text-primary-text font-semibold text-2xl">Publications</span>
-            <span class="text-secondary-text font-normal text-l">Découvrez ce que la communauté a à partager</span>
+            <span class="text-secondary-text font-normal text-base">Découvrez ce que la communauté a à partager</span>
           </div>
 
           <!-- Show post editor -->
