@@ -70,7 +70,7 @@
           <button 
             type="submit"
             :disabled="saving"
-            class="bg-accent hover:bg-accent/90 rounded-2xl w-full px-4 py-3 text-box font-medium cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="bg-accent hover:bg-accent/90 rounded-2xl w-full px-4 py-3 text-box font-normal cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <template v-if="saving">
               <svg class="animate-spin h-4 w-4 text-box" fill="none" viewBox="0 0 24 24">

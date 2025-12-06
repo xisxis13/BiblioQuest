@@ -3,10 +3,10 @@ import { useAuthStore } from '@/stores/authStore'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
+import Catalog from '../views/Catalog.vue'
 // import Library from '../views/Library.vue'
 // import MyLibrary from '../views/MyLibrary.vue'
 // import ReadingTracker from '../views/ReadingTracker.vue'
-// import Catalogue from '../views/Catalogue.vue'
 // import BookDetail from '../views/BookDetail.vue'
 // import BookAdd from '../views/BookAdd.vue'
 // import BookEdit from '../views/BookEdit.vue'
@@ -33,6 +33,12 @@ const router = createRouter({
       meta: { requiresGuest: true }
     },
     {
+      path: '/catalog',
+      name: 'catalog',
+      component: Catalog,
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/:pathMatch(.*)*',
       redirect: '/'
     },
@@ -52,12 +58,6 @@ const router = createRouter({
     //   path: '/reading-tracker',
     //   name: 'reading-tracker',
     //   component: ReadingTracker,
-    //   meta: { requiresAuth: true }
-    // },
-    // {
-    //   path: '/catalogue',
-    //   name: 'catalogue',
-    //   component: Catalogue,
     //   meta: { requiresAuth: true }
     // },
     // {
