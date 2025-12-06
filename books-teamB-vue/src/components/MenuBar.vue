@@ -1,5 +1,5 @@
 <template>
-  <div class="w-56 h-full flex flex-col p-2 gap-3">
+  <div class="w-48 h-full flex flex-col py-3 gap-3">
     <!-- Navigation -->
     <nav class="flex-1 space-y-1">
       <MenuBarItem
