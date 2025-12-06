@@ -1,5 +1,5 @@
 <template>
-  <div class="w-48 h-full flex flex-col py-3 gap-3">
+  <div :class="['h-full flex flex-col py-3 gap-3 transition-all duration-300', uiStore.isMenuCollapsed ? 'w-16' : 'w-48']">
     <!-- Navigation -->
     <nav class="flex-1 space-y-1">
       <MenuBarItem
@@ -8,6 +8,7 @@
         :to="item.path"
         :label="item.label"
         :icon="item.icon"
+        :collapsed="uiStore.isMenuCollapsed"
       />
     </nav>
 
@@ -15,10 +16,14 @@
     <div class="pt-3 border-t border-border">
       <button 
         @click="handleLogout"
-        class="flex items-center w-full px-4 py-3 gap-2 rounded-2xl transition-colors duration-200 text-secondary-text hover:bg-accent/10 hover:text-primary-text group cursor-pointer"
+        :class="[
+          'flex items-center w-full py-3 gap-2 rounded-2xl transition-colors duration-200 text-secondary-text hover:bg-accent/10 hover:text-primary-text group cursor-pointer',
+          uiStore.isMenuCollapsed ? 'px-2 justify-center' : 'px-4'
+        ]"
+        :title="uiStore.isMenuCollapsed ? 'Se déconnecter' : ''"
       >
         <LogOut class="w-5 h-5 hover:stroke-primary-text" />
-        <span>Se déconnecter</span>
+        <span v-if="!uiStore.isMenuCollapsed">Se déconnecter</span>
       </button>
     </div>
   </div>
@@ -26,7 +31,9 @@
 
 <script>
 import { useAuthStore } from '@/stores/authStore'
+import { useUiStore } from '@/stores/uiStore'
 import { useRouter } from 'vue-router'
+import { onMounted } from 'vue'
 import MenuBarItem from './MenuBarItem.vue'
 import { 
   Home, 
@@ -45,6 +52,7 @@ export default {
   },
   setup() {
     const authStore = useAuthStore()
+    const uiStore = useUiStore()
     const router = useRouter()
 
     const navItems = [
@@ -60,10 +68,16 @@ export default {
       router.push('/login')
     }
 
+    // Initialize menu state from localStorage
+    onMounted(() => {
+      uiStore.initializeMenuState()
+    })
+
     return {
       navItems,
       handleLogout,
-      authStore
+      authStore,
+      uiStore
     }
   }
 }
