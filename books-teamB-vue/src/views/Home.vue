@@ -7,9 +7,19 @@
 
      <div class="bg-box border border-border rounded-3xl flex-1 h-full overflow-y-auto flex flex-col gap-4 p-6">
         <!-- Header -->
-        <div class="w-full h-fit flex flex-col gap-1">
-          <span class="text-primary-text font-semibold text-2xl">Publications</span>
-          <span class="text-secondary-text font-normal text-l">Découvrez ce que la communauté a à partager</span>
+        <div class="w-full flex items-center justify-between">
+          <div class="w-full h-fit flex flex-col gap-1">
+            <span class="text-primary-text font-semibold text-2xl">Publications</span>
+            <span class="text-secondary-text font-normal text-l">Découvrez ce que la communauté a à partager</span>
+          </div>
+
+          <!-- Show post editor -->
+          <button
+            @click="showPostEditor = !showPostEditor"
+            class="bg-background hover:bg-box transition-colors border border-border rounded-full w-fit h-fit p-2.5 aspect-square cursor-pointer"
+          >
+            <SquarePen class="text-secondary-text" :size="22" />
+          </button>
         </div>
 
         <!-- Loading state -->
@@ -42,6 +52,7 @@
 
       <!-- Post editor sidebar -->
       <div
+        v-if="showPostEditor"
         class="bg-box border border-border rounded-3xl w-72 h-full p-5 flex flex-col items-start justify-start gap-4 overflow-hidden"
       >
         <span class="w-full pb-3 border-b border-border text-primary-text font-medium text-lg">Écrire une publication</span>
@@ -94,6 +105,11 @@ export default {
     MenuBar,
     PostItem,
     SquarePen,
+  },
+  data() {
+    return {
+      showPostEditor: false,
+    };
   },
   setup() {
     const authStore = useAuthStore();
