@@ -108,7 +108,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { Star, PenLine } from 'lucide-vue-next'
-import ReviewItem from './ReviewItem.vue'
+import ReviewItem from './ReviewCard.vue'
 
 const props = defineProps({
   bookId: {

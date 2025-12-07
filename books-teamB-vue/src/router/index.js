@@ -7,7 +7,7 @@ import Catalog from '../views/Catalog.vue'
 import AddBook from '../views/AddBook.vue'
 import BookDetail from '../views/BookDetail.vue'
 import MyLibrary from '../views/MyLibrary.vue'
-// import ReadingTracker from '../views/ReadingTracker.vue'
+import ReadingTracker from '../views/ReadingTracker.vue'
 // import BookEdit from '../views/BookEdit.vue'
 
 const router = createRouter({
@@ -56,15 +56,15 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/reading-tracker',
+      name: 'reading-tracker',
+      component: ReadingTracker,
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/:pathMatch(.*)*',
       redirect: '/'
     },
-    // {
-    //   path: '/reading-tracker',
-    //   name: 'reading-tracker',
-    //   component: ReadingTracker,
-    //   meta: { requiresAuth: true }
-    // },
     // {
     //   path: '/books/:id/edit',
     //   name: 'book-edit',

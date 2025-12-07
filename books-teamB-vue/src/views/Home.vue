@@ -92,7 +92,7 @@
 <script>
 import AppHeader from '@/components/AppHeader.vue';
 import MenuBar from '@/components/MenuBar.vue';
-import PostItem from '@/components/PostItem.vue';
+import PostItem from '@/components/PostCard.vue';
 import { SquarePen } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/authStore';
 import postService from '@/services/postService';
