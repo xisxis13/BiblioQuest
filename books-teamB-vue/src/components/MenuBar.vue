@@ -39,9 +39,10 @@ import {
   Home, 
   Compass, 
   Library, 
-  ShoppingBag, 
   User,
-  LogOut 
+  LogOut, 
+  Users,
+  ChartNoAxesCombined
 } from 'lucide-vue-next'
 
 export default {
@@ -59,7 +60,8 @@ export default {
       { path: '/', label: 'Accueil', icon: Home },
       { path: '/catalog', label: 'Catalogue', icon: Compass },
       { path: '/my-library', label: 'Ma bibliothèque', icon: Library },
-      { path: '/marketplace', label: 'Marketplace', icon: ShoppingBag },
+      { path: '/reading-tracker', label: 'Suivi de lecture', icon: ChartNoAxesCombined },
+      { path: '/community', label: 'Communauté', icon: Users },
       { path: '/profile', label: 'Profile', icon: User }
     ]
 
