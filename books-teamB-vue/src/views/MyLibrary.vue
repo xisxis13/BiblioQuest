@@ -5,7 +5,7 @@
     <main class="w-full flex-1 min-h-0 flex gap-3">
       <MenuBar />
 
-     <div class="bg-box border border-border rounded-2xl flex-1 h-full overflow-y-auto flex flex-col gap-4 p-6">
+     <div class="bg-box border border-border rounded-3xl flex-1 h-full overflow-y-auto flex flex-col gap-4 p-6">
         <!-- header -->
         <div class="w-full h-fit flex flex-col gap-1">
           <span class="text-primary-text font-semibold text-2xl">Ma bibliothèque</span>
@@ -14,7 +14,7 @@
 
         <!-- Stats card -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="bg-white border border-border rounded-2xl p-4 h-fit flex items-center justify-start gap-4">
+          <div class="bg-white border border-border rounded-3xl p-4 h-fit flex items-center justify-start gap-4">
             <div class="bg-green-100 w-12 h-12 flex items-center justify-center rounded-xl">
               <Check class="stroke-green-600" />
             </div>
@@ -24,7 +24,7 @@
             </div>
           </div>
 
-          <div class="bg-white border border-border rounded-2xl p-4 h-fit flex items-center justify-start gap-4">
+          <div class="bg-white border border-border rounded-3xl p-4 h-fit flex items-center justify-start gap-4">
             <div class="bg-orange-100 w-12 h-12 flex items-center justify-center rounded-xl">
               <BookOpen class="stroke-orange-600" />
             </div>
@@ -34,7 +34,7 @@
             </div>
           </div>
 
-          <div class="bg-white border border-border rounded-2xl p-4 h-fit flex items-center justify-start gap-4">
+          <div class="bg-white border border-border rounded-3xl p-4 h-fit flex items-center justify-start gap-4">
             <div class="bg-yellow-100 w-12 h-12 flex items-center justify-center rounded-xl">
               <Bookmark class="stroke-yellow-600" />
             </div>
@@ -44,7 +44,7 @@
             </div>
           </div>
 
-          <div class="bg-white border border-border rounded-2xl p-4 h-fit flex items-center justify-start gap-4">
+          <div class="bg-white border border-border rounded-3xl p-4 h-fit flex items-center justify-start gap-4">
             <div class="bg-purple-100 w-12 h-12 flex items-center justify-center rounded-xl">
               <FileText class="stroke-purple-600" />
             </div>
