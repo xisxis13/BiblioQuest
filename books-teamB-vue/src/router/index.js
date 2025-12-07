@@ -8,6 +8,7 @@ import EditBook from '../views/EditBook.vue'
 import BookDetail from '../views/BookDetail.vue'
 import MyLibrary from '../views/MyLibrary.vue'
 import ReadingTracker from '../views/ReadingTracker.vue'
+import Profile from '@/views/Profile.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,14 +68,15 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/profile',
+      name: 'profile',
+      component: Profile,
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/:pathMatch(.*)*',
       redirect: '/'
     },
-    // {
-    //   path: '/profile',
-    //   name: 'profile',
-    //   redirect: '/library'
-    // },
   ]
 })
 
