@@ -5,7 +5,7 @@
       <img 
         v-if="coverImage"
         :src="coverImage" 
-        :alt="title + ' cover'"
+        :alt="book.title + ' cover'"
         class="w-full h-full object-cover"
       >
       <div v-else class="w-full h-full flex items-center justify-center text-secondary-text">

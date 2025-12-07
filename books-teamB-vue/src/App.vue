@@ -1,18 +1,6 @@
 <script>
-import { useAuthStore } from '@/stores/authStore'
-
 export default {
-  name: 'App',
-  setup() {
-    const authStore = useAuthStore()
-
-    // Initialize authentication state when app starts
-    authStore.initializeAuth()
-
-    return {
-      authStore
-    }
-  }
+  name: 'App'
 }
 </script>
 

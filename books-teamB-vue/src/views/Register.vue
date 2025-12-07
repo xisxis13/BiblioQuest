@@ -96,9 +96,14 @@
 <script>
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
+import { Info, CircleCheck } from 'lucide-vue-next'
 
 export default {
   name: 'RegisterPage',
+  components: {
+    Info,
+    CircleCheck
+  },
   setup() {
     const authStore = useAuthStore()
     const router = useRouter()

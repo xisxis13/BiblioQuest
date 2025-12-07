@@ -4,11 +4,11 @@ import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Catalog from '../views/Catalog.vue'
+import AddBook from '../views/AddBook.vue'
 // import Library from '../views/Library.vue'
 // import MyLibrary from '../views/MyLibrary.vue'
 // import ReadingTracker from '../views/ReadingTracker.vue'
 // import BookDetail from '../views/BookDetail.vue'
-// import BookAdd from '../views/BookAdd.vue'
 // import BookEdit from '../views/BookEdit.vue'
 
 const router = createRouter({
@@ -39,6 +39,12 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/books/add',
+      name: 'add-book',
+      component: AddBook,
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/:pathMatch(.*)*',
       redirect: '/'
     },
@@ -58,12 +64,6 @@ const router = createRouter({
     //   path: '/reading-tracker',
     //   name: 'reading-tracker',
     //   component: ReadingTracker,
-    //   meta: { requiresAuth: true }
-    // },
-    // {
-    //   path: '/books/add',
-    //   name: 'book-add',
-    //   component: BookAdd,
     //   meta: { requiresAuth: true }
     // },
     // {

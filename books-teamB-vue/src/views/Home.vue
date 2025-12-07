@@ -5,7 +5,7 @@
     <main class="w-full flex-1 min-h-0 flex gap-3">
       <MenuBar />
 
-     <div class="bg-box border border-border rounded-3xl flex-1 h-full overflow-y-auto flex flex-col gap-4 p-6">
+      <div class="bg-box border border-border rounded-3xl flex-1 h-full overflow-y-auto flex flex-col gap-4 p-6">
         <!-- Header -->
         <div class="w-full flex items-center justify-between">
           <div class="w-full h-fit flex flex-col gap-1">
