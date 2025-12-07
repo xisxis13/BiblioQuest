@@ -1,5 +1,5 @@
 <template>
-  <div class="border border-border rounded-2xl flex flex-col gap-2 bg-background overflow-hidden">
+  <div class="border border-border rounded-2xl flex flex-col gap-2 bg-background overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.02]">
     <!-- Cover -->
     <div class="relative aspect-2/3 bg-accent/30 rounded-2xl overflow-hidden">
       <img 
@@ -8,9 +8,9 @@
         :alt="book.title + ' cover'"
         class="w-full h-full object-cover"
       >
-      <div v-else class="w-full h-full flex flex-col items-center justify-center gap-2">
+      <div v-else class="w-full h-full p-3 flex flex-col items-center justify-center gap-2">
         <BookOpen class="stroke-secondary-text" :size="50" />
-        <span class="text-secondary-text text-base font-normal">Livre sans couverture</span>
+        <span class="text-secondary-text text-base font-normal text-center">Livre sans couverture</span>
       </div>
 
       <!-- Status badge -->
