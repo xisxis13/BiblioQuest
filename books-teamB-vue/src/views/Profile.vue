@@ -11,8 +11,8 @@
           <div class="bg-accent aspect-square h-full rounded-full flex items-center justify-center flex-shrink-0 text-white text-5xl font-bold">
             {{ getUserInitials() }}
           </div>
-          <div class="flex flex-col gap-1 py-2">
-            <p class="text-secondary-text">{{ user?.email }}</p>
+          <div class="flex flex-col gap-2 py-2">
+            <p class="text-sm text-secondary-text">{{ user?.email }}</p>
             <span class="w-full text-5xl font-bold text-primary-text">{{ user?.username }}</span>
             <p class="text-sm text-secondary-text mt-1">Membre depuis {{ formatDate(user?.createdAt) }}</p>
           </div>
@@ -21,7 +21,17 @@
         <!-- Content -->
         <div class="flex-1 h-full flex flex-col gap-6 p-6">
           <!-- Stats Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white border border-border rounded-3xl p-4 h-fit flex items-center justify-start gap-4">
+              <div class="bg-blue-100 w-12 h-12 flex items-center justify-center rounded-xl">
+                <Library class="stroke-blue-600" />
+              </div>
+              <div class="flex flex-col items-start justify-center">
+                <span class="text-secondary-text font-normal text-sm">Livres</span>
+                <span class="text-primary-text font-semibold text-2xl">{{ stats.booksOwn }}</span>
+              </div>
+            </div>
+
             <div class="bg-white border border-border rounded-3xl p-4 h-fit flex items-center justify-start gap-4">
               <div class="bg-green-100 w-12 h-12 flex items-center justify-center rounded-xl">
                 <Check class="stroke-green-600" />
@@ -33,32 +43,12 @@
             </div>
   
             <div class="bg-white border border-border rounded-3xl p-4 h-fit flex items-center justify-start gap-4">
-              <div class="bg-orange-100 w-12 h-12 flex items-center justify-center rounded-xl">
-                <BookOpen class="stroke-orange-600" />
-              </div>
-              <div class="flex flex-col items-start justify-center">
-                <span class="text-secondary-text font-normal text-sm">En cours</span>
-                <span class="text-primary-text font-semibold text-2xl">{{ stats.booksReading }}</span>
-              </div>
-            </div>
-  
-            <div class="bg-white border border-border rounded-3xl p-4 h-fit flex items-center justify-start gap-4">
-              <div class="bg-yellow-100 w-12 h-12 flex items-center justify-center rounded-xl">
-                <Bookmark class="stroke-yellow-600" />
-              </div>
-              <div class="flex flex-col items-start justify-center">
-                <span class="text-secondary-text font-normal text-sm">À lire</span>
-                <span class="text-primary-text font-semibold text-2xl">{{ stats.booksToRead }}</span>
-              </div>
-            </div>
-  
-            <div class="bg-white border border-border rounded-3xl p-4 h-fit flex items-center justify-start gap-4">
               <div class="bg-purple-100 w-12 h-12 flex items-center justify-center rounded-xl">
-                <FileText class="stroke-purple-600" />
+                <Users class="stroke-purple-600" />
               </div>
               <div class="flex flex-col items-start justify-center">
-                <span class="text-secondary-text font-normal text-sm">Pages lues</span>
-                <span class="text-primary-text font-semibold text-2xl">{{ stats.pagesRead }}</span>
+                <span class="text-secondary-text font-normal text-sm">Abonnés</span>
+                <span class="text-primary-text font-semibold text-2xl">{{ stats.followers }}</span>
               </div>
             </div>
           </div>
@@ -87,7 +77,7 @@ import { useAuthStore } from '@/stores/authStore'
 import AppHeader from '@/components/AppHeader.vue';
 import MenuBar from '@/components/MenuBar.vue';
 import PostCard from '@/components/PostCard.vue';
-import { Check, Bookmark, FileText, BookOpen } from 'lucide-vue-next';
+import { Check, Library, Users } from 'lucide-vue-next';
 
 export default {
   name: 'ProfilePage',
@@ -96,9 +86,8 @@ export default {
     MenuBar,
     PostCard,
     Check,
-    Bookmark,
-    FileText, 
-    BookOpen,
+    Library,
+    Users, 
   },
   setup() {
     const route = useRoute()
@@ -106,7 +95,7 @@ export default {
     
     const user = ref({
       id: 1,
-      username: 'Juste a user',
+      username: 'Just a user',
       email: 'justauser@example.com',
       createdAt: '2023-01-15T10:00:00Z'
     })
@@ -114,8 +103,8 @@ export default {
     const stats = ref({
       booksRead: 12,
       booksReading: 2,
-      booksToRead: 8,
-      pagesRead: 3450
+      booksOwn: 8,
+      followers: 35
     })
 
     const userPosts = ref([
