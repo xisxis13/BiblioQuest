@@ -32,12 +32,22 @@
               Retour
             </button>
 
-            <button 
-              class="bg-accent hover:bg-accent/90 rounded-full px-4 py-2 text-box font-normal cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >       
-              <Plus :size="22" />
-              <span>Ajouter à ma bibliothèque</span>
-            </button>
+            <div class="flex items-center gap-3">
+              <button 
+                @click="$router.push({ name: 'book-edit', params: { id: book.id } })"
+                class="bg-box hover:bg-background border border-border rounded-full px-4 py-2 cursor-pointer transition-colors flex items-center justify-center gap-2"
+              >
+                <PenLine :size="20" class="stroke-primary-text" />
+                <span class="text-primary-text font-normal">Modifier</span>
+              </button>
+
+              <button 
+                class="bg-accent hover:bg-accent/90 rounded-full px-4 py-2 text-box font-normal cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >       
+                <Plus :size="22" />
+                <span>Ajouter à ma bibliothèque</span>
+              </button>
+            </div>
           </div>
 
           <!-- Book header -->
@@ -170,7 +180,7 @@ import AppHeader from '@/components/AppHeader.vue';
 import MenuBar from '@/components/MenuBar.vue';
 import ReviewList from '@/components/ReviewList.vue';
 import ReviewForm from '@/components/ReviewForm.vue';
-import { ChevronLeft, Plus, BookOpen, Star } from 'lucide-vue-next';
+import { ChevronLeft, Plus, BookOpen, Star, PenLine } from 'lucide-vue-next';
 import booksService from '@/services/booksService'
 import reviewsService from '@/services/reviewsService'
 
@@ -185,6 +195,7 @@ export default {
     Plus,
     BookOpen,
     Star,
+    PenLine,
   },
   data() {
     return {

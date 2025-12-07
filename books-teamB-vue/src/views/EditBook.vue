@@ -15,7 +15,7 @@
         </button>
 
         <div class="w-full h-fit flex flex-col gap-1">
-          <span class="text-primary-text font-semibold text-2xl">Ajouter un livre</span>
+          <span class="text-primary-text font-semibold text-2xl">{{ isEditMode ? 'Modifier un livre' : 'Ajouter un livre' }}</span>
           <span class="text-secondary-text font-normal text-base">Informations du livre</span>
         </div>
 
@@ -181,7 +181,7 @@
                 <span>Enregistrement...</span>
               </template>
               
-              <span v-else>Enregistrer</span>
+              <span v-else>{{ isEditMode ? 'Modifier' : 'Enregistrer' }}</span>
             </button>
           </div>
         </form>
@@ -197,7 +197,7 @@ import booksService from '@/services/booksService'
 import { ChevronLeft, Info, CircleCheck, Plus, X } from 'lucide-vue-next'
 
 export default {
-  name: 'AddBook',
+  name: 'EditBook',
   components: {
     AppHeader,
     MenuBar,
@@ -228,6 +228,18 @@ export default {
     }
   },
 
+  computed: {
+    isEditMode() {
+      return !!this.$route.params.id
+    }
+  },
+
+  async mounted() {
+    if (this.isEditMode) {
+      await this.loadBook(this.$route.params.id)
+    }
+  },
+
   methods: {
     addAuthorField() {
       this.form.authors.push({ firstName: '', lastName: '' })
@@ -237,6 +249,33 @@ export default {
       this.form.authors.splice(index, 1)
       if (this.form.authors.length === 0) {
         this.form.authors.push({ firstName: '', lastName: '' })
+      }
+    },
+
+    async loadBook(id) {
+      try {
+        const book = await booksService.getBookById(id)
+        this.book = book
+        
+        // Populate form
+        this.form.title = book.title
+        this.form.subject = book.subject ? book.subject.text : ''
+        this.form.totalPages = book.totalPages
+        this.form.isbn = book.isbn
+        this.form.publishedDate = book.publishedDate
+        this.form.desc_txt = book.desc_txt
+        this.form.cover = book.cover
+        
+        // Handle authors
+        if (book.authors && book.authors.length > 0) {
+          this.form.authors = book.authors.map(a => ({
+            firstName: a.firstName,
+            lastName: a.lastName
+          }))
+        }
+      } catch (error) {
+        console.error('Error loading book:', error)
+        this.error = "Impossible de charger les informations du livre."
       }
     },
 
@@ -274,16 +313,24 @@ export default {
           cover: this.form.cover
         }
 
-        await booksService.addBook(createdBook)
-        this.successMessage = 'Les informations du livre ont bien été enregistrées.'
-        
-        // Rediriger vers le catalogue après un court délai pour montrer le message de succès
-        setTimeout(() => {
-          this.$router.push({ name: 'catalog' })
-        }, 1500)
+        if (this.isEditMode) {
+          await booksService.updateBook(this.$route.params.id, createdBook)
+          this.successMessage = 'Le livre a été modifié avec succès.'
+          
+          setTimeout(() => {
+            this.$router.push({ name: 'book-detail', params: { id: this.$route.params.id } })
+          }, 1500)
+        } else {
+          await booksService.addBook(createdBook)
+          this.successMessage = 'Les informations du livre ont bien été enregistrées.'
+          
+          setTimeout(() => {
+            this.$router.push({ name: 'catalog' })
+          }, 1500)
+        }
       } catch (error) {
-        console.error('Erreur lors de la création du livre :', error)
-        this.error = "Impossible d'ajouter le livre."
+        console.error('Erreur lors de la création/modification du livre :', error)
+        this.error = this.isEditMode ? "Impossible de modifier le livre." : "Impossible d'ajouter le livre."
       } finally {
         this.saving = false
       }

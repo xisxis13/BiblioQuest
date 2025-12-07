@@ -4,11 +4,10 @@ import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Catalog from '../views/Catalog.vue'
-import AddBook from '../views/AddBook.vue'
+import EditBook from '../views/EditBook.vue'
 import BookDetail from '../views/BookDetail.vue'
 import MyLibrary from '../views/MyLibrary.vue'
 import ReadingTracker from '../views/ReadingTracker.vue'
-// import BookEdit from '../views/BookEdit.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,7 +39,7 @@ const router = createRouter({
     {
       path: '/books/add',
       name: 'add-book',
-      component: AddBook,
+      component: EditBook,
       meta: { requiresAuth: true }
     },
     {
@@ -62,20 +61,15 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/books/:id/edit',
+      name: 'book-edit',
+      component: EditBook,
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/:pathMatch(.*)*',
       redirect: '/'
     },
-    // {
-    //   path: '/books/:id/edit',
-    //   name: 'book-edit',
-    //   component: BookEdit,
-    //   meta: { requiresAuth: true }
-    // },
-    // {
-    //   path: '/marketplace',
-    //   name: 'marketplace',
-    //   redirect: '/library'
-    // },
     // {
     //   path: '/profile',
     //   name: 'profile',
