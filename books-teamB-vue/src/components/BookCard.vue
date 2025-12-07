@@ -8,8 +8,9 @@
         :alt="book.title + ' cover'"
         class="w-full h-full object-cover"
       >
-      <div v-else class="w-full h-full flex items-center justify-center text-secondary-text">
+      <div v-else class="w-full h-full flex flex-col items-center justify-center gap-2">
         <BookOpen class="stroke-secondary-text" :size="50" />
+        <span class="text-secondary-text text-base font-normal">Livre sans couverture</span>
       </div>
 
       <!-- Status badge -->
