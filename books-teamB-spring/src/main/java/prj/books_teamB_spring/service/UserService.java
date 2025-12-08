@@ -43,9 +43,6 @@ public class UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
     
-    public List<User> getAllUser() {
-        return userRepository.findAll();
-    }
     // Ajoutez ici d'autres méthodes de gestion utilisateur si nécessaire :
     // - createUser(User user)
     // - updateProfile(String username, UserUpdateDto dto)
