@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-3 p-3 bg-background w-full h-screen">
     <AppHeader />
-    
+
     <main class="w-full flex-1 min-h-0 flex gap-3">
       <MenuBar />
 
@@ -14,7 +14,7 @@
           </div>
 
           <!-- Publish book button  -->
-          <button 
+          <button
             @click="goToPublishBook"
             type="button"
             class="bg-accent hover:bg-accent/90 rounded-2xl px-4 py-3 text-box font-normal cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 whitespace-nowrap"
@@ -28,10 +28,10 @@
           <!-- Search bar -->
           <div class="relative w-full bg-background border border-border rounded-full">
             <Search class="absolute top-1/2 -translate-y-1/2 left-3 z-10 text-secondary-text" :size="24" />
-            <input 
+            <input
               v-model="searchQuery"
-              type="text" 
-              placeholder="ex. : Harry Potter" 
+              type="text"
+              placeholder="ex. : Harry Potter"
               class="px-4 py-2 pl-11 w-full h-full rounded-full font-normal focus:outline-none focus:ring-1 focus:ring-accent"
             >
           </div>
@@ -55,16 +55,16 @@
         </div>
 
         <!-- Error State -->
-        <div 
+        <div
           v-else-if="error"
           class="w-full h-full flex items-center justify-center flex-col gap-3"
         >
           <Info class="stroke-secondary-text" :size="50" />
           <p class="text-secondary-text">Erreur lors du chargement</p>
           <p class="text-sm text-gray-400">{{ error }}</p>
-          
-          <button 
-            @click="loadBooks()" 
+
+          <button
+            @click="loadBooks()"
             type="button"
             class="bg-accent hover:bg-accent/90 rounded-2xl px-4 py-3 text-box font-normal cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 whitespace-nowrap"
           >
@@ -75,7 +75,7 @@
 
         <!-- Book List -->
         <div class="grid grid-cols-1 min-[520px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-          <BookCard 
+          <BookCard
             v-for="book in filteredBooks"
             @click="goToBookDetail(book.id)"
             :key="book.id"
@@ -160,7 +160,7 @@
 import AppHeader from '@/components/AppHeader.vue'
 import MenuBar from '@/components/MenuBar.vue'
 import BookCard from '@/components/BookCard.vue'
-import booksService from '@/services/booksService'
+import bookService from '@/services/bookService'
 import { Search, Filter, Plus, Info, RotateCw, BookOpen } from 'lucide-vue-next'
 
 export default {
@@ -172,7 +172,7 @@ export default {
     Filter,
     Plus,
     Info,
-    RotateCw, 
+    RotateCw,
     BookOpen,
     BookCard,
   },
@@ -199,7 +199,7 @@ export default {
         const query = this.searchQuery.toLowerCase()
         filtered = filtered.filter(book => {
           return book.title?.toLowerCase().includes(query) ||
-                 book.authorsNames?.some(author => 
+                 book.authorsNames?.some(author =>
                    author.toLowerCase().includes(query)
                  ) ||
                  book.subject?.text?.toLowerCase().includes(query)
@@ -208,7 +208,7 @@ export default {
 
       // Filter by genre
       if (this.selectedGenre !== 'tous') {
-        filtered = filtered.filter(book => 
+        filtered = filtered.filter(book =>
           book.subject && book.subject.text === this.selectedGenre
         )
       }
@@ -218,7 +218,7 @@ export default {
 
       return filtered
     },
-    
+
     availableGenres() {
       const genres = new Set()
       this.books.forEach(book => {
@@ -234,10 +234,10 @@ export default {
       try {
         this.loading = true
         this.error = null
-        
-        const response = await booksService.getCatalogBooks()
-        this.books = response.content || response || []
-        
+
+        const response = await bookService.getAll()
+        this.books = response.data || response || []
+
       } catch (error) {
         console.error('Erreur lors du chargement des livres:', error)
         this.error = 'Impossible de charger les livres. Vérifiez que le serveur est démarré.'
@@ -245,14 +245,14 @@ export default {
         this.loading = false
       }
     },
-    
+
     getAuthorsNames(book) {
       if (!book.authorsNames || book.authorsNames.length === 0) {
         return 'Auteur inconnu'
       }
       return book.authorsNames.join(', ')
     },
-    
+
     goToBookDetail(bookId) {
       this.$router.push({ name: 'book-detail', params: { id: bookId } })
     },

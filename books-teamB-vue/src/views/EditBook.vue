@@ -1,10 +1,10 @@
 <template>
   <div class="flex flex-col gap-3 p-3 bg-background w-full h-screen">
     <AppHeader />
-    
+
     <main class="w-full flex-1 min-h-0 flex gap-3">
       <MenuBar />
-    
+
       <div class="bg-box border border-border rounded-3xl flex-1 h-full overflow-y-auto flex flex-col gap-4 p-6">
         <button
           @click="$router.go(-1)"
@@ -20,8 +20,8 @@
         </div>
 
         <!-- Error message -->
-        <div 
-          v-if="error" 
+        <div
+          v-if="error"
           class="bg-red-50 border border-red-300 rounded-2xl w-full p-3 flex items-center justify-start gap-2"
         >
           <Info class="text-red-600 " :size="20" />
@@ -29,8 +29,8 @@
         </div>
 
         <!-- Success message -->
-        <div 
-          v-if="successMessage" 
+        <div
+          v-if="successMessage"
           class="bg-green-50 border border-green-400 rounded-2xl w-full p-3 flex items-center justify-start gap-2"
         >
           <CircleCheck class="text-green-600 " :size="20" />
@@ -55,7 +55,7 @@
             <div class="w-full flex items-center justify-between">
               <label class="text-primary-text font-semibold text-lg text-center">Auteur</label>
 
-              <button 
+              <button
                 type="button"
                 @click="addAuthorField"
                 class="bg-accent hover:bg-accent/90 rounded-2xl w-fit px-3 py-2 text-box font-normal text-xs cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
@@ -102,7 +102,7 @@
               placeholder="ex. Fantasy, Young Adult..."
             />
           </div>
-          
+
           <!-- Technical informations -->
           <div class="w-full flex gap-3 items-center justify-center">
             <div class="w-full flex flex-col gap-1.5 items-start justify-center">
@@ -160,15 +160,15 @@
 
           <!-- Action buttons -->
           <div class="w-full flex items-center justify-between">
-            <button 
+            <button
               @click="$router.go(-1)"
               type="button"
               class="bg-box hover:bg-background border border-border rounded-2xl px-4 py-2 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 whitespace-nowrap"
             >
               <span class="text-primary-text font-normal">Annuler</span>
             </button>
-  
-             <button 
+
+             <button
               type="submit"
               :disabled="saving"
               class="bg-accent hover:bg-accent/90 rounded-2xl px-4 py-2 text-box font-normal cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -180,7 +180,7 @@
                 </svg>
                 <span>Enregistrement...</span>
               </template>
-              
+
               <span v-else>{{ isEditMode ? 'Modifier' : 'Enregistrer' }}</span>
             </button>
           </div>
@@ -193,7 +193,7 @@
 <script>
 import AppHeader from '@/components/AppHeader.vue'
 import MenuBar from '@/components/MenuBar.vue'
-import booksService from '@/services/booksService'
+import bookService from '@/services/bookService'
 import { ChevronLeft, Info, CircleCheck, Plus, X } from 'lucide-vue-next'
 
 export default {
@@ -254,9 +254,9 @@ export default {
 
     async loadBook(id) {
       try {
-        const book = await booksService.getBookById(id)
+        const book = await bookService.getBookById(id)
         this.book = book
-        
+
         // Populate form
         this.form.title = book.title
         this.form.subject = book.subject ? book.subject.text : ''
@@ -265,7 +265,7 @@ export default {
         this.form.publishedDate = book.publishedDate
         this.form.desc_txt = book.desc_txt
         this.form.cover = book.cover
-        
+
         // Handle authors
         if (book.authors && book.authors.length > 0) {
           this.form.authors = book.authors.map(a => ({
@@ -314,16 +314,16 @@ export default {
         }
 
         if (this.isEditMode) {
-          await booksService.updateBook(this.$route.params.id, createdBook)
+          await bookService.updateBook(this.$route.params.id, createdBook)
           this.successMessage = 'Le livre a été modifié avec succès.'
-          
+
           setTimeout(() => {
             this.$router.push({ name: 'book-detail', params: { id: this.$route.params.id } })
           }, 1500)
         } else {
-          await booksService.addBook(createdBook)
+          await bookService.addBook(createdBook)
           this.successMessage = 'Les informations du livre ont bien été enregistrées.'
-          
+
           setTimeout(() => {
             this.$router.push({ name: 'catalog' })
           }, 1500)
