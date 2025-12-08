@@ -71,9 +71,10 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useUserStore } from '@/stores/userStore'
 import AppHeader from '@/components/AppHeader.vue';
 import MenuBar from '@/components/MenuBar.vue';
 import PostCard from '@/components/PostCard.vue';
@@ -92,6 +93,7 @@ export default {
   setup() {
     const route = useRoute()
     const authStore = useAuthStore()
+    const userStore = useUserStore()
     
     const user = ref({
       id: 1,
@@ -143,11 +145,33 @@ export default {
       { id: 6, title: 'Dune', author: 'Frank Herbert', cover: null }
     ])
 
-    // Vérifier si c'est le profil de l'utilisateur connecté
     const isOwnProfile = computed(() => {
       const userId = route.params.id
       return !userId || userId === authStore.getUser?.id?.toString()
     })
+
+    const loadUserData = async () => {
+      loading.value = true
+      error.value = null
+      
+      try {
+        const userId = route.params.id || authStore.getUser?.id
+        if (userId) {
+          const userData = await userStore.getById(userId)
+          user.value = userData
+        }
+      } catch (err) {
+        console.error('Error loading user data:', err)
+        error.value = err.message || 'Failed to load user data'
+      } finally {
+        loading.value = false
+      }
+    }
+
+    onMounted(() => {
+      loadUserData()
+    })
+
 
     const getUserInitials = () => {
       if (user.value && user.value.username) {
@@ -175,6 +199,7 @@ export default {
       isOwnProfile,
       getUserInitials,
       formatDate,
+      loadUserData
     }
   }
 }
