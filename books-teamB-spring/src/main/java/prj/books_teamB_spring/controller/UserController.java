@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 
 import prj.books_teamB_spring.model.User;
 import prj.books_teamB_spring.service.UserService;
+import java.util.List;
+
 
 /**
  * Contrôleur pour la gestion des profils utilisateur
@@ -25,8 +27,21 @@ public class UserController {
      * GET /api/users/me - Récupère le profil de l'utilisateur connecté
      */
     @GetMapping("/me")
-    public ResponseEntity<User> getCurrentUser(@RequestHeader("X-Username") String username) {
-        User user = userService.requireUser(username);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<User> getCurrentUser(@RequestHeader("X-Username") Long userId) {
+        try {
+            User user = userService.findById(userId);
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    /**
+     * GET /api/users - Récupère tous les utilisateurs
+     */
+    @GetMapping
+    public ResponseEntity<List<User>> getAll() {
+        List<User> users = userService.findAll();
+        return ResponseEntity.ok(users);
     }
 }
