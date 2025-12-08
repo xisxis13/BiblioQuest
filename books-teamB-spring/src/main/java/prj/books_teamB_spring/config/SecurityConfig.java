@@ -22,6 +22,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/catalog/**").permitAll()
                 .requestMatchers("/api/books/**").permitAll()
                 .requestMatchers("/api/posts/**").permitAll()
+                .requestMatchers("/api/users/**").permitAll()
                 .requestMatchers("/api/books/add").hasRole("AUTEUR")  
                 .requestMatchers("/api/books/${id}/edit").hasRole("BIBLIOTHECAIRE")
                 .anyRequest().denyAll()

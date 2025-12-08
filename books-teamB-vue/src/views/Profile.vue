@@ -14,7 +14,7 @@
           <div class="flex flex-col gap-2 py-2">
             <p class="text-sm text-secondary-text">{{ user?.email }}</p>
             <span class="w-full text-5xl font-bold text-primary-text">{{ user?.username }}</span>
-            <p class="text-sm text-secondary-text mt-1">Membre depuis {{ formatDate(user?.createdAt) }}</p>
+            <p class="text-sm text-secondary-text mt-1">Dernière activité {{ formatDate(user?.lastActivityAt) }}</p>
           </div>
         </div>
 
@@ -95,55 +95,21 @@ export default {
     const authStore = useAuthStore()
     const userStore = useUserStore()
     
-    const user = ref({
-      id: 1,
-      username: 'Just a user',
-      email: 'justauser@example.com',
-      createdAt: '2023-01-15T10:00:00Z'
-    })
+    const user = ref(null)
 
-    const stats = ref({
-      booksRead: 12,
-      booksReading: 2,
-      booksOwn: 8,
-      followers: 35
-    })
+    const stats = computed(() => ({
+      booksRead: 0, // TODO: récupérer depuis UserBook
+      booksReading: 0, // TODO: récupérer depuis UserBook
+      booksOwn: 0, // TODO: récupérer depuis UserBook
+      followers: user.value?.followersCount || 0
+    }))
 
-    const userPosts = ref([
-      {
-        id: 1,
-        content: "Je viens de terminer le Comte de Monte-Cristo, quel chef-d'œuvre !",
-        createdAt: '2023-11-05T15:30:00Z',
-        likes: 15,
-        comments: 4
-      },
-      {
-        id: 2,
-        content: "Lecture en cours : Les Trois Mousquetaires. D'Artagnan est impétueux !",
-        createdAt: '2023-11-10T09:45:00Z',
-        likes: 8,
-        comments: 2
-      },
-      {
-        id: 2,
-        content: "Harry Potter quel kiffe !",
-        createdAt: '2025-12-07T11:35:00Z',
-        likes: 8,
-        comments: 2
-      }
-    ])
+    const userPosts = ref([])
 
     const loading = ref(false)
     const error = ref(null)
     const isFollowing = ref(false)
-    const recentBooks = ref([
-      { id: 1, title: 'Le Petit Prince', author: 'Antoine de Saint-Exupéry', cover: null },
-      { id: 2, title: '1984', author: 'George Orwell', cover: null },
-      { id: 3, title: 'L\'Étranger', author: 'Albert Camus', cover: null },
-      { id: 4, title: 'Harry Potter', author: 'J.K. Rowling', cover: null },
-      { id: 5, title: 'Le Seigneur des Anneaux', author: 'J.R.R. Tolkien', cover: null },
-      { id: 6, title: 'Dune', author: 'Frank Herbert', cover: null }
-    ])
+    const recentBooks = ref([])
 
     const isOwnProfile = computed(() => {
       const userId = route.params.id
@@ -156,9 +122,15 @@ export default {
       
       try {
         const userId = route.params.id || authStore.getUser?.id
+        console.log('Loading user with ID:', userId)
+        console.log('Auth user:', authStore.getUser)
+        
         if (userId) {
           const userData = await userStore.getById(userId)
+          console.log('User data loaded:', userData)
           user.value = userData
+        } else {
+          console.warn('No user ID found')
         }
       } catch (err) {
         console.error('Error loading user data:', err)
@@ -181,6 +153,7 @@ export default {
     }
 
     const formatDate = (dateString) => {
+      if (!dateString) return 'N/A'
       const date = new Date(dateString)
       return date.toLocaleDateString('fr-FR', { 
         year: 'numeric', 
