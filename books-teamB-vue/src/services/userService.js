@@ -1,25 +1,26 @@
 import axios from 'axios'
 
-const API_BASE_URL = 'http://localhost:8080/api'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
 
-// Configuration axios avec token
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
 })
 
-// Intercepteur pour ajouter le token d'authentification
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('auth_token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+    const raw = localStorage.getItem('auth_token')
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw)
+        if (parsed?.token) {
+          config.headers.Authorization = `Bearer ${parsed.token}`
+        }
+      } catch {}
     }
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
 // Service pour récupérer les utilisateurs
