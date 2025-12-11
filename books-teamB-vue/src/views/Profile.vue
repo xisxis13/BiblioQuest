@@ -113,7 +113,7 @@ export default {
 
     const isOwnProfile = computed(() => {
       const userId = route.params.id
-      return !userId || userId === authStore.getUser?.id?.toString()
+      return !userId || userId === authStore.user?.id?.toString()
     })
 
     const loadUserData = async () => {
@@ -129,7 +129,7 @@ export default {
           user.value = userData
         } else {
           // Utiliser les données déjà chargées de l'utilisateur connecté
-          user.value = authStore.getUser
+          user.value = authStore.user
         }
       } catch (err) {
         console.error('Error loading user data:', err)

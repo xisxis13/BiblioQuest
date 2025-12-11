@@ -125,7 +125,7 @@ export default {
     }
   },
   mounted() {
-    this.authStore.clearError()
+    // this.authStore.clearError()
   }
 }
 </script>
