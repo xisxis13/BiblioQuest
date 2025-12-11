@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import prj.books_teamB_spring.controller.CatalogController;
 import prj.books_teamB_spring.dto.AuthorDto;
-import prj.books_teamB_spring.dto.BookDetailDto;
+import prj.books_teamB_spring.dto.BookDto;
 import prj.books_teamB_spring.dto.BookSummaryDto;
 import prj.books_teamB_spring.dto.SubjectDto;
 import prj.books_teamB_spring.service.BookService;
@@ -246,7 +246,7 @@ class BookControllerTest {
         authorDto.setFirstName("J.R.R.");
         authorDto.setLastName("Tolkien");
 
-        BookDetailDto dto = new BookDetailDto();
+        BookDto dto = new BookDto();
         dto.setId(5L);
         dto.setTitle("The Hobbit");
         dto.setDesc_txt("A fantasy adventure");

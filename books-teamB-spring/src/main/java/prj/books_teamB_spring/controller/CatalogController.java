@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import prj.books_teamB_spring.dto.BookDetailDto;
+import prj.books_teamB_spring.dto.BookDto;
 import prj.books_teamB_spring.dto.BookSearchFilters;
 import prj.books_teamB_spring.dto.BookSummaryDto;
 import prj.books_teamB_spring.service.BookService;
@@ -56,8 +56,8 @@ public class CatalogController {
      * Endpoint: GET /api/catalog/{id}
      */
     @GetMapping("/{id}")
-    public ResponseEntity<BookDetailDto> getBookDetails(@PathVariable Long id) {
-        BookDetailDto book = bookService.findBookById(id);
+    public ResponseEntity<BookDto> getBookDetails(@PathVariable Long id) {
+        BookDto book = bookService.findBookById(id);
         return ResponseEntity.ok(book);
     }
 }
