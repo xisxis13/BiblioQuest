@@ -6,16 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import prj.books_teamB_spring.model.Book;
+import prj.books_teamB_spring.model.ReadingStatus;
+import prj.books_teamB_spring.model.UserBook;
 import prj.books_teamB_spring.service.UserBookService;
+import prj.books_teamB_spring.dto.UserBookDTO;
 
-/**
- * Contrôleur pour gérer les collections personnelles de livres
- * Gère les livres possédés par chaque utilisateur
- */
 @RestController
-@RequestMapping("/api/users/books") 
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
+@RequestMapping("/api/user/books")
 public class UserBookController {
 
     private final UserBookService userBookService;
@@ -25,47 +22,38 @@ public class UserBookController {
     }
 
     /**
-     * POST /api/users/books - Ajoute un livre à la collection de l'utilisateur
-     */
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Book> addBookToCollection(
-            @RequestHeader("X-Username") String username,
-            @RequestBody Book book) {
-        Book savedBook = userBookService.addBookForUser(username, book);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedBook);
-    }
-
-    /**
-     * GET /api/users/books - Liste tous les livres de l'utilisateur connecté
+     * Récupère tous les livres d'un user.
      */
     @GetMapping
-    public ResponseEntity<List<Book>> listMyBooks(
-            @RequestHeader("X-Username") String username) {
-        List<Book> books = userBookService.listBooksForUser(username);
-        return ResponseEntity.ok(books);
+    public List<UserBook> getAllBooks(@RequestParam Long userId) {
+        return userBookService.getAllBooks(userId);
     }
 
     /**
-     * GET /api/users/books/{id} - Récupère un livre spécifique de la collection
+     * Ajoute un livre pour un user.
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<Book> getMyBook(
-            @RequestHeader("X-Username") String username,
-            @PathVariable Long id) {
-        Book book = userBookService.getBookForUser(username, id);
-        return ResponseEntity.ok(book);
+    @PostMapping
+    public ResponseEntity<UserBook> addBook(@RequestBody UserBookDTO userBookDto) {
+        UserBook created = userBookService.addBook(userBookDto);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     /**
-     * DELETE /api/users/books/{id} - Supprime un livre de la collection
+     * Supprime un livre pour un user.
      */
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> removeBookFromCollection(
-            @RequestHeader("X-Username") String username,
-            @PathVariable Long id) {
-        userBookService.deleteBookForUser(username, id);
+    @DeleteMapping("/id")
+    public ResponseEntity<Void> deleteBook(@RequestBody UserBookDTO userBookDto) {
+        userBookService.deleteBook(userBookDto);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Met à jour le readingStatus d'un livre pour un user.
+     */
+    @PostMapping("/update")
+    public ResponseEntity<UserBook> updateReadingStatus(@RequestBody UserBookDTO userBookDto,
+                                                        @RequestParam ReadingStatus readingStatus) {
+        UserBook updated = userBookService.updateReadingStatus(userBookDto, readingStatus);
+        return ResponseEntity.ok(updated);
     }
 }
