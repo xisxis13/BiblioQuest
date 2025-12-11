@@ -10,88 +10,28 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   getters: {
-    isAuthenticated: (state) => {
-      if (!state.token) return false
-      // Vérifier que le token n'est pas expiré
-      return authService.isAuthenticated()
-    },
-    getUser: (state) => state.user,
+    isAuthenticated: (state) => !!state.token,
     getError: (state) => state.error,
     isLoading: (state) => state.loading
   },
 
   actions: {
-    // Initialiser avec les données localStorage
-    initializeAuth() {
-      // Vérifier si la session est toujours valide
-      if (authService.isAuthenticated()) {
-        const tokenData = authService.getToken()
-        const user = authService.getUser()
-        
-        if (tokenData && user) {
-          this.token = tokenData.token
-          this.user = user
-        }
-      } else {
-        // Session expirée, nettoyer
-        this.logout()
-      }
-    },
-
-    // Connexion
     async login(credentials) {
-      console.log('AuthStore login called with:', credentials)
-      this.loading = true
-      this.error = null
-      
-      try {
-        const result = await authService.login(credentials)
-        console.log('AuthService result:', result)
-        
-        const { user, token } = result
-        this.token = token
-        this.user = user
-        
-        console.log('User set in store:', this.user)
-        return { success: true }
-      } catch (error) {
-        console.error('Login error in authStore:', error)
-        this.error = error.message
-        return { success: false, error: error.message }
-      } finally {
-        this.loading = false
+      const response = await authService.login(credentials)
+      return response
+    },
+
+    async register(credentials) {
+      const response = await authService.register(credentials)
+      return response
+    },
+
+    getUser() {
+      return {
+        username: this.user?.username,
+        email: this.user?.email,
+        role: this.user?.role
       }
-    },
-
-    // Inscription
-    async register(userData) {
-      this.loading = true
-      this.error = null
-      
-      try {
-        const { user, token } = await authService.register(userData)
-        this.token = token
-        this.user = user
-        return { success: true }
-      } catch (error) {
-        this.error = error.message
-        return { success: false, error: error.message }
-      } finally {
-        this.loading = false
-      }
-    },
-
-    // Déconnexion
-    logout() {
-      authService.logout()
-      this.token = null
-      this.user = null
-      this.error = null
-    },
-
-    // Nettoyer les erreurs
-    clearError() {
-      this.error = null
     }
   }
 })
