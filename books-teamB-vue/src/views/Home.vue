@@ -151,9 +151,9 @@ export default {
       saving.value = true;
 
       try {
-        const user = authStore.getUser;
+        const user = authStore.user;
         // user.id n'existe pas !
-        // authStore.getUser ne renvoie que 'role' et 'username'
+        // authStore.user ne renvoie que 'role' et 'username'
         const userId = user && user.id ? user.id : null;
 
         const payload = {

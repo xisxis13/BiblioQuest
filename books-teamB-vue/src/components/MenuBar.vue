@@ -66,7 +66,7 @@ export default {
     ]
 
     const handleLogout = async () => {
-      await authStore.logout()
+      // await authStore.logout()
       router.push('/login')
     }
 
