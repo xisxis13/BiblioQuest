@@ -1,0 +1,53 @@
+
+import axios from 'axios'
+
+const API_BASE_URL = 'http://localhost:8080/api'
+
+const getCurrentUsername = () => {
+  return localStorage.getItem('currentUsername') || 'admin'
+}
+
+const reviewService = {
+  // Récupérer les avis d'un livre
+  async getBookReviews(bookId) {
+    const username = getCurrentUsername()
+    const response = await axios.get(`${API_BASE_URL}/books/${bookId}/reviews`, {
+      headers: { 'X-Username': username }
+    })
+    return response.data
+  },
+
+  // Ajouter un avis
+  async addReview(bookId, review) {
+    const username = getCurrentUsername()
+    const response = await axios.post(`${API_BASE_URL}/books/${bookId}/reviews`, review, {
+      headers: {
+        'X-Username': username,
+        'Content-Type': 'application/json'
+      }
+    })
+    return response.data
+  },
+
+  // Supprimer un avis
+  async deleteReview(bookId) {
+    const username = getCurrentUsername()
+    await axios.delete(`${API_BASE_URL}/books/${bookId}/reviews`, {
+      headers: { 'X-Username': username }
+    })
+  },
+
+  // Modifier un avis (PATCH ou PUT selon l'API, ici POST pour cohérence avec backend)
+  async updateReview(bookId, review) {
+    const username = getCurrentUsername()
+    const response = await axios.post(`${API_BASE_URL}/books/${bookId}/reviews`, review, {
+      headers: {
+        'X-Username': username,
+        'Content-Type': 'application/json'
+      }
+    })
+    return response.data
+  }
+}
+
+export default reviewService
