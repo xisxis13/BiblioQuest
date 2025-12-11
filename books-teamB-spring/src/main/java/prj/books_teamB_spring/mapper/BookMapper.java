@@ -1,7 +1,7 @@
 package prj.books_teamB_spring.mapper;
 
 import prj.books_teamB_spring.dto.AuthorDto;
-import prj.books_teamB_spring.dto.BookDetailDto;
+import prj.books_teamB_spring.dto.BookDto;
 import prj.books_teamB_spring.dto.BookSummaryDto;
 import prj.books_teamB_spring.dto.SubjectDto;
 import prj.books_teamB_spring.model.Author;
@@ -41,12 +41,12 @@ public class BookMapper {
     /**
      * Convertit un Book en BookDetailDto (pour la page de détail)
      */
-    public static BookDetailDto toDetailDto(Book book) {
+    public static BookDto toDetailDto(Book book) {
         if (book == null) {
             return null;
         }
 
-        BookDetailDto dto = new BookDetailDto();
+        BookDto dto = new BookDto();
         dto.setId(book.getId());
         dto.setTitle(book.getTitle());
         dto.setDesc_txt(book.getDesc_txt());
