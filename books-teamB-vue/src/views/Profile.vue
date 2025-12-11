@@ -121,16 +121,15 @@ export default {
       error.value = null
       
       try {
-        const userId = route.params.id || authStore.getUser?.id
-        console.log('Loading user with ID:', userId)
-        console.log('Auth user:', authStore.getUser)
+        const userId = route.params.id
         
         if (userId) {
+          // Charger un profil d'un autre utilisateur
           const userData = await userStore.getById(userId)
-          console.log('User data loaded:', userData)
           user.value = userData
         } else {
-          console.warn('No user ID found')
+          // Utiliser les données déjà chargées de l'utilisateur connecté
+          user.value = authStore.getUser
         }
       } catch (err) {
         console.error('Error loading user data:', err)
