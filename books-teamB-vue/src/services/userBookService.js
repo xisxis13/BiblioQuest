@@ -30,7 +30,6 @@ api.interceptors.request.use(
 )
 
 const userBookService = {
-  // Récupérer tous les livres d'un utilisateur
   async getAllBooks(userId) {
     try {
       const response = await api.get(`/users/${userId}/library`)
@@ -41,7 +40,6 @@ const userBookService = {
     }
   },
 
-  // Ajouter un livre pour un utilisateur
   async addBook(userId, bookId) {
     try {
       const response = await api.post(`/users/${userId}/books?bookId=${bookId}`)
@@ -52,7 +50,6 @@ const userBookService = {
     }
   },
 
-  // Supprimer un livre pour un utilisateur
   async deleteBook(userId, bookId) {
     try {
       const response = await api.delete(`/users/${userId}/books/${bookId}`)
@@ -63,7 +60,6 @@ const userBookService = {
     }
   },
 
-  // Mettre à jour le statut de lecture d'un livre pour un utilisateur
   async updateReadingStatus(userId, bookId, readingStatus) {
     try {
       const params = new URLSearchParams()
