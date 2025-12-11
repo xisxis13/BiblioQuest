@@ -16,10 +16,6 @@ import java.time.LocalDate;
 @ToString(exclude = {"user", "book"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserBook {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
