@@ -33,7 +33,7 @@
             </button>
 
             <div class="flex items-center gap-3">
-              <button 
+              <button
                 @click="$router.push({ name: 'book-edit', params: { id: book.id } })"
                 class="bg-box hover:bg-background border border-border rounded-full px-4 py-2 cursor-pointer transition-colors flex items-center justify-center gap-2"
               >
@@ -41,9 +41,9 @@
                 <span class="text-primary-text font-normal">Modifier</span>
               </button>
 
-              <button 
+              <button
                 class="bg-accent hover:bg-accent/90 rounded-full px-4 py-2 text-box font-normal cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >       
+              >
                 <Plus :size="22" />
                 <span>Ajouter à ma bibliothèque</span>
               </button>
@@ -54,9 +54,9 @@
           <div class="grid grid-cols-1 md:grid-cols-4 px-2 gap-6">
             <!-- Book Cover -->
             <div class="relative aspect-2/3 bg-accent/30 rounded-2xl overflow-hidden md:col-span-1">
-              <img 
-                v-if="book.cover" 
-                :src="book.cover" 
+              <img
+                v-if="book.cover"
+                :src="book.cover"
                 :alt="book.title + ' cover'"
                 class="w-full h-full object-cover"
               >
@@ -70,14 +70,14 @@
             <div class="md:col-span-3 pb-3 flex flex-col items-start justify-end gap-4">
               <!-- add subject -->
               <span class="w-full text-base font-regular text-primary-text">
-                Par {{ getAuthorsNames(book) }} • 
-                <span class="text-base font-regular text-secondary-text">{{ new Date(book.created_at).getFullYear() }}</span> • 
+                Par {{ getAuthorsNames(book) }} •
+                <span class="text-base font-regular text-secondary-text">{{ new Date(book.created_at).getFullYear() }}</span> •
                 <span v-if="book.totalPages" class="text-base font-regular text-secondary-text">{{ book.totalPages }} pages</span>
                 <span v-else class="text-base font-regular text-secondary-text">nombre de page inconnu</span>
               </span>
               <span class="w-full text-5xl font-bold text-primary-text">{{ book.title }}</span>
               <span v-if="book.isbn" class="text-base font-regular text-primary-text">ISBN : {{ book.isbn }}</span>
-              
+
               <!-- Statistics -->
               <div v-if="reviewStats" class="flex items-center gap-6">
                 <div class="flex items-center gap-3">
@@ -113,9 +113,9 @@
           <div class="w-full px-2 flex flex-col gap-6">
             <!-- Switch button -->
             <div class="bg-background border border-border rounded-full w-full p-1 flex items-center justify-center">
-              <button 
+              <button
                 @click="showDesc"
-                type="button"                
+                type="button"
                 class="rounded-full w-full px-4 py-2 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 whitespace-nowrap"
                 :class="{
                   'bg-accent text-box': activeTab === 'description',
@@ -124,8 +124,8 @@
               >
                 <span>Description</span>
               </button>
-  
-              <button 
+
+              <button
                 @click="showReviews"
                 type="button"
                 class="rounded-full w-full px-4 py-2 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 whitespace-nowrap"
@@ -137,7 +137,7 @@
                 <span>Avis des lecteurs</span>
               </button>
             </div>
-  
+
             <!-- Description -->
             <div v-if="activeTab === 'description'" class="w-full h-fit flex flex-col gap-3">
               <span class="text-primary-text font-semibold text-xl">Description</span>
@@ -181,7 +181,7 @@ import MenuBar from '@/components/MenuBar.vue';
 import ReviewList from '@/components/ReviewList.vue';
 import ReviewForm from '@/components/ReviewForm.vue';
 import { ChevronLeft, Plus, BookOpen, Star, PenLine } from 'lucide-vue-next';
-import booksService from '@/services/booksService'
+import bookService from '@/services/bookService'
 import reviewsService from '@/services/reviewsService'
 
 export default {
@@ -226,13 +226,13 @@ export default {
       try {
         this.loading = true
         this.error = null
-        
+
         const bookId = this.$route.params.id
-        this.book = await booksService.getBookById(bookId)
-        
+        this.book = await bookService.getBookById(bookId)
+
         // Charger les avis
         await this.loadReviews()
-        
+
       } catch (error) {
         console.error('Erreur lors du chargement du livre:', error)
         this.error = 'Impossible de charger les détails du livre'
@@ -290,7 +290,7 @@ export default {
         alert('Erreur lors de la suppression de votre avis')
       }
     },
-    
+
     getAuthorsNames(book) {
       if (!book.authors || book.authors.length === 0) {
         return 'Auteur inconnu'

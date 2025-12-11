@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import booksService from '@/services/booksService'
+import bookService from '@/services/bookService'
 
 export const useBooksStore = defineStore('books', {
   state: () => ({
@@ -29,11 +29,11 @@ export const useBooksStore = defineStore('books', {
 
   actions: {
     // Récupérer tous les livres disponibles (catalogue)
-    async fetchAllBooks() {
+    async getAll() {
       this.loading = true
       this.error = null
       try {
-        this.books = await booksService.getAllBooks()
+        this.books = await bookService.getAllBooks()
       } catch (error) {
         console.error('Erreur lors de la récupération des livres:', error)
         this.error = error.response?.data?.message || 'Erreur lors du chargement des livres'
@@ -43,27 +43,12 @@ export const useBooksStore = defineStore('books', {
       }
     },
 
-    // Rechercher des livres
-    async searchBooks(query) {
-      this.loading = true
-      this.error = null
-      try {
-        this.books = await booksService.searchBooks(query)
-      } catch (error) {
-        console.error('Erreur lors de la recherche:', error)
-        this.error = error.response?.data?.message || 'Erreur lors de la recherche'
-        throw error
-      } finally {
-        this.loading = false
-      }
-    },
-
     // Récupérer un livre par ID
-    async fetchBookById(id) {
+    async getById(id) {
       this.loading = true
       this.error = null
       try {
-        return await booksService.getBookById(id)
+        return await bookService.getBookById(id)
       } catch (error) {
         console.error('Erreur lors de la récupération du livre:', error)
         this.error = error.response?.data?.message || 'Erreur lors du chargement du livre'
@@ -74,11 +59,11 @@ export const useBooksStore = defineStore('books', {
     },
 
     // Ajouter un nouveau livre
-    async addBook(bookData) {
+    async add(bookData) {
       this.loading = true
       this.error = null
       try {
-        const newBook = await booksService.addBook(bookData)
+        const newBook = await bookService.addBook(bookData)
         this.books.push(newBook)
         return newBook
       } catch (error) {
@@ -91,17 +76,17 @@ export const useBooksStore = defineStore('books', {
     },
 
     // Mettre à jour un livre
-    async updateBook(id, bookData) {
+    async update(id, bookData) {
       this.loading = true
       this.error = null
       try {
-        const updatedBook = await booksService.updateBook(id, bookData)
+        const updatedBook = await bookService.updateBook(id, bookData)
         const index = this.books.findIndex(book => book.id === id)
         if (index !== -1) {
           this.books[index] = updatedBook
         }
-        return updatedBook
-      } catch (error) {
+        return updatedBookerror
+      } catch () {
         console.error('Erreur lors de la mise à jour du livre:', error)
         this.error = error.response?.data?.message || 'Erreur lors de la mise à jour du livre'
         throw error
@@ -111,35 +96,15 @@ export const useBooksStore = defineStore('books', {
     },
 
     // Supprimer un livre
-    async deleteBook(id) {
+    async delete(id) {
       this.loading = true
       this.error = null
       try {
-        await booksService.deleteBook(id)
+        await bookService.deleteBook(id)
         this.books = this.books.filter(book => book.id !== id)
       } catch (error) {
         console.error('Erreur lors de la suppression du livre:', error)
         this.error = error.response?.data?.message || 'Erreur lors de la suppression du livre'
-        throw error
-      } finally {
-        this.loading = false
-      }
-    },
-
-    // Mettre à jour le statut d'un livre
-    async updateBookStatus(id, status) {
-      this.loading = true
-      this.error = null
-      try {
-        const updatedBook = await booksService.updateBookStatus(id, status)
-        const index = this.books.findIndex(book => book.id === id)
-        if (index !== -1) {
-          this.books[index] = { ...this.books[index], status }
-        }
-        return updatedBook
-      } catch (error) {
-        console.error('Erreur lors de la mise à jour du statut:', error)
-        this.error = error.response?.data?.message || 'Erreur lors de la mise à jour du statut'
         throw error
       } finally {
         this.loading = false

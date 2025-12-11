@@ -78,7 +78,7 @@
 
         <!-- Books grid -->
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
-          <BookCard 
+          <BookCard
             v-for="book in filteredBooks"
             :key="book.id"
             :book="book"
@@ -112,7 +112,7 @@ import BookCard from '@/components/BookCard.vue';
 import { Check, BookOpen, Bookmark, FileText } from 'lucide-vue-next';
 
 export default {
-  name: 'Home',
+  name: 'MyLibrary',
   components: {
     AppHeader,
     MenuBar,

@@ -21,39 +21,26 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-function usernameHeader() {
-  try {
-    const user = typeof authService.getUser === 'function' ? authService.getUser() : null
-    const username = user?.username || user?.email || user?.name
-    return username ? { 'X-Username': username } : {}
-  } catch (e) {
-    return {}
-  }
-}
-
 export const bookService = {
-  list() {
-    const headers = usernameHeader()
-    return api.get('/books', { headers })
+  async getAll() {
+    return api.get('/books')
   },
 
-  get(id) {
-    const headers = usernameHeader()
-    return api.get(`/books/${id}`, { headers })
+  async getById(id) {
+    return api.get(`/books/${id}`)
   },
 
-  add(book) {
-    const headers = usernameHeader()
-    return api.post('/books', book, { headers })
+  async add(book) {
+    return api.post('/books', book)
   },
 
-  update(id, book) {
-    const headers = usernameHeader()
-    return api.put(`/books/${id}`, book, { headers })
+  async update(id, book) {
+    return api.put(`/books/${id}`, book)
   },
 
-  remove(id) {
-    const headers = usernameHeader()
-    return api.delete(`/books/${id}`, { headers })
+  async delete(id) {
+    return api.delete(`/books/${id}`)
   }
 }
+
+export default bookService
