@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import prj.books_teamB_spring.model.ReadingSession;
 import prj.books_teamB_spring.model.UserBook;
+import prj.books_teamB_spring.model.UserBookId;
 import prj.books_teamB_spring.repository.ReadingSessionRepository;
 import prj.books_teamB_spring.repository.UserBookRepository;
 
@@ -14,8 +15,13 @@ import prj.books_teamB_spring.repository.UserBookRepository;
 public class ReadingSessionService {
     private final ReadingSessionRepository sessionRepository;
     private final UserBookRepository userBookRepository;
-    public ReadingSession addSession(Long userBookId, Integer duration, Integer pagesRead) {
-        UserBook userBook = userBookRepository.findById(userBookId).orElseThrow();
+
+    public ReadingSession addSession(UserBookId userBookId, Integer duration, Integer pagesRead) {
+        UserBook userBook = userBookRepository.findByUserAndBook(
+            userBookId.getUserId(),
+            userBookId.getBookId()
+        ).orElseThrow();
+        
         ReadingSession session = new ReadingSession(  userBook, duration, pagesRead);
         return sessionRepository.save(session);
     }

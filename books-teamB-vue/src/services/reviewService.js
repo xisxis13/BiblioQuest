@@ -47,7 +47,12 @@ const reviewService = {
       }
     })
     return response.data
-  }
+  },
+  //TODO CORRIGER PLUS TARD
+  // getReviewsStats(reviews){
+    // const average = reviews => reviews.reduce((a, b) => a.rating + b.rating) / reviews.length;
+    // console.log("average review rating", average)
+  // }
 }
 
 export default reviewService

@@ -8,18 +8,19 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' }
 })
 
-// Attach token from authService/localStorage if present
-api.interceptors.request.use((config) => {
-  try {
-    const token = typeof authService.getToken === 'function' ? authService.getToken() : localStorage.getItem('auth_token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-  } catch (e) {
-    // ignore
-  }
-  return config
-})
+// // Attach token from authService/localStorage if present
+// api.interceptors.request.use((config) => {
+//   try {
+//     const token = typeof authService.getToken === 'function' ? authService.getToken() : localStorage.getItem('auth_token')
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`
+//     }
+//   } catch (e) {
+//     // ignore
+
+//   }
+//   return config
+// })
 
 export const bookService = {
   async getAll() {

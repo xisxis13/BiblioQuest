@@ -45,7 +45,7 @@ public class UserBookService {
      */
 
     public List<UserBook> findByUserId(Long userId){
-        return userBookRepository.fin
+        return userBookRepository.findByUserId(userId);
     }
     public List<UserBook> getAllBooks(Long userId) {
         return userBookRepository.findByUserId(userId);

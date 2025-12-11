@@ -14,7 +14,7 @@
 
     <!-- Logout -->
     <div class="pt-3 border-t border-border">
-      <button 
+      <button
         @click="handleLogout"
         :class="[
           'flex items-center w-full py-3 gap-2 rounded-2xl transition-colors duration-200 text-secondary-text hover:bg-accent/10 hover:text-primary-text group cursor-pointer',
@@ -35,12 +35,12 @@ import { useUiStore } from '@/stores/uiStore'
 import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
 import MenuBarItem from './MenuBarItem.vue'
-import { 
-  Home, 
-  Compass, 
-  Library, 
+import {
+  Home,
+  Compass,
+  Library,
   User,
-  LogOut, 
+  LogOut,
   Users,
   ChartNoAxesCombined
 } from 'lucide-vue-next'
@@ -65,9 +65,10 @@ export default {
       { path: '/profile', label: 'Profile', icon: User }
     ]
 
-    const handleLogout = async () => {
-      // await authStore.logout()
+    const handleLogout = () => {
+      authStore.logout()
       router.push('/login')
+      console.log("redirect to login")
     }
 
     // Initialize menu state from localStorage

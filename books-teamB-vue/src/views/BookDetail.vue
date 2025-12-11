@@ -182,7 +182,7 @@ import ReviewList from '@/components/ReviewList.vue';
 import ReviewForm from '@/components/ReviewForm.vue';
 import { ChevronLeft, Plus, BookOpen, Star, PenLine } from 'lucide-vue-next';
 import bookService from '@/services/bookService'
-import reviewsService from '@/services/reviewsService'
+import reviewService from '@/services/reviewService';
 
 export default {
   name: 'BookDetail',
@@ -228,8 +228,8 @@ export default {
         this.error = null
 
         const bookId = this.$route.params.id
-        this.book = await bookService.getBookById(bookId)
-
+        this.book = await bookService.getById(bookId)
+        console.log(this.book)
         // Charger les avis
         await this.loadReviews()
 
@@ -245,8 +245,8 @@ export default {
       try {
         this.reviewsLoading = true
         const bookId = parseInt(this.$route.params.id)
-        this.reviews = await reviewsService.getReviewsForBook(bookId)
-        this.reviewStats = reviewsService.calculateReviewStats(this.reviews)
+        this.reviews = await reviewService.getBookReviews(bookId)
+        // this.reviewStats = reviewService.getReviewsStats(this.reviews)
       } catch (error) {
         console.error('Erreur lors du chargement des avis:', error)
         this.reviews = []
@@ -259,7 +259,7 @@ export default {
     async handleAddReview(reviewData) {
       try {
         const bookId = parseInt(this.$route.params.id)
-        await reviewsService.addOrUpdateReview(bookId, reviewData)
+        await reviewService.addReview(bookId, reviewData)
         await this.loadReviews() // Recharger les avis
       } catch (error) {
         console.error('Erreur lors de l\'ajout de l\'avis:', error)
@@ -270,7 +270,7 @@ export default {
     async handleUpdateReview(reviewData) {
       try {
         const bookId = parseInt(this.$route.params.id)
-        await reviewsService.addOrUpdateReview(bookId, reviewData)
+        await reviewService.updateReview(bookId, reviewData)
         await this.loadReviews() // Recharger les avis
       } catch (error) {
         console.error('Erreur lors de la mise à jour de l\'avis:', error)
@@ -281,7 +281,7 @@ export default {
     async handleDeleteReview(review) {
       try {
         const bookId = parseInt(this.$route.params.id)
-        await reviewsService.deleteReview(bookId)
+        await reviewService.delete(bookId)
         await this.loadReviews() // Recharger les avis
         // Force Vue to update the view
         this.$forceUpdate()

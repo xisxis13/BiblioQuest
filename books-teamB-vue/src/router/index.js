@@ -87,7 +87,6 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = authStore.isAuthenticated
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const requiresGuest = to.matched.some(record => record.meta.requiresGuest)
-
   if (requiresAuth && !isAuthenticated) {
     // Rediriger vers login si authentification requise
     next({ name: 'login', query: { redirect: to.fullPath } })

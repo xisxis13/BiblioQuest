@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import prj.books_teamB_spring.model.ReadingSession;
+import prj.books_teamB_spring.model.UserBookId;
 import prj.books_teamB_spring.service.ReadingSessionService;
 
 @RestController
@@ -24,7 +25,7 @@ public class ReadingSessionController {
     private final ReadingSessionService readingService;
 
     @PostMapping("/")
-    public ReadingSession addSession(@RequestParam Long userBookId,
+    public ReadingSession addSession(@RequestParam UserBookId userBookId,
             @RequestParam Integer duration, @RequestParam Integer pagesRead) {
         return readingService.addSession(userBookId, duration, pagesRead);
     }

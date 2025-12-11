@@ -102,7 +102,7 @@ export default {
       this.errorMessage = ''
       this.successMessage = ''
       this.isLoading = true
-
+      console.log("user sent credentials")
       try {
         await this.authStore.login(this.form).then(() => setTimeout(() => {
           this.router.push('/')

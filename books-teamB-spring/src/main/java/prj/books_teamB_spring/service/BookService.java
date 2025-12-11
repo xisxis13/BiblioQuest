@@ -40,6 +40,9 @@ public class BookService {
         return book;
     }
 
+    public Iterable<Book> findAll(){
+        return this.bookRepository.findAll();
+    }
     public void deleteBook(Long id) {
         if (!bookRepository.existsById(id)) {
             throw new BookNotFoundException(id);

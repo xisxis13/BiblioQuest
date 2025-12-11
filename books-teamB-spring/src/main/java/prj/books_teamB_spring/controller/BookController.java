@@ -1,5 +1,8 @@
 package prj.books_teamB_spring.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,6 +29,18 @@ public class BookController {
 
     public BookController(BookService bookService) {
         this.bookService = bookService;
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<BookDTO>> getAll(){
+        Iterable<Book> books = this.bookService.findAll();
+        List<BookDTO> bookDTOs = new ArrayList<>();
+
+        for(Book book: books){
+            bookDTOs.add(new BookDTO(book));
+        }
+
+        return ResponseEntity.ok(bookDTOs);
     }
 
     @GetMapping("/{id}")

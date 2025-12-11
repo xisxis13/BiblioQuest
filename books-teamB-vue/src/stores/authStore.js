@@ -3,14 +3,14 @@ import { authService } from '@/services/authService'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null,
+    user: localStorage.getItem("user"),
     token: null,
     loading: false,
     error: null,
   }),
 
   getters: {
-    isAuthenticated: (state) => !(state.user === null),
+    isAuthenticated: (state) => state.user !== null && state.user !== "null",
     getError: (state) => state.error,
     isLoading: (state) => state.loading
   },
@@ -27,8 +27,11 @@ export const useAuthStore = defineStore('auth', {
           followingCount: user.followingCount,
           lastActivityAt: user.lastActivityAt
         }
+        localStorage.setItem("user", this.user)
       } else {
         this.user = null
+        localStorage.setItem("user", null)
+        console.log("user info", this.user)
       }
     },
 
@@ -61,10 +64,10 @@ export const useAuthStore = defineStore('auth', {
         email: this.user?.email,
         role: this.user?.role
       }
+    },
+    logout() {
+      this.setUser(null)
     }
   },
 
-  logout() {
-    this.setUser(null)
-  }
 })
