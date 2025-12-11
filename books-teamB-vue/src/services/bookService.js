@@ -24,11 +24,11 @@ const api = axios.create({
 
 export const bookService = {
   async getAll() {
-    return api.get('/books')
+    return (await api.get('/books')).data
   },
 
   async getById(id) {
-    return api.get(`/books/${id}`)
+    return (await api.get(`/books/${id}`)).data
   },
 
   async add(book) {

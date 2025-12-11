@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_books")
@@ -32,7 +33,9 @@ public class UserBook {
     private Integer rating;
 
     @Column(length = 1000)
-    private String personalNote;
+    private String review;
+    
+    private LocalDateTime reviewCreatedAt;
 
     public UserBook(User user, Book book) {
         this.id = new UserBookId(user.getId(), book.getId());

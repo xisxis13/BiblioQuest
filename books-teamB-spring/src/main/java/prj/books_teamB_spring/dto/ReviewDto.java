@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * DTO pour exposer les avis publics sur un livre
@@ -14,6 +15,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ReviewDto {
     private UserBookDTO userBookDTO;
+    private String username;
     private Integer rating;
-    private String personalNote;
+    private String comment;
+    private LocalDateTime createdAt;
 }

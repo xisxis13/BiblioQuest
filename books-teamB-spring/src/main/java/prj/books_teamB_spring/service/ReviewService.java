@@ -1,28 +1,19 @@
 package prj.books_teamB_spring.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import prj.books_teamB_spring.dto.ReviewDto;
 import prj.books_teamB_spring.dto.UserBookDTO;
-import prj.books_teamB_spring.model.Book;
 import prj.books_teamB_spring.model.User;
 import prj.books_teamB_spring.model.UserBook;
-import prj.books_teamB_spring.model.ReadingStatus;
 import prj.books_teamB_spring.repository.BookRepository;
 import prj.books_teamB_spring.repository.UserBookRepository;
 import prj.books_teamB_spring.repository.UserRepository;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * Service simplifié pour gérer les avis sur les livres
- */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -41,10 +32,13 @@ public class ReviewService {
                 userBook.getId().getUserId(),
                 userBook.getId().getBookId()
             );
+			User user = userRepository.findById(userBook.getId().getUserId()).orElseThrow();
             ReviewDto review = new ReviewDto(
 				userBookDTO,
+				user.getUsername(),
 				userBook.getRating(),
-				userBook.getPersonalNote()
+				userBook.getReview(),
+				userBook.getReviewCreatedAt()
 			);
 			reviews.add(review);
         }
@@ -60,7 +54,7 @@ public class ReviewService {
 		).orElseThrow();
 
 		userBook.setRating(review.getRating());
-		userBook.setPersonalNote(review.getPersonalNote());
+		userBook.setReview(review.getComment());
 		userBookRepository.save(userBook);
 	}
 
@@ -71,7 +65,7 @@ public class ReviewService {
 		).orElseThrow();
 
 		userBook.setRating(null);
-		userBook.setPersonalNote(null);
+		userBook.setReview(null);
 		userBookRepository.save(userBook);
 	}
 }

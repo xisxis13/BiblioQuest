@@ -29,7 +29,7 @@ public class Author {
     private long id;
     
     private String firstName;
-    private String lastName; 
+    private String lastName;
     
     @ManyToMany(mappedBy = "authors")
     private Set<Book> books = new HashSet<>();

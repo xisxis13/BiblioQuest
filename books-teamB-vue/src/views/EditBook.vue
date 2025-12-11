@@ -254,7 +254,7 @@ export default {
 
     async loadBook(id) {
       try {
-        const book = await bookService.getBookById(id)
+        const book = await bookService.getById(id)
         this.book = book
 
         // Populate form

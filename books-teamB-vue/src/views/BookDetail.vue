@@ -229,7 +229,7 @@ export default {
 
         const bookId = this.$route.params.id
         this.book = await bookService.getById(bookId)
-        console.log(this.book)
+        console.log("book fetched by id for details", this.book)
         // Charger les avis
         await this.loadReviews()
 
@@ -246,6 +246,7 @@ export default {
         this.reviewsLoading = true
         const bookId = parseInt(this.$route.params.id)
         this.reviews = await reviewService.getBookReviews(bookId)
+        console.log("book reviews", this.reviews)
         // this.reviewStats = reviewService.getReviewsStats(this.reviews)
       } catch (error) {
         console.error('Erreur lors du chargement des avis:', error)

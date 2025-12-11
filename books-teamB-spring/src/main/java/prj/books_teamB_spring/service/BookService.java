@@ -98,7 +98,7 @@ public class BookService {
         book.setCover(newBookDTO.getCover());
         book.setSerie_id(newBookDTO.getSerie_id());
         book.setSerie_pos(newBookDTO.getSerie_pos());
-        book.setTotal_pages(newBookDTO.getTotal_pages());
+        book.setTotal_pages(newBookDTO.getTotalPages());
         book.setIsbn(newBookDTO.getIsbn());
         book.setCreated_at(LocalDateTime.now());
         book.setUpdated_at(LocalDateTime.now());

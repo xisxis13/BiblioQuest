@@ -7,7 +7,7 @@
         ({{ reviews.length }} avis)
       </span>
     </span>
-  
+
     <!-- Statistics -->
     <div v-if="reviews.length > 0" class="w-full flex items-center gap-8">
       <!-- Average note -->
@@ -46,7 +46,7 @@
             <Star :size="16" class="fill-primary-text stroke-primary-text" />
           </div>
           <div class="flex-1 h-2 bg-border rounded-full overflow-hidden">
-            <div 
+            <div
               class="h-full bg-accent transition-all duration-300 rounded-full"
               :style="{ width: `${rating.percentage}%` }"
             ></div>
@@ -86,10 +86,10 @@
       <!-- Other reviews -->
       <div v-if="otherReviews.length > 0" class="flex flex-col items-start justify-start gap-3">
         <span v-if="userReview" class="w-full text-primary-text font-medium text-sm border-t border-border pt-3">Autres avis</span>
-        <ReviewItem 
+        <ReviewItem
           v-for="review in otherReviews"
           :key="review.id"
-          :review="review" 
+          :review="review"
         />
       </div>
     </div>
@@ -129,6 +129,8 @@ const emit = defineEmits(['add-review', 'update-review', 'delete-review', 'refre
 
 // Computed properties
 const userReview = computed(() => {
+  console.log("coucou du userReview")
+  //TODO adapter le isOwnReview
   return props.reviews.find(review => review.isOwnReview)
 })
 
@@ -148,14 +150,14 @@ const ratingDistribution = computed(() => {
     count: props.reviews.filter(review => review.rating === stars).length,
     percentage: 0
   }))
-  
+
   const total = props.reviews.length
   if (total > 0) {
     distribution.forEach(item => {
       item.percentage = (item.count / total) * 100
     })
   }
-  
+
   return distribution
 })
 

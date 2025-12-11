@@ -26,7 +26,7 @@ public class BookDTO {
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 
-    private Integer total_pages;
+    private Integer totalPages;
     private String isbn;
 
     public BookDTO(Book book){
@@ -46,7 +46,7 @@ public class BookDTO {
         this.authors = authors;
         this.created_at = book.getCreated_at();
         this.updated_at = book.getUpdated_at();
-        this.total_pages = book.getTotal_pages();
+        this.totalPages = book.getTotal_pages();
         this.isbn = book.getIsbn();
     }
 }

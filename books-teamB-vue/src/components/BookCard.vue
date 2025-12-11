@@ -2,9 +2,9 @@
   <div class="border border-border rounded-2xl flex flex-col gap-2 bg-background overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200">
     <!-- Cover -->
     <div class="relative aspect-2/3 bg-accent/30 rounded-2xl overflow-hidden">
-      <img 
+      <img
         v-if="coverImage"
-        :src="coverImage" 
+        :src="coverImage"
         :alt="book.title + ' cover'"
         class="w-full h-full object-cover"
       >
@@ -14,8 +14,8 @@
       </div>
 
       <!-- Status badge -->
-      <div 
-        v-if="statusLabel" 
+      <div
+        v-if="statusLabel"
         class="absolute top-3 right-3"
       >
         <span
@@ -36,7 +36,7 @@
         <span v-if="book.year" class="text-primary-text text-xs bg-border px-2 py-0.5 rounded-full">{{ book.year }}</span>
         <span class="text-secondary-text text-sm line-clamp-1" :title="getAuthorsNames(book.authors)">{{ getAuthorsNames(book.authors) }}</span>
       </div>
-  
+
       <!-- Action button -->
       <div v-if="showActions" class="flex gap-1 my-4 p-1 bg-box border border-border rounded-2xl">
         <button
@@ -122,7 +122,7 @@ export default {
       if (Array.isArray(authors)) {
         return authors.map(author => `${author.firstName} ${author.lastName}`).join(', ');
       }
-      return 'Auteur inconnu';
+      return this.book;
     },
   },
 };
