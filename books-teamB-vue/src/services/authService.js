@@ -10,7 +10,6 @@ const api = axios.create({
   }
 })
 
-
 export const authService = {
   async login(credentials) {
     const response = await api.post('/auth/login', credentials)

@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-3 p-3 bg-background w-full h-screen items-center justify-center">
     <div class="max-w-sm w-full flex flex-col items-center justify-center gap-8">
       <span class="text-primary-text font-semibold text-3xl text-center w-full">Bienvenue sur <span class="text-accent font-semibold text-3xl">BiblioQuest</span> !</span>
-      
+
       <form @submit.prevent="handleLogin" class="bg-box border border-border rounded-2xl w-full p-6 flex flex-col justify-center items-center gap-4">
         <span class="border-b border-border pb-4 w-full text-center text-primary-text text-sm">Pas encore de compte ? <router-link to="/register" class="text-accent text-sm">Inscris toi ici</router-link></span>
 
@@ -45,7 +45,7 @@
           />
         </div>
 
-        <button 
+        <button
           type="submit"
           :disabled="isLoading"
           class="bg-accent hover:bg-accent/90 rounded-2xl w-full px-4 py-3 text-box font-medium cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -57,7 +57,7 @@
             </svg>
             <span>Connexion en cours...</span>
           </template>
-          
+
           <span v-else>Se connecter</span>
         </button>
       </form>
@@ -104,13 +104,12 @@ export default {
       this.isLoading = true
 
       try {
-        await this.authStore.login(this.form)
-        this.successMessage = 'Connexion réussie ! Redirection en cours...'
-        
-        // Rediriger après un court délai pour montrer le message de succès
-        setTimeout(() => {
+        await this.authStore.login(this.form).then(() => setTimeout(() => {
           this.router.push('/')
-        }, 1000)
+        }, 1000))
+        this.successMessage = 'Connexion réussie ! Redirection en cours...'
+
+        // Rediriger après un court délai pour montrer le message de succès
       } catch (error) {
         console.error('Login failed:', error)
         this.errorMessage = error.message || 'Erreur de connexion'

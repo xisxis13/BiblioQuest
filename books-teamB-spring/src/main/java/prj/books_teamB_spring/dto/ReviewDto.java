@@ -13,44 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewDto {
-
-    /**
-     * ID de l'avis (correspond à l'ID du UserBook)
-     */
-    private Long id;
-    
-    /**
-     * ID du livre concerné
-     */
-    private Long bookId;
-
-    /**
-     * Titre du livre (pour affichage)
-     */
-    private String bookTitle;
-
-    /**
-     * Nom d'utilisateur de l'auteur de l'avis
-     */
-    private String username;
-
-    /**
-     * Note sur 5 étoiles (1-5)
-     */
+    private UserBookDTO userBookDTO;
     private Integer rating;
-
-    /**
-     * Commentaire/avis textuel (max 1000 caractères)
-     */
-    private String comment;
-
-    /**
-     * Date de création de l'avis
-     */
-    private LocalDate createdAt;
-
-    /**
-     * Indique si c'est l'avis de l'utilisateur connecté
-     */
-    private Boolean isOwnReview;
+    private String personalNote;
 }

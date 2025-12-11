@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
@@ -27,28 +28,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReadingSession {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_book_id", nullable = false)
-    private UserBook userBook;
+    private Long userId;
+
+    private Long bookId;
 
     @Min(1)
     @Column(nullable = false)
     private Integer duration;
 
-    @Min(0)
-    @Column(nullable = false)
-    private Integer pagesRead;
-
     @NotNull
     @Column(nullable = false)
     private LocalDateTime sessionDate;
-
 
     @Min(0)
     private Integer startPage;
@@ -59,12 +54,11 @@ public class ReadingSession {
     @Column(length = 500)
     private String sessionNotes;
 
-
     // Constructeurs utilitaires
-    public ReadingSession( UserBook userBook, Integer duration, Integer pagesRead) {
-        this.userBook = userBook;
+    public ReadingSession(UserBook userBook, Integer duration, Integer pagesRead) {
+        this.userId = userBook.getId().getUserId();
+        this.bookId = userBook.getId().getBookId();
         this.duration = duration;
-        this.pagesRead = pagesRead;
         this.sessionDate = LocalDateTime.now();
     }
 }

@@ -16,7 +16,7 @@ import prj.books_teamB_spring.repository.UserBookRepository;
 import prj.books_teamB_spring.repository.UserRepository;
 import prj.books_teamB_spring.dto.UserBookDTO;
 
-/**
+/*
  * Service pour gérer les collections de livres des utilisateurs.
  * Responsabilités : ajouter/supprimer des livres, lister les livres possédés,
  * mettre à jour le statut de lecture.
@@ -43,6 +43,10 @@ public class UserBookService {
      * @param userId id de l'utilisateur
      * @return liste des UserBook de cet utilisateur
      */
+
+    public List<UserBook> findByUserId(Long userId){
+        return userBookRepository.fin
+    }
     public List<UserBook> getAllBooks(Long userId) {
         return userBookRepository.findByUserId(userId);
     }
@@ -90,7 +94,7 @@ public class UserBookService {
                         "Livre introuvable avec l'id " + userBookDto.getBookId()
                 ));
 
-        UserBook userBook = userBookRepository.findByUserAndBook(user, book)
+        UserBook userBook = userBookRepository.findByUserAndBook(user.getId(), book.getId())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Ce livre n'est pas présent dans la collection de cet utilisateur"
@@ -119,7 +123,7 @@ public class UserBookService {
                         "Livre introuvable avec l'id " + userBookDto.getBookId()
                 ));
 
-        UserBook userBook = userBookRepository.findByUserAndBook(user, book)
+        UserBook userBook = userBookRepository.findByUserAndBook(user.getId(), book.getId())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Ce livre n'est pas présent dans la collection de cet utilisateur"

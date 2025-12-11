@@ -28,8 +28,7 @@ public class ReadingSessionService {
         ReadingSession session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session introuvable"));
         if (duration != null) session.setDuration(duration);
-        if (pagesRead != null) session.setPagesRead(pagesRead);
-        if (notes != null) session.setSessionNotes(notes);  
+        if (notes != null) session.setSessionNotes(notes);
         return sessionRepository.save(session);
     }
 

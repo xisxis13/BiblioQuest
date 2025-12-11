@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import prj.books_teamB_spring.dto.BookDto;
+import prj.books_teamB_spring.dto.BookDTO;
 import prj.books_teamB_spring.dto.AuthorDto;
 import prj.books_teamB_spring.dto.SubjectDto;
 import prj.books_teamB_spring.exception.BookNotFoundException;
@@ -88,19 +88,19 @@ public class BookService {
     }
 
 
-    public Book addBook(BookDto newBookDto) {
+    public Book addBook(BookDTO newBookDTO) {
         Book book = new Book();
-        book.setTitle(newBookDto.getTitle());
-        book.setDesc_txt(newBookDto.getDesc_txt());
-        book.setCover(newBookDto.getCover());
-        book.setSerie_id(newBookDto.getSerie_id());
-        book.setSerie_pos(newBookDto.getSerie_pos());
-        book.setTotal_pages(newBookDto.getTotal_pages());
-        book.setIsbn(newBookDto.getIsbn());
+        book.setTitle(newBookDTO.getTitle());
+        book.setDesc_txt(newBookDTO.getDesc_txt());
+        book.setCover(newBookDTO.getCover());
+        book.setSerie_id(newBookDTO.getSerie_id());
+        book.setSerie_pos(newBookDTO.getSerie_pos());
+        book.setTotal_pages(newBookDTO.getTotal_pages());
+        book.setIsbn(newBookDTO.getIsbn());
         book.setCreated_at(LocalDateTime.now());
         book.setUpdated_at(LocalDateTime.now());
 
-        SubjectDto subjectDto = newBookDto.getSubject();
+        SubjectDto subjectDto = newBookDTO.getSubject();
         if (subjectDto != null && subjectDto.getText() != null && !subjectDto.getText().isBlank()) {
             Subject subject = new Subject();
             subject.setText(subjectDto.getText());
@@ -108,8 +108,8 @@ public class BookService {
             book.setSubject(subject);
         }
 
-        if (newBookDto.getAuthors() != null) {
-            for (AuthorDto authorDto : newBookDto.getAuthors()) {
+        if (newBookDTO.getAuthors() != null) {
+            for (AuthorDto authorDto : newBookDTO.getAuthors()) {
                 if ((authorDto.getFirstName() == null || authorDto.getFirstName().isBlank()) &&
                     (authorDto.getLastName() == null || authorDto.getLastName().isBlank())) {
                     continue;

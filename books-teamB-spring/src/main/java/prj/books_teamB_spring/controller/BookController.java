@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import prj.books_teamB_spring.dto.BookDto;
+import prj.books_teamB_spring.dto.BookDTO;
 import prj.books_teamB_spring.model.Book;
 import prj.books_teamB_spring.dto.AuthorDto;
 import prj.books_teamB_spring.service.BookService;
@@ -29,9 +29,9 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookDto> getBook(@PathVariable Long id) {
-        BookDto bookDto = bookService.findById(id);
-        return ResponseEntity.ok(bookDto);
+    public ResponseEntity<BookDTO> getBook(@PathVariable Long id) {
+        Book book = bookService.findById(id);
+        return ResponseEntity.ok(new BookDTO(book));
     }
 
     @DeleteMapping("/{id}")
@@ -41,9 +41,9 @@ public class BookController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<BookDto> addBook(@Valid @RequestBody BookDto bookDto) {
-        BookDto created = bookService.addBook(bookDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<BookDTO> addBook(@Valid @RequestBody BookDTO bookDto) {
+        Book created = bookService.addBook(bookDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BookDTO(created));
     }
 
     @PostMapping("/{bookId}/authors")

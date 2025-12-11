@@ -3,7 +3,6 @@ package prj.books_teamB_spring.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -13,21 +12,11 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"user", "book"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserBook {
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    @EqualsAndHashCode.Include
-    private User user;
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "book_id", nullable = false)
-    @EqualsAndHashCode.Include
-    private Book book;
+    @EmbeddedId
+    private UserBookId id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -46,15 +35,13 @@ public class UserBook {
     private String personalNote;
 
     public UserBook(User user, Book book) {
-        this.user = user;
-        this.book = book;
+        this.id = new UserBookId(user.getId(), book.getId());
         this.status = ReadingStatus.TO_READ;
         this.progress = 0;
     }
     
     public UserBook(User user, Book book, ReadingStatus status) {
-        this.user = user;
-        this.book = book;
+        this.id = new UserBookId(user.getId(), book.getId());
         this.status = status;
         this.progress = 0;
     }
