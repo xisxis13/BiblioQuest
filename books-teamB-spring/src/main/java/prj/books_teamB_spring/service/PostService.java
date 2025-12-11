@@ -30,7 +30,7 @@ public class PostService {
     }
 
     public List<Post> getPostsByUserId(Long userId) {
-        User user = userService.getUserById(userId);
+        User user = userService.findById(userId);
         if (user == null) {
             throw new IllegalArgumentException("User not found with id: " + userId);
         }
