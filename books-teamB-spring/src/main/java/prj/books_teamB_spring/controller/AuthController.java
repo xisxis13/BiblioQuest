@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import prj.books_teamB_spring.model.User;
+import prj.books_teamB_spring.dto.UserDto;
 import prj.books_teamB_spring.dto.UserLoginDto;
 import prj.books_teamB_spring.dto.UserRegisterDto;
 import prj.books_teamB_spring.model.Role;
@@ -31,7 +32,7 @@ public class AuthController {
         if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
             return ResponseEntity.status(401).body("Invalid email or password");
         }
-        return ResponseEntity.ok("Login successful");
+        return ResponseEntity.ok(new UserDto(user));
     }
 
     @PostMapping("/register")
@@ -49,6 +50,6 @@ public class AuthController {
             Role.USER
         );
         userRepository.save(user);
-        return ResponseEntity.ok("Registration successful");
+        return ResponseEntity.ok(new UserDto(user));
     }
 }
