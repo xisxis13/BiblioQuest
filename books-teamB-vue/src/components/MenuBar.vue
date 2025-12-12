@@ -62,7 +62,7 @@ export default {
       { path: '/my-library', label: 'Ma bibliothèque', icon: Library },
       { path: '/reading-tracker', label: 'Suivi de lecture', icon: ChartNoAxesCombined },
       { path: '/community', label: 'Communauté', icon: Users },
-      { path: '/profile', label: 'Profile', icon: User }
+      { path: `/profile/${authStore.getUser().id}`, label: 'Profile', icon: User }
     ]
 
     const handleLogout = () => {

@@ -244,8 +244,8 @@ export default {
         this.reviewsLoading = true
         const bookId = parseInt(this.$route.params.id)
         this.reviews = await reviewService.getBookReviews(bookId)
-        console.log("book reviews", this.reviews)
-        // this.reviewStats = reviewService.getReviewsStats(this.reviews)
+        this.reviewStats = reviewService.getReviewsStats(this.reviews)
+        console.log("book reviews average rating", this.reviewStats.averageRating)
       } catch (error) {
         console.error('Erreur lors du chargement des avis:', error)
         this.reviews = []

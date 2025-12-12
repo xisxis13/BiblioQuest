@@ -36,6 +36,7 @@ public class ReviewController {
     public ResponseEntity<String> addOrUpdateReview(
             @RequestBody ReviewDto reviewDTO
         ) {
+            System.out.println("review dto " + reviewDTO);
             reviewService.addOrUpdateReview(reviewDTO);
         
         return ResponseEntity.status(HttpStatus.CREATED).body("ok");

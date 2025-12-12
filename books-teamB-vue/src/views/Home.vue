@@ -32,13 +32,13 @@
         </div>
 
         <!-- Posts list -->
-        <div 
+        <div
           v-if="!loadingPosts"
           class="w-full h-full flex items-center justify-start flex-col gap-3 overflow-scroll"
         >
           <PostItem
-            v-for="post in posts" 
-            :key="post.id" 
+            v-for="post in posts"
+            :key="post.id"
             :post="post"
           />
         </div>
@@ -58,7 +58,7 @@
         <span class="w-full pb-3 border-b border-border text-primary-text font-medium text-lg">Écrire une publication</span>
 
         <form @submit.prevent="onSubmit" class="w-full h-full flex flex-col items-start justify-start gap-4">
-          
+
           <!-- add a select for book -->
 
           <textarea
@@ -67,7 +67,7 @@
             class="bg-background border border-border rounded-2xl w-full h-40 px-4 py-3 text-sm placeholder:text-secondary-text focus:outline-none focus:ring-1 focus:ring-accent"
           ></textarea>
 
-          <button 
+          <button
             type="submit"
             :disabled="saving"
             class="bg-accent hover:bg-accent/90 rounded-2xl w-full px-4 py-3 text-box font-normal cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -79,7 +79,7 @@
               </svg>
               <span>Publication...</span>
             </template>
-            
+
             <span v-else>Publier</span>
           </button>
         </form>
@@ -121,6 +121,7 @@ export default {
     const newPost = ref({
       // add linked book
       content: '',
+      username: ''
     });
 
     const formatDate = (value) => {
@@ -137,6 +138,7 @@ export default {
 
       try {
         const res = await postService.list();
+        console.log("result of fetching posts", res.data)
         posts.value = res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       } catch (err) {
         console.error('Erreur lors du chargement des publications :', err);
@@ -151,14 +153,13 @@ export default {
       saving.value = true;
 
       try {
-        const user = authStore.user;
-        // user.id n'existe pas !
-        // authStore.user ne renvoie que 'role' et 'username'
-        const userId = user && user.id ? user.id : null;
+        const user = authStore.getUser();
+        const userId = user.id
+        console.log("userId on post submit", userId)
 
         const payload = {
           content: newPost.value.content,
-          userId,
+          userId: userId,
         };
 
         const res = await postService.add(payload);
@@ -166,8 +167,8 @@ export default {
         posts.value.unshift(res.data);
 
         newPost.value = {
-          title: '',
           content: '',
+          username: user.username
         };
       } catch (err) {
         console.error("Erreur lors de l'envoi de la publications :", err);

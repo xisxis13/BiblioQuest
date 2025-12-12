@@ -68,7 +68,7 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/profile',
+      path: '/profile/:id',
       name: 'profile',
       component: Profile,
       meta: { requiresAuth: true }

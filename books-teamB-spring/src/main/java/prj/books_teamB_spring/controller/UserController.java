@@ -3,6 +3,7 @@ package prj.books_teamB_spring.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import prj.books_teamB_spring.dto.UserDto;
 import prj.books_teamB_spring.model.User;
 import prj.books_teamB_spring.service.UserService;
 import java.util.List;
@@ -27,11 +28,13 @@ public class UserController {
     /**
      * GET /api/users/me - Récupère le profil de l'utilisateur connecté
      */
-    @GetMapping("/me")
-    public ResponseEntity<User> getCurrentUser(@RequestHeader("X-Username") Long userId) {
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getById(
+        @PathVariable Long id
+    ) {
         try {
-            User user = userService.findById(userId);
-            return ResponseEntity.ok(user);
+            User user = userService.findById(id);
+            return ResponseEntity.ok(new UserDto(user));
         } catch (Exception e) {
             throw new RuntimeException("User not found");
         }

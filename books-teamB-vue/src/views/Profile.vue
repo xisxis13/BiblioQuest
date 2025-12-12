@@ -41,7 +41,7 @@
                 <span class="text-primary-text font-semibold text-2xl">{{ stats.booksRead }}</span>
               </div>
             </div>
-  
+
             <div class="bg-white border border-border rounded-3xl p-4 h-fit flex items-center justify-start gap-4">
               <div class="bg-purple-100 w-12 h-12 flex items-center justify-center rounded-xl">
                 <Users class="stroke-purple-600" />
@@ -52,15 +52,15 @@
               </div>
             </div>
           </div>
-  
+
           <!-- Posts Section -->
           <div class="flex flex-col gap-4">
             <h2 class="text-xl font-semibold text-primary-text">Mes publications</h2>
             <div class="grid gap-4">
-              <PostCard 
-                v-for="post in userPosts" 
+              <PostCard
+                v-for="post in userPosts"
                 :key="post.id"
-                :post="{...post, user: user?.username}" 
+                :post="post"
               />
             </div>
           </div>
@@ -79,6 +79,7 @@ import AppHeader from '@/components/AppHeader.vue';
 import MenuBar from '@/components/MenuBar.vue';
 import PostCard from '@/components/PostCard.vue';
 import { Check, Library, Users } from 'lucide-vue-next';
+import postService from '@/services/postService';
 
 export default {
   name: 'ProfilePage',
@@ -88,13 +89,13 @@ export default {
     PostCard,
     Check,
     Library,
-    Users, 
+    Users,
   },
   setup() {
     const route = useRoute()
     const authStore = useAuthStore()
     const userStore = useUserStore()
-    
+
     const user = ref(null)
 
     const stats = computed(() => ({
@@ -113,24 +114,22 @@ export default {
 
     const isOwnProfile = computed(() => {
       const userId = route.params.id
-      return !userId || userId === authStore.user?.id?.toString()
+      return userId === authStore.getUser().id
     })
 
     const loadUserData = async () => {
       loading.value = true
       error.value = null
-      
+
       try {
-        const userId = route.params.id
-        
-        if (userId) {
-          // Charger un profil d'un autre utilisateur
-          const userData = await userStore.getById(userId)
-          user.value = userData
-        } else {
-          // Utiliser les données déjà chargées de l'utilisateur connecté
-          user.value = authStore.user
-        }
+        const userId = Number(route.params.id)
+        await userStore.getById(userId).then(async (data) => {
+          user.value = data
+          await postService.getUserPosts(data.id).then((posts) => {
+            userPosts.value = posts.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          })
+        })
+
       } catch (err) {
         console.error('Error loading user data:', err)
         error.value = err.message || 'Failed to load user data'
@@ -154,9 +153,9 @@ export default {
     const formatDate = (dateString) => {
       if (!dateString) return 'N/A'
       const date = new Date(dateString)
-      return date.toLocaleDateString('fr-FR', { 
-        year: 'numeric', 
-        month: 'long' 
+      return date.toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'long'
       })
     }
 

@@ -25,7 +25,7 @@ public class Post {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Size(min = 10, max = 300, message = "Le contenu ne peut pas dépasser 300 caractères")
+    @Size(max = 300, message = "Le contenu ne peut pas dépasser 300 caractères")
     private String content;
     private Long userId;
 

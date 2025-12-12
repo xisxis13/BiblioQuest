@@ -38,6 +38,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         const response = await authService.login(credentials)
         this.setUser(response)
+        console.log("userInfo stocked on localStorage", this.user)
         return response
 
       } catch (error) {
@@ -57,7 +58,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     getUser() {
-      return this.$state.user
+      return this.user
     },
     logout() {
       this.setUser(null)

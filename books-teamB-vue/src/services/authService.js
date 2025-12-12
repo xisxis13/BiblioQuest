@@ -18,6 +18,7 @@ export const authService = {
 
   async register(credentials) {
     const response = await api.post('/auth/register', credentials)
+    console.log("register credentials", credentials)
     return response.data
   }
 }
