@@ -32,7 +32,7 @@ export const bookService = {
   },
 
   async add(book) {
-    return api.post('/books', book)
+    return api.post('/books/add', book)
   },
 
   async update(id, book) {
@@ -41,7 +41,11 @@ export const bookService = {
 
   async delete(id) {
     return api.delete(`/books/${id}`)
-  }
+  },
+
+  async getSubjects(){
+    return api.get('/books/subjects')
+  },
 }
 
 export default bookService

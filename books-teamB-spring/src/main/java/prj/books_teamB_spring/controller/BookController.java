@@ -3,6 +3,8 @@ package prj.books_teamB_spring.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import prj.books_teamB_spring.dto.BookDTO;
 import prj.books_teamB_spring.model.Book;
+import prj.books_teamB_spring.model.Subject;
 import prj.books_teamB_spring.dto.AuthorDto;
 import prj.books_teamB_spring.service.BookService;
 
@@ -61,6 +64,12 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new BookDTO(created));
     }
 
+    @PostMapping("/update/{id}")
+    public ResponseEntity<BookDTO> updateBook(@Valid @RequestBody BookDTO bookDto) {
+        BookDTO book = bookService.update(bookDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(book);
+    }
+
     @PostMapping("/{bookId}/authors")
     public ResponseEntity<Book> addAuthor(
             @PathVariable Long bookId,
@@ -75,5 +84,11 @@ public class BookController {
             @PathVariable Long authorId) {
         Book updated = bookService.deleteAuthor(bookId, authorId);
         return ResponseEntity.ok(updated);
+    }
+
+    @GetMapping("/subjects")
+    public ResponseEntity<List<Subject>> getBook() {
+        List<Subject> subjects = this.bookService.getSubjects();
+        return ResponseEntity.ok(subjects);
     }
 }

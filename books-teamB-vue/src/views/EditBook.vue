@@ -314,14 +314,14 @@ export default {
         }
 
         if (this.isEditMode) {
-          await bookService.updateBook(this.$route.params.id, createdBook)
+          await bookService.update(this.$route.params.id, createdBook)
           this.successMessage = 'Le livre a été modifié avec succès.'
 
           setTimeout(() => {
             this.$router.push({ name: 'book-detail', params: { id: this.$route.params.id } })
           }, 1500)
         } else {
-          await bookService.addBook(createdBook)
+          await bookService.add(createdBook)
           this.successMessage = 'Les informations du livre ont bien été enregistrées.'
 
           setTimeout(() => {
