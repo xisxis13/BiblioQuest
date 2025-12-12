@@ -1,5 +1,6 @@
 
 import axios from 'axios'
+import { useAuthStore } from '@/stores/authStore'
 
 const API_BASE_URL = 'http://localhost:8080/api'
 
@@ -19,10 +20,13 @@ const reviewService = {
 
   // Ajouter un avis
   async addReview(bookId, review) {
-    const username = getCurrentUsername()
-    const response = await axios.post(`${API_BASE_URL}/books/${bookId}/reviews`, review, {
+    const authStore = useAuthStore()
+    const userId = authStore.getUser().id
+    console.log("review", review)
+    review.userBookDTO = { userId: userId, bookId: bookId }
+    console.log("review", review)
+    const response = await axios.post(`${API_BASE_URL}/books/reviews/update`, review, {
       headers: {
-        'X-Username': username,
         'Content-Type': 'application/json'
       }
     })
@@ -40,7 +44,7 @@ const reviewService = {
   // Modifier un avis (PATCH ou PUT selon l'API, ici POST pour cohérence avec backend)
   async updateReview(bookId, review) {
     const username = getCurrentUsername()
-    const response = await axios.post(`${API_BASE_URL}/books/${bookId}/reviews`, review, {
+    const response = await axios.post(`${API_BASE_URL}/books/reviews/update`, review, {
       headers: {
         'X-Username': username,
         'Content-Type': 'application/json'
@@ -50,8 +54,8 @@ const reviewService = {
   },
   //TODO CORRIGER PLUS TARD
   // getReviewsStats(reviews){
-    // const average = reviews => reviews.reduce((a, b) => a.rating + b.rating) / reviews.length;
-    // console.log("average review rating", average)
+  // const average = reviews => reviews.reduce((a, b) => a.rating + b.rating) / reviews.length;
+  // console.log("average review rating", average)
   // }
 }
 

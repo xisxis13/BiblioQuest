@@ -48,4 +48,12 @@ public class UserBook {
         this.status = status;
         this.progress = 0;
     }
+
+    public UserBook(Long userId, Long bookId, String review, Integer rating){
+        this.id = new UserBookId(userId, bookId);
+        this.review = review;
+        this.rating = rating;
+        this.progress = 0;
+        this.status = ReadingStatus.TO_READ;
+    }
 }

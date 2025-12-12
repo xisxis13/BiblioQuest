@@ -3,7 +3,7 @@ import { authService } from '@/services/authService'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: localStorage.getItem("user"),
+    user: JSON.parse(localStorage.getItem("user")),
     token: null,
     loading: false,
     error: null,
@@ -27,11 +27,10 @@ export const useAuthStore = defineStore('auth', {
           followingCount: user.followingCount,
           lastActivityAt: user.lastActivityAt
         }
-        localStorage.setItem("user", this.user)
+        localStorage.setItem("user", JSON.stringify(this.user))
       } else {
         this.user = null
         localStorage.setItem("user", null)
-        console.log("user info", this.user)
       }
     },
 
@@ -39,7 +38,6 @@ export const useAuthStore = defineStore('auth', {
       try {
         const response = await authService.login(credentials)
         this.setUser(response)
-        console.log("user info", this.user)
         return response
 
       } catch (error) {
@@ -59,11 +57,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     getUser() {
-      return {
-        username: this.user?.username,
-        email: this.user?.email,
-        role: this.user?.role
-      }
+      return this.$state.user
     },
     logout() {
       this.setUser(null)

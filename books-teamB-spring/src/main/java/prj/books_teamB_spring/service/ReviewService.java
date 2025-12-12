@@ -13,56 +13,62 @@ import prj.books_teamB_spring.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class ReviewService {
 
-    private final UserBookRepository userBookRepository;
-    private final BookRepository bookRepository;
-    private final UserRepository userRepository;
+	private final UserBookRepository userBookRepository;
+	private final BookRepository bookRepository;
+	private final UserRepository userRepository;
 
-    public List<ReviewDto> getBookReviews(Long bookId) {
-        List<UserBook> userBooks = userBookRepository.findByBookId(bookId);
-        List<ReviewDto> reviews = new ArrayList<>();
+	public List<ReviewDto> getBookReviews(Long bookId) {
+		List<UserBook> userBooks = userBookRepository.findByBookId(bookId);
+		List<ReviewDto> reviews = new ArrayList<>();
 
-        for (UserBook userBook: userBooks){
-            UserBookDTO userBookDTO = new UserBookDTO(
-                userBook.getId().getUserId(),
-                userBook.getId().getBookId()
-            );
+		for (UserBook userBook : userBooks) {
+			UserBookDTO userBookDTO = new UserBookDTO(
+					userBook.getId().getUserId(),
+					userBook.getId().getBookId());
 			User user = userRepository.findById(userBook.getId().getUserId()).orElseThrow();
-            ReviewDto review = new ReviewDto(
-				userBookDTO,
-				user.getUsername(),
-				userBook.getRating(),
-				userBook.getReview(),
-				userBook.getReviewCreatedAt()
-			);
+			ReviewDto review = new ReviewDto(
+					userBookDTO,
+					user.getUsername(),
+					userBook.getRating(),
+					userBook.getReview(),
+					userBook.getReviewCreatedAt());
 			reviews.add(review);
-        }
-        return reviews;
-    }
-
-	public void addOrUpdateReview(ReviewDto review){
-		UserBookDTO userBookDTO = review.getUserBookDTO();
-
-		UserBook userBook = userBookRepository.findByUserAndBook(
-			userBookDTO.getUserId(),
-			userBookDTO.getBookId()
-		).orElseThrow();
-
-		userBook.setRating(review.getRating());
-		userBook.setReview(review.getComment());
-		userBookRepository.save(userBook);
+		}
+		return reviews;
 	}
 
-	public void deleteReview(UserBookDTO userBookDTO){
+	public void addOrUpdateReview(ReviewDto review) {
+		UserBookDTO userBookDTO = review.getUserBookDTO();
+
+		Optional<UserBook> userBook = userBookRepository.findByUserAndBook(
+				userBookDTO.getUserId(),
+				userBookDTO.getBookId());
+
+		if (userBook.isEmpty()) {
+			userBookRepository.save(new UserBook(
+					userBookDTO.getUserId(),
+					userBookDTO.getBookId(),
+					review.getComment(),
+					review.getRating()));
+		} else {
+			UserBook ub = userBook.get();
+			ub.setRating(review.getRating());
+			ub.setReview(review.getComment());
+			userBookRepository.save(ub);
+		}
+	}
+
+	public void deleteReview(UserBookDTO userBookDTO) {
 		UserBook userBook = userBookRepository.findByUserAndBook(
-			userBookDTO.getUserId(),
-			userBookDTO.getBookId()
-		).orElseThrow();
+				userBookDTO.getUserId(),
+				userBookDTO.getBookId()).orElseThrow();
 
 		userBook.setRating(null);
 		userBook.setReview(null);

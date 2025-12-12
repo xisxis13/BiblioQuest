@@ -34,7 +34,7 @@ public class ReviewController {
 
     @PostMapping("/reviews/update")
     public ResponseEntity<String> addOrUpdateReview(
-            ReviewDto reviewDTO
+            @RequestBody ReviewDto reviewDTO
         ) {
             reviewService.addOrUpdateReview(reviewDTO);
         

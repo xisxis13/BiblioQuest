@@ -71,9 +71,7 @@
               <!-- add subject -->
               <span class="w-full text-base font-regular text-primary-text">
                 Par {{ getAuthorsNames(book) }} •
-                <span class="text-base font-regular text-secondary-text">{{ new Date(book.created_at).getFullYear() }}</span> •
-                <span v-if="book.totalPages" class="text-base font-regular text-secondary-text">{{ book.totalPages }} pages</span>
-                <span v-else class="text-base font-regular text-secondary-text">nombre de page inconnu</span>
+                <span class="text-base font-regular text-secondary-text">{{ new Date(book.created_at).getFullYear() }}</span>
               </span>
               <span class="w-full text-5xl font-bold text-primary-text">{{ book.title }}</span>
               <span v-if="book.isbn" class="text-base font-regular text-primary-text">ISBN : {{ book.isbn }}</span>
