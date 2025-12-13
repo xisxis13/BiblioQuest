@@ -11,7 +11,9 @@ const api = axios.create({
 
 export const authService = {
   async login(credentials) {
-    console.log("server url", import.meta.env.VITE_SERVER_URL)
+    console.log("VITE_APP_SERVER_URL", import.meta.env.VITE_SERVER_URL)
+    console.log("VUE_APP_SERVER_URL", import.meta.env.VUE_APP_SERVER_URL)
+
     console.log("chosed server url", API_BASE_URL)
     const response = await api.post('/auth/login', credentials)
     return response.data
