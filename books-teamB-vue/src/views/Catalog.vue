@@ -86,7 +86,8 @@
         <div class="w-full py-2 flex flex-col gap-3">
           <span class="text-primary-text text-base font-medium">Genre</span>
           <div class="flex flex-wrap gap-2">
-            <select v-model="selectedGenre">
+            <select v-model="selectedGenre"
+              class="cursor-pointer px-1 py-1 rounded-full border border-border text-sm text-primary-text">
               <option disabled value="">-- Choisir un genre --</option>
 
               <option v-for="subject in subjects" :key="subject.id" :value="subject.id">
@@ -162,7 +163,12 @@ export default {
       books: [],
       subjects: [],
       loading: true,
-      error: null
+      error: null,
+      yearRanges: {
+        '2025-2020': [2020, 2025],
+        '2019-2010': [2010, 2019],
+        '2009-2000': [2000, 2009]
+      },
     }
   },
   async mounted() {
@@ -184,15 +190,26 @@ export default {
             book.subject?.text?.toLowerCase().includes(query)
         })
       }
+      if (this.selectedYear !== 'toutes') {
+        filtered = filtered.filter(book => {
+          if (!book.created_at) return false
 
+          const year = new Date(book.created_at).getFullYear()
+
+          if (this.selectedYear === 'avant 2000') {
+            return year < 2000
+          }
+
+          const range = this.yearRanges[this.selectedYear]
+          return range ? year >= range[0] && year <= range[1] : true
+        })
+      }
       // Filter by genre
       if (this.selectedGenre !== 'tous') {
         filtered = filtered.filter(book =>
           book.subjects?.some(subject => subject.id === this.selectedGenre)
         )
       }
-
-
       return filtered
     },
 
@@ -206,6 +223,7 @@ export default {
 
         const response = await bookService.getAll()
         this.books = response.data || response || []
+        console.log("books", this.books)
 
       } catch (error) {
         console.error('Erreur lors du chargement des livres:', error)
