@@ -1,6 +1,8 @@
 package prj.books_teamB_spring.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import prj.books_teamB_spring.model.Author;
 import prj.books_teamB_spring.model.Book;
 import prj.books_teamB_spring.model.BookSubject;
@@ -11,6 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookDTO {
     private Long id;
     private String title;
