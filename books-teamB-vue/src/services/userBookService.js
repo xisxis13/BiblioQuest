@@ -1,11 +1,18 @@
 import axios from 'axios'
 
-const API_BASE_URL = 'http://localhost:8080/api'
+const api = axios.create({
+  baseURL: import.meta.env.PROD
+    ? '/api'
+    : 'http://localhost:8080/api',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
 
 const userBookService = {
   async getAllBooks(userId) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/user/books?userId=${userId}`,)
+      const response = await api.get(`/user/books?userId=${userId}`,)
       return response.data
     } catch (error) {
       console.error('userBookService.getAllBooks error', error)
@@ -15,7 +22,7 @@ const userBookService = {
 
   async addBook(userId, bookId) {
     try {
-      const response = await axios.post(`${API_BASE_URL}/user/books`, {userId: userId, bookId: bookId})
+      const response = await api.post(`/user/books`, {userId: userId, bookId: bookId})
       return response.data
     } catch (error) {
       console.error('userBookService.addBook error', error)
@@ -25,7 +32,7 @@ const userBookService = {
 
   async deleteBook(userId, bookId) {
     try {
-      const response = await axios.delete(`/users/${userId}/books/${bookId}`)
+      const response = await api.delete(`/users/${userId}/books/${bookId}`)
       return response.data
     } catch (error) {
       console.error('userBookService.deleteBook error', error)
@@ -37,7 +44,7 @@ const userBookService = {
     try {
       const params = new URLSearchParams()
       if (readingStatus !== undefined && readingStatus !== null) params.append('status', readingStatus)
-      const response = await axios.post(`${API_BASE_URL}/user/books/update?readingStatusId=${readingStatus}`, {userId: userId, bookId: bookId})
+      const response = await api.post(`/user/books/update?readingStatusId=${readingStatus}`, {userId: userId, bookId: bookId})
       return response.data
     } catch (error) {
       console.error('userBookService.updateReadingStatus error', error)

@@ -1,49 +1,17 @@
 import axios from 'axios'
 
-// Configuration API - Backend Spring Boot
-const API_BASE_URL = 'http://localhost:8080/api'
-
-// Récupérer le token d'authentification
-const getAuthToken = () => {
-  const tokenData = localStorage.getItem('auth_token')
-  if (tokenData) {
-    const parsed = JSON.parse(tokenData)
-    return parsed.token
-  }
-  return null
-}
-
-// Récupérer l'utilisateur connecté
-const getCurrentUser = () => {
-  const userData = localStorage.getItem('auth_user')
-  if (userData) {
-    return JSON.parse(userData)
-  }
-  return null
-}
-
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: import.meta.env.PROD
+    ? '/api'
+    : 'http://localhost:8080/api',
   headers: {
     'Content-Type': 'application/json'
   }
 })
 
-// Intercepteur pour ajouter le token automatiquement
-api.interceptors.request.use(
-  (config) => {
-    const token = getAuthToken()
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => Promise.reject(error)
-)
-
 export const readingService = {
   // === BIBLIOTHÈQUE UTILISATEUR ===
-  
+
   // Récupérer la bibliothèque d'un utilisateur
   async getUserLibrary(userId) {
     try {
@@ -74,7 +42,7 @@ export const readingService = {
       if (updates.progress !== undefined) params.append('progress', updates.progress)
       if (updates.rating) params.append('rating', updates.rating)
       if (updates.personalNote) params.append('personalNote', updates.personalNote)
-      
+
       const response = await api.put(`/users/${userId}/books/${bookId}?${params}`)
       return response.data
     } catch (error) {
@@ -104,7 +72,7 @@ export const readingService = {
       params.append('userBookId', userBookId)
       params.append('duration', duration)
       params.append('pagesRead', pagesRead)
-      
+
       const response = await api.post(`/reading-sessions?${params}`)
       return response.data
     } catch (error) {
@@ -132,7 +100,7 @@ export const readingService = {
       if (updates.pagesRead !== undefined) params.append('pagesRead', updates.pagesRead)
       if (updates.notes) params.append('notes', updates.notes)
       if (updates.mood) params.append('mood', updates.mood)
-      
+
       const response = await api.put(`/reading-sessions/${sessionId}?${params}`)
       return response.data
     } catch (error) {
@@ -147,7 +115,7 @@ export const readingService = {
       const params = new URLSearchParams()
       params.append('comment', comment)
       params.append('mood', mood)
-      
+
       const response = await api.post(`/reading-sessions/${sessionId}/reaction?${params}`)
       return response.data
     } catch (error) {

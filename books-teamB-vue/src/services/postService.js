@@ -1,10 +1,9 @@
 import axios from 'axios'
-import { authService } from '@/services/authService'
-
-const API_BASE = 'http://localhost:8080/api'
 
 const api = axios.create({
-  baseURL: API_BASE,
+  baseURL: import.meta.env.PROD
+    ? '/api'
+    : 'http://localhost:8080/api',
   headers: { 'Content-Type': 'application/json' }
 })
 

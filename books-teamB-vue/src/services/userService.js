@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
-
-const apiClient = axios.create({
-  baseURL: API_URL,
+const api = axios.create({
+  baseURL: import.meta.env.PROD
+    ? '/api'
+    : 'http://localhost:8080/api',
   headers: {
     'Content-Type': 'application/json'
   }
@@ -14,7 +14,7 @@ export default {
    * Récupère un utilisateur par son ID
    */
   async getUserById(userId) {
-    const response = await apiClient.get(`/users/${userId}`)
+    const response = await api.get(`/users/${userId}`)
     return response.data
   },
 
@@ -22,7 +22,7 @@ export default {
    * Récupère tous les utilisateurs
    */
   async getAllUsers() {
-    const response = await apiClient.get('/users')
+    const response = await api.get('/users')
     return response.data
   }
 }
