@@ -1,7 +1,6 @@
 import axios from 'axios'
 
-// Configuration API - Backend Spring Boot
-const API_BASE_URL = 'http://localhost:8080/api'
+const API_BASE_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:8080/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -18,7 +17,6 @@ export const authService = {
 
   async register(credentials) {
     const response = await api.post('/auth/register', credentials)
-    console.log("register credentials", credentials)
     return response.data
   }
 }
