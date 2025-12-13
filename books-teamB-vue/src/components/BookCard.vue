@@ -40,8 +40,8 @@
       <!-- Action button -->
       <div v-if="showActions" class="flex gap-1 my-4 p-1 bg-box border border-border rounded-2xl">
         <button
-          @click="$emit('update-status', book.id, 'read')"
-          :class="{ 'bg-green-500 rounded-xl text-white hover:bg-green-400': book.status === 'read' }"
+          @click="$emit('update-status', book.id, 2)"
+          :class="{ 'bg-green-500 rounded-xl text-white hover:bg-green-400': book.readingStatusId === 2 }"
           class="flex-1 px-3 py-2 hover:rounded-xl hover:bg-green-200 text-sm font-medium transition-all cursor-pointer"
         >
           Lu
@@ -50,8 +50,8 @@
         <div class="w-px bg-border"></div>
 
         <button
-          @click="$emit('update-status', book.id, 'reading')"
-          :class="{ 'bg-accent rounded-xl text-white hover:bg-accent/80': book.status === 'reading' }"
+          @click="$emit('update-status', book.id, 1)"
+          :class="{ 'bg-accent rounded-xl text-white hover:bg-accent/80': book.readingStatusId === 1 }"
           class="flex-1 px-3 py-2 hover:rounded-xl hover:bg-accent/20 text-sm font-medium transition-all cursor-pointer"
         >
           En cours
@@ -60,8 +60,8 @@
         <div class="w-px bg-border"></div>
 
         <button
-          @click="$emit('update-status', book.id, 'to-read')"
-          :class="{ 'bg-yellow-500 rounded-xl text-white hover:bg-yellow-400': book.status === 'to-read' }"
+          @click="$emit('update-status', book.id, 0)"
+          :class="{ 'bg-yellow-500 rounded-xl text-white hover:bg-yellow-400': book.readingStatusId === 0 }"
           class="flex-1 px-3 py-2 hover:rounded-xl hover:bg-accent/20 text-sm font-medium transition-all cursor-pointer"
         >
           À lire

@@ -30,6 +30,9 @@ public class BookDTO {
     private Integer totalPages;
     private String isbn;
 
+    //uniquement utilisé lorsque l'on renvoie les livres d'un utilisateur
+    private Integer readingStatusId;
+
     public BookDTO(Book book){
         this.id = book.getId();
         this.title = book.getTitle();
