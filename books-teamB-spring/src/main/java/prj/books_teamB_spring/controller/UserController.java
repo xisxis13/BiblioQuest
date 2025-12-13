@@ -8,15 +8,12 @@ import prj.books_teamB_spring.model.User;
 import prj.books_teamB_spring.service.UserService;
 import java.util.List;
 
-
 /**
  * Contrôleur pour la gestion des profils utilisateur
  * Endpoints pour consulter/modifier le profil
  */
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = {"http:ajouter la méthode getById\n" + //
-        "//localhost:3000", "http://localhost:5173"})
 public class UserController {
 
     private final UserService userService;
@@ -30,8 +27,7 @@ public class UserController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getById(
-        @PathVariable Long id
-    ) {
+            @PathVariable Long id) {
         try {
             User user = userService.findById(id);
             return ResponseEntity.ok(new UserDto(user));

@@ -11,7 +11,7 @@ COPY pom.xml .
 COPY src ./src
 
 # Compiler le projet
-RUN mvn package -DskipTests
+RUN mvn package -Dmaven.test.skip=true
 
 FROM eclipse-temurin:23-jre-alpine
 

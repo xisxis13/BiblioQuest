@@ -17,7 +17,6 @@ import prj.books_teamB_spring.dto.UserBookDTO;
 
 @RestController
 @RequestMapping("/api/user/books")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
 public class UserBookController {
 
     private final UserBookService userBookService;

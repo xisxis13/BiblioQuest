@@ -15,7 +15,6 @@ import prj.books_teamB_spring.service.UserService;
 
 @RestController
 @RequestMapping("/api/posts")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
 public class PostController {
 
     private final PostService postService;

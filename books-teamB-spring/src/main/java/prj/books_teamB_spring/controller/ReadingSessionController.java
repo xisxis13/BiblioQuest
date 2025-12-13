@@ -19,7 +19,6 @@ import prj.books_teamB_spring.service.ReadingSessionService;
 @RestController
 @RequestMapping("/api/reading-sessions")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
 public class ReadingSessionController {
 
     private final ReadingSessionService readingService;
