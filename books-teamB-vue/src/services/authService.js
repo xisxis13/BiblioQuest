@@ -1,9 +1,10 @@
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:8080/api';
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: import.meta.env.PROD
+    ? '/api/events'
+    : 'http://localhost:8080/api/events',
   headers: {
     'Content-Type': 'application/json'
   }
@@ -11,10 +12,8 @@ const api = axios.create({
 
 export const authService = {
   async login(credentials) {
-    console.log("VITE_APP_SERVER_URL", import.meta.env.VITE_SERVER_URL)
+    console.log("PROD env variable", import.meta.env.PROD)
     console.log("VUE_APP_SERVER_URL", import.meta.env.VUE_APP_SERVER_URL)
-
-    console.log("chosed server url", API_BASE_URL)
     const response = await api.post('/auth/login', credentials)
     return response.data
   },
