@@ -1,14 +1,12 @@
 package prj.books_teamB_spring.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import prj.books_teamB_spring.model.ReadingSession;
-import prj.books_teamB_spring.model.UserBook;
 
 public interface ReadingSessionRepository extends JpaRepository<ReadingSession, Long> {
     
@@ -24,7 +22,7 @@ public interface ReadingSessionRepository extends JpaRepository<ReadingSession, 
     List<ReadingSession> findByUserId(@Param("userId") Long userId);
 
     @Query("SELECT rs FROM ReadingSession rs WHERE rs.userId = :userId AND rs.bookId = :bookId")
-    Optional<UserBook> findByUserIdAndBookId(@Param("userId") Long userId,
+    List<ReadingSession> findByUserIdAndBookId(@Param("userId") Long userId,
             @Param("bookId") Long bookId);
 
 }

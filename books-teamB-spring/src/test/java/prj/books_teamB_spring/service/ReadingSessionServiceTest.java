@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import prj.books_teamB_spring.dto.ReadingSessionDTO;
+import prj.books_teamB_spring.dto.UserBookDTO;
 import prj.books_teamB_spring.model.ReadingSession;
 import prj.books_teamB_spring.model.UserBook;
 import prj.books_teamB_spring.model.UserBookId;
@@ -59,7 +61,15 @@ class ReadingSessionServiceTest {
         when(userBookRepository.findByUserAndBook(1L, 1L)).thenReturn(Optional.of(testUserBook));
         when(sessionRepository.save(any(ReadingSession.class))).thenReturn(testSession);
 
-        ReadingSession result = readingSessionService.addSession(testUserBookId, 30, 25);
+        ReadingSessionDTO sessionDTO = new ReadingSessionDTO();
+        UserBookDTO userBookDTO = new UserBookDTO(testSession.getUserId(), testSession.getUserId());
+        sessionDTO.setUserBookDTO(userBookDTO);
+        sessionDTO.setDuration(testSession.getDuration());
+        sessionDTO.setStartPage(testSession.getStartPage());
+        sessionDTO.setEndPage(testSession.getEndPage());
+        sessionDTO.setSessionNotes(testSession.getSessionNotes());
+
+        ReadingSession result = readingSessionService.addSession(sessionDTO);
 
         assertNotNull(result);
         verify(userBookRepository).findByUserAndBook(1L, 1L);
@@ -72,7 +82,14 @@ class ReadingSessionServiceTest {
 
         UserBookId invalidId = new UserBookId(999L, 999L);
         
-        Exception exception = assertThrows(Exception.class, () -> readingSessionService.addSession(invalidId, 30, 25));
+        ReadingSessionDTO invalidSessionDTO = new ReadingSessionDTO();
+        UserBookDTO userBookDTO = new UserBookDTO(invalidId.getUserId(), invalidId.getUserId());
+        invalidSessionDTO.setUserBookDTO(userBookDTO);
+        invalidSessionDTO.setDuration(30);
+        invalidSessionDTO.setStartPage(10);
+        invalidSessionDTO.setEndPage(25);
+        
+        Exception exception = assertThrows(RuntimeException.class, () -> readingSessionService.addSession(invalidSessionDTO));
         assertNotNull(exception);
         verify(userBookRepository).findByUserAndBook(999L, 999L);
         verify(sessionRepository, never()).save(any());
