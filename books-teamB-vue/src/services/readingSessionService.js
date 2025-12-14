@@ -1,18 +1,24 @@
 import axios from 'axios'
 
-// Configuration API - Backend Spring Boot
-const API_BASE_URL = 'http://localhost:8080/api'
+const api = axios.create({
+  baseURL: import.meta.env.PROD
+    ? '/api'
+    : 'http://localhost:8080/api',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
 
 export const readingSessionService = {
 
   async addSession(readingSessionDTO) {
-    const response = await axios.post(`${API_BASE_URL}/reading-sessions/`, readingSessionDTO)
+    const response = await api.post(`/reading-sessions/`, readingSessionDTO)
     return response.data
   },
 
   async getSessions(userId) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/reading-sessions?userId=${userId}`)
+      const response = await api.get(`/reading-sessions?userId=${userId}`)
       return response.data
     } catch (error) {
       console.error('Erreur lors de la récupération des sessions du user:', error)
@@ -27,7 +33,7 @@ export const readingSessionService = {
       if (updates.pagesRead !== undefined) params.append('pagesRead', updates.pagesRead)
       if (updates.notes) params.append('notes', updates.notes)
       
-      const response = await axios.put(`${API_BASE_URL}/reading-sessions/${sessionId}?${params}`)
+      const response = await api.put(`/reading-sessions/${sessionId}?${params}`)
       return response.data
     } catch (error) {
       console.error('Erreur lors de la mise à jour de la session:', error)
