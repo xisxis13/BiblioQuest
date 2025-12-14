@@ -20,36 +20,6 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/login',
-      name: 'login',
-      component: Login,
-      meta: { requiresGuest: true }
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: Register,
-      meta: { requiresGuest: true }
-    },
-    {
-      path: '/catalog',
-      name: 'catalog',
-      component: Catalog,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/books/add',
-      name: 'add-book',
-      component: EditBook,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/books/:id',
-      name: 'book-detail',
-      component: BookDetail,
-      meta: { requiresAuth: true }
-    },
-    {
       path: '/my-library',
       name: 'my-library',
       component: MyLibrary,
@@ -72,6 +42,23 @@ const router = createRouter({
       name: 'profile',
       component: Profile,
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      redirect: '/library'
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login,
+      meta: { requiresGuest: true }
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: Register,
+      meta: { requiresGuest: true }
     },
     {
       path: '/:pathMatch(.*)*',

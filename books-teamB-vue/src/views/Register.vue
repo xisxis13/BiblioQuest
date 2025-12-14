@@ -161,7 +161,7 @@ export default {
   },
   mounted() {
     if (this.authStore.isAuthenticated) {
-      this.router.push('/library')
+      this.router.push('/my-library')
     }
   }
 }

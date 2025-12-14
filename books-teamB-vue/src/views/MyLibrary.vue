@@ -80,7 +80,7 @@
           <p class="text-secondary-text">Chargement des livres...</p>
         </div>
 
-        <!-- Empty state -->
+      <!-- Empty state -->
         <div v-if=" !loading && filteredBooks.length === 0" class="w-full h-full flex items-center justify-center flex-col gap-3">
           <BookOpen class="stroke-secondary-text" :size="50" />
           <p class="text-secondary-text">Aucun livre dans cette catégorie</p>
