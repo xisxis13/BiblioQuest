@@ -8,7 +8,7 @@
       <Menu class="w-6 h-6 text-primary-text" />
     </button>
 
-    <div class="flex justify-center items-center gap-2">
+    <div class="relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center gap-2">
       <img :src="biblioQuestIcon" alt="BilbioQuest icon" class="h-14">
       <span class="text-primary-text font-bold text-2xl">BiblioQuest</span>
     </div>
