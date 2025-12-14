@@ -21,8 +21,33 @@
           <span class="text-primary-text font-normal">Ajouter une session</span>
         </button>
 
+        <!-- Loading state -->
+        <div v-if="loading" class="w-full h-full flex items-center justify-center flex-col gap-3">
+          <svg class="animate-spin h-10 w-10 text-secondary-text" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          <p class="text-secondary-text">Chargement des sessions de lecture...</p>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="error" class="w-full h-full flex items-center justify-center flex-col gap-3">
+          <Info class="stroke-secondary-text" :size="50" />
+          <p class="text-secondary-text">Erreur lors du chargement</p>
+          <p class="text-sm text-gray-400">{{ error }}</p>
+
+          <button @click="loadReadingSessions()" type="button"
+            class="bg-accent hover:bg-accent/90 rounded-2xl px-4 py-3 text-box font-normal cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 whitespace-nowrap">
+            <RotateCw :size="20" />
+            <span>Réassayer</span>
+          </button>
+        </div>
+
         <!-- Recent Sessions -->
-        <div class="flex flex-col items-start justify-start gap-3">
+        <div v-else class="flex flex-col items-start justify-start gap-3">
           <h2 class="text-xl font-semibold text-primary-text">Sessions Récentes</h2>
 
           <div v-if="readingSessions.length > 0" class="w-full flex flex-col gap-3">
@@ -72,7 +97,7 @@
               class="bg-background border border-border rounded-2xl w-full px-4 py-3 text-sm text-primary-text placeholder:text-secondary-text focus:outline-none focus:ring-1 focus:ring-accent appearance-none"
             >
               <option value="">Sélectionner un livre</option>
-              <option v-for="book in currentlyReadingBooks" :key="book.id" :value="book.id">
+              <option v-for="book in userBooks" :key="book.id" :value="book.id">
                 {{ book.title }}
               </option>
             </select>
@@ -163,10 +188,11 @@
 import AppHeader from '@/components/AppHeader.vue';
 import MenuBar from '@/components/MenuBar.vue';
 import SessionCard from '@/components/SessionCard.vue';
-import { PenLine, X } from 'lucide-vue-next';
+import { PenLine, X, Info, RotateCw } from 'lucide-vue-next';
 import { useReadingStore } from '@/stores/readingStore';
 import { useAuthStore } from '@/stores/authStore';
 import readingSessionService from '@/services/readingSessionService';
+import userBookService from '@/services/userBookService';
 
 export default {
   name: 'ReadingTrackerPage',
@@ -176,6 +202,8 @@ export default {
     SessionCard,
     PenLine,
     X,
+    Info,
+    RotateCw,
   },
   setup() {
     const readingStore = useReadingStore()
@@ -194,18 +222,10 @@ export default {
         duration: 30,
         notes: ''
       },
-      currentlyReadingBooks: [],
+      userBooks: [],
       readingSessions: [],
-      todayStats: {
-        pagesRead: 0,
-        readingTime: 0,
-        sessions: 0,
-        dailyGoal: 50
-      },
-      activeGoals: [],
-      streak: 0,
-      comment: '',
-      saving: false,
+      loading: true,
+      error: null,
       showSessionEditor: false
     }
   },
@@ -231,6 +251,8 @@ export default {
       }
 
       const result = await readingSessionService.addSession(sessionData)
+      this.readingSessions.push(result)
+      this.readingSessions = this.readingSessions.sort((a, b) => new Date(b.sessionDate) - new Date(a.sessionDate));
       
       if (result.success) {
         this.closeSessionEditor()
@@ -238,81 +260,22 @@ export default {
     },
     async loadReadingSessions() {
       try {
+        this.loading = true
+        this.error = null
+
         const response = await readingSessionService.getSessions(this.currentUser.id)
-        this.readingSessions = response.data
+        this.readingSessions = response.sort((a, b) => new Date(b.sessionDate) - new Date(a.sessionDate));
+
       } catch (error) {
-        console.error("Y'a une erreur bg : ", error)
+        console.error('Erreur lors du chargement des sessions de lecture:', error)
+        this.error = 'Impossible de charger les sessions de lecture. Vérifiez que le serveur est démarré.'
+      } finally {
+        this.loading = false
       }
     },
-    loadMockSessions() {
-      // Mock data for testing
-      this.recentSessions = [
-        {
-          id: 1,
-          bookId: 1,
-          bookTitle: 'Harry Potter à l\'école des sorciers',
-          startPage: 10,
-          endPage: 46,
-          pagesRead: 36,
-          duration: 45,
-          notes: 'Chapitre passionnant ! J\'adore découvrir le monde magique.',
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: 2,
-          bookId: 2,
-          bookTitle: 'Le Seigneur des Anneaux',
-          startPage: 120,
-          endPage: 165,
-          pagesRead: 45,
-          duration: 60,
-          notes: 'La bataille de Helm est incroyable.',
-          createdAt: new Date(Date.now() - 86400000).toISOString() // Yesterday
-        },
-        {
-          id: 3,
-          bookId: 3,
-          bookTitle: '1984',
-          startPage: 50,
-          endPage: 78,
-          pagesRead: 28,
-          duration: 35,
-          notes: 'L\'atmosphère dystopique est vraiment oppressante.',
-          createdAt: new Date(Date.now() - 2 * 86400000).toISOString() // 2 days ago
-        },
-        {
-          id: 4,
-          bookId: 1,
-          bookTitle: 'Harry Potter à l\'école des sorciers',
-          startPage: 1,
-          endPage: 10,
-          pagesRead: 10,
-          duration: 20,
-          notes: 'Début prometteur !',
-          createdAt: new Date(Date.now() - 3 * 86400000).toISOString() // 3 days ago
-        },
-        {
-          id: 5,
-          bookId: 4,
-          bookTitle: 'Les Misérables',
-          startPage: 200,
-          endPage: 245,
-          pagesRead: 45,
-          duration: 55,
-          notes: 'Victor Hugo est un génie de la description.',
-          createdAt: new Date(Date.now() - 5 * 86400000).toISOString() // 5 days ago
-        }
-      ]
-    }
   },
-  mounted() {
-    this.currentlyReadingBooks = [
-      { id: 1, title: 'Anger is a Gift', totalPages: 400 },
-      { id: 3, title: 'In Other Lands', totalPages: 370 },
-    ]
-    
-
-    // Load mock data for testing
+  async mounted() {
+    this.userBooks = await userBookService.getAllBooks(this.currentUser.id)
     this.loadReadingSessions()
   }
 }

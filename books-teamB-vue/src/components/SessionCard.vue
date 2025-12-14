@@ -6,9 +6,9 @@
 
     <div class="w-full h-fit flex flex-col items-start justify-start gap-3">
       <div class="w-full h-fit flex flex-col items-start justify-start">
-        <span class="font-semibold text-primary-text mb-1">{{ session.bookTitle }}</span>
+        <span class="font-semibold text-primary-text mb-1">{{ bookTitle }}</span>
         <span class="text-sm text-secondary-text mb-2">
-          Pages {{ session.startPage }} - {{ session.currentPage }} • {{ session.pagesRead }} pages lues
+          Pages {{ session.startPage }} - {{ session.endPage }} • {{ (session.endPage - session.startPage) }} pages lues
         </span>
         <div class="flex items-center gap-4 text-xs text-secondary-text">
           <span class="flex items-center gap-1">
@@ -18,8 +18,8 @@
           <span>{{ formattedDate }}</span>
         </div>
       </div>
-      <span v-if="session.notes" class="w-full text-sm text-primary-text mt-2 italic">
-        "{{ session.notes }}"
+      <span v-if="session.sessionNotes" class="w-full text-sm text-primary-text mt-2 italic">
+        "{{ session.sessionNotes }}"
       </span>
     </div>
   </div>
@@ -27,6 +27,8 @@
 
 <script>
 import { BookOpen, Clock } from 'lucide-vue-next';
+import bookService from '@/services/bookService';
+
 export default {
   name: 'SessionCard',
   components: {
@@ -39,9 +41,14 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      bookTitle: '',
+    }
+  },
   computed: {
     formattedDate() {
-      const date = new Date(this.session.createdAt)
+      const date = new Date(this.session.sessionDate)
       const now = new Date()
       const diffTime = Math.abs(now - date)
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
@@ -52,6 +59,11 @@ export default {
       
       return date.toLocaleDateString('fr-FR')
     }
+  },
+  async mounted() {
+    const book = await bookService.getById(this.session.bookId)
+    this.bookTitle = book.title
+    console.log(this.bookTitle)
   }
 }
 </script>

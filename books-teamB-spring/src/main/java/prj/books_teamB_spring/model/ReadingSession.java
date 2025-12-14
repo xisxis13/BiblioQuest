@@ -4,13 +4,9 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinColumns;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -33,12 +29,8 @@ public class ReadingSession {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY) 
-    @JoinColumns({
-        @JoinColumn(name = "user_id", referencedColumnName = "userId"), // "name" = colonne dans reading_sessions
-        @JoinColumn(name = "book_id", referencedColumnName = "bookId")  // "referencedColumnName" = champ dans UserBookId (ou colonne cible)
-    })
-    private UserBook userBook;
+    private Long userId;
+    private Long bookId;
 
     @Min(1)
     @Column(nullable = false)
@@ -59,7 +51,8 @@ public class ReadingSession {
 
     // Constructeur utilitaire
     public ReadingSession(UserBook userBook, Integer duration, Integer startPage, Integer endPage, String notes) {
-        this.userBook = userBook;
+        this.userId = userBook.getId().getUserId();
+        this.bookId = userBook.getId().getBookId();
         this.duration = duration;
         this.sessionDate = LocalDateTime.now();
         this.startPage = startPage;

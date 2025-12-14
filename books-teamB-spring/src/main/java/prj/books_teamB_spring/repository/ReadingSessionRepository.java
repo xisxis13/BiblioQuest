@@ -23,7 +23,7 @@ public interface ReadingSessionRepository extends JpaRepository<ReadingSession, 
     )
     List<ReadingSession> findByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT rs FROM ReadingSession rs WHERE rs.userBook.id.userId = :userId AND rs.userBook.id.bookId = :bookId")
+    @Query("SELECT rs FROM ReadingSession rs WHERE rs.userId = :userId AND rs.bookId = :bookId")
     Optional<UserBook> findByUserIdAndBookId(@Param("userId") Long userId,
             @Param("bookId") Long bookId);
 

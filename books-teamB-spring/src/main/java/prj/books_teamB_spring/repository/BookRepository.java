@@ -1,7 +1,5 @@
 package prj.books_teamB_spring.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;

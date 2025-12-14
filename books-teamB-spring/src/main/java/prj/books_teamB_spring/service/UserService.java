@@ -10,8 +10,6 @@ import org.springframework.web.server.ResponseStatusException;
 import prj.books_teamB_spring.model.User;
 import prj.books_teamB_spring.repository.UserRepository;
 
-import java.util.List;
-
 /**
  * Service pour la gestion des utilisateurs
  * Responsabilités : authentification, création de compte, gestion du profil

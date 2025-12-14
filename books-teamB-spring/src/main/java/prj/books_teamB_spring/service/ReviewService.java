@@ -7,7 +7,6 @@ import prj.books_teamB_spring.dto.ReviewDto;
 import prj.books_teamB_spring.dto.UserBookDTO;
 import prj.books_teamB_spring.model.User;
 import prj.books_teamB_spring.model.UserBook;
-import prj.books_teamB_spring.repository.BookRepository;
 import prj.books_teamB_spring.repository.UserBookRepository;
 import prj.books_teamB_spring.repository.UserRepository;
 
@@ -21,7 +20,6 @@ import java.util.Optional;
 public class ReviewService {
 
 	private final UserBookRepository userBookRepository;
-	private final BookRepository bookRepository;
 	private final UserRepository userRepository;
 
 	public List<ReviewDto> getBookReviews(Long bookId) {

@@ -2,7 +2,6 @@ package prj.books_teamB_spring.controller;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +23,7 @@ public class ReadingSessionController {
 
     private final ReadingSessionService readingService;
 
-    @PostMapping("")
+    @PostMapping("/")
     public ReadingSession addSession(@RequestBody ReadingSessionDTO readingSessionDTO) {
         System.out.println("readingSessionDTO : " + readingSessionDTO);
         return readingService.addSession(readingSessionDTO);

@@ -24,8 +24,6 @@ public class ReadingSessionService {
             readingSessionDTO.getUserBookDTO().getBookId()
         ).orElseThrow();
 
-        
-        
         ReadingSession session = new ReadingSession(userBook, readingSessionDTO.getDuration(), readingSessionDTO.getStartPage(), readingSessionDTO.getEndPage(), readingSessionDTO.getSessionNotes());
         return sessionRepository.save(session);
     }
