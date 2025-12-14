@@ -128,7 +128,7 @@ public class UserBookService {
                         HttpStatus.NOT_FOUND,
                         "Ce livre n'est pas présent dans la collection de cet utilisateur"
                 ));
-
+        
         userBook.setStatus(readingStatus);
         return userBookRepository.save(userBook);
     }

@@ -109,6 +109,7 @@
 import { ref, computed } from 'vue'
 import { Star, PenLine } from 'lucide-vue-next'
 import ReviewItem from './ReviewCard.vue'
+import { useAuthStore } from '@/stores/authStore'
 
 const props = defineProps({
   bookId: {
@@ -125,13 +126,15 @@ const props = defineProps({
   }
 })
 
+const authStore = useAuthStore()
 const emit = defineEmits(['add-review', 'update-review', 'delete-review', 'refresh-reviews', 'show-review-editor'])
 
 // Computed properties
 const userReview = computed(() => {
   console.log("coucou du userReview")
   //TODO adapter le isOwnReview
-  return props.reviews.find(review => review.isOwnReview)
+  const userId = authStore.getUser().id
+  return props.reviews.find(review => review.userBookDTO.userId === userId)
 })
 
 const otherReviews = computed(() => {

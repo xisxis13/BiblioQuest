@@ -12,13 +12,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
-@CrossOrigin(
-    origins = {"http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:3000", "http://127.0.0.1:5173"},
-    allowedHeaders = {"*"},
-    exposedHeaders = {"*"},
-    allowCredentials = "true",
-    maxAge = 3600
-)
 public class ReviewController {
 
     private final ReviewService reviewService;

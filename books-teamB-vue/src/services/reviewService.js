@@ -2,12 +2,19 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 
-const API_BASE_URL = 'http://localhost:8080/api'
+const api = axios.create({
+  baseURL: import.meta.env.PROD
+    ? '/api'
+    : 'http://localhost:8080/api',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
 
 const reviewService = {
   // Récupérer les avis d'un livre
   async getBookReviews(bookId) {
-    const response = await axios.get(`${API_BASE_URL}/books/${bookId}/reviews`,)
+    const response = await api.get(`/books/${bookId}/reviews`,)
     return response.data
   },
 
@@ -18,7 +25,7 @@ const reviewService = {
 
     review.userBookDTO = { userId: userId, bookId: bookId }
 
-    const response = await axios.post(`${API_BASE_URL}/books/reviews/update`, review,)
+    const response = await api.post(`/books/reviews/update`, review,)
     return response.data
   },
 
@@ -27,7 +34,7 @@ const reviewService = {
     const userId = authStore.getUser().userId
 
     const userBookDTO = { userId: userId, bookId: bookId }
-    await axios.delete(`${API_BASE_URL}/books/reviews/delete`, userBookDTO,)
+    await api.delete(`/books/reviews/delete`, userBookDTO,)
   },
 
   async updateReview(bookId, review) {
@@ -36,7 +43,7 @@ const reviewService = {
 
     review.userBookDTO = { userId: userId, bookId: bookId }
 
-    const response = await axios.post(`${API_BASE_URL}/books/reviews/update`, review,)
+    const response = await api.post(`/books/reviews/update`, review,)
     return response.data
   },
 

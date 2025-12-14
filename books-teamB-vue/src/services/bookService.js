@@ -1,26 +1,11 @@
 import axios from 'axios'
-import { authService } from '@/services/authService'
-
-const API_BASE = 'http://localhost:8080/api'
 
 const api = axios.create({
-  baseURL: API_BASE,
+  baseURL: import.meta.env.PROD
+    ? '/api'
+    : 'http://localhost:8080/api',
   headers: { 'Content-Type': 'application/json' }
 })
-
-// // Attach token from authService/localStorage if present
-// api.interceptors.request.use((config) => {
-//   try {
-//     const token = typeof authService.getToken === 'function' ? authService.getToken() : localStorage.getItem('auth_token')
-//     if (token) {
-//       config.headers.Authorization = `Bearer ${token}`
-//     }
-//   } catch (e) {
-//     // ignore
-
-//   }
-//   return config
-// })
 
 export const bookService = {
   async getAll() {
@@ -32,7 +17,7 @@ export const bookService = {
   },
 
   async add(book) {
-    return api.post('/books', book)
+    return api.post('/books/add', book)
   },
 
   async update(id, book) {
@@ -41,7 +26,11 @@ export const bookService = {
 
   async delete(id) {
     return api.delete(`/books/${id}`)
-  }
+  },
+
+  async getSubjects(){
+    return api.get('/books/subjects')
+  },
 }
 
 export default bookService

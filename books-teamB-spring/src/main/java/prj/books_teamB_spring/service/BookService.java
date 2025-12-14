@@ -1,15 +1,14 @@
 package prj.books_teamB_spring.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import prj.books_teamB_spring.dto.BookDTO;
 import prj.books_teamB_spring.dto.AuthorDto;
-import prj.books_teamB_spring.dto.SubjectDto;
 import prj.books_teamB_spring.exception.BookNotFoundException;
 import prj.books_teamB_spring.model.Book;
 import prj.books_teamB_spring.model.Author;
@@ -27,8 +26,8 @@ public class BookService {
     private final SubjectRepository subjectRepository;
 
     public BookService(BookRepository bookRepository,
-                       AuthorRepository authorRepository,
-                       SubjectRepository subjectRepository) {
+            AuthorRepository authorRepository,
+            SubjectRepository subjectRepository) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.subjectRepository = subjectRepository;
@@ -40,9 +39,10 @@ public class BookService {
         return book;
     }
 
-    public Iterable<Book> findAll(){
+    public Iterable<Book> findAll() {
         return this.bookRepository.findAll();
     }
+
     public void deleteBook(Long id) {
         if (!bookRepository.existsById(id)) {
             throw new BookNotFoundException(id);
@@ -90,7 +90,6 @@ public class BookService {
         return saved;
     }
 
-
     public Book addBook(BookDTO newBookDTO) {
         Book book = new Book();
         book.setTitle(newBookDTO.getTitle());
@@ -103,18 +102,10 @@ public class BookService {
         book.setCreated_at(LocalDateTime.now());
         book.setUpdated_at(LocalDateTime.now());
 
-        SubjectDto subjectDto = newBookDTO.getSubject();
-        if (subjectDto != null && subjectDto.getText() != null && !subjectDto.getText().isBlank()) {
-            Subject subject = new Subject();
-            subject.setText(subjectDto.getText());
-            subject = subjectRepository.save(subject);
-            book.setSubject(subject);
-        }
-
         if (newBookDTO.getAuthors() != null) {
             for (AuthorDto authorDto : newBookDTO.getAuthors()) {
                 if ((authorDto.getFirstName() == null || authorDto.getFirstName().isBlank()) &&
-                    (authorDto.getLastName() == null || authorDto.getLastName().isBlank())) {
+                        (authorDto.getLastName() == null || authorDto.getLastName().isBlank())) {
                     continue;
                 }
                 Author author = new Author();
@@ -127,5 +118,29 @@ public class BookService {
 
         Book saved = bookRepository.save(book);
         return saved;
+    }
+
+    public List<Subject> getSubjects() {
+        Iterable<Subject> subjecIterable = this.subjectRepository.findAll();
+        List<Subject> subjects = new ArrayList<>();
+
+        for (Subject subject : subjecIterable) {
+            subjects.add(subject);
+        }
+        return subjects;
+    }
+
+    public BookDTO update(BookDTO bookDTO){
+        Book book = this.findById(bookDTO.getId());
+        book.setTitle(bookDTO.getTitle());
+        book.setDesc_txt(bookDTO.getDesc_txt());
+        book.setCover(bookDTO.getCover());
+        book.setSerie_id(bookDTO.getSerie_id());
+        book.setSerie_pos(bookDTO.getSerie_pos());
+        book.setIsbn(bookDTO.getIsbn());
+        book.setTotal_pages(bookDTO.getTotalPages());
+
+        bookRepository.save(book);
+        return bookDTO;
     }
 }

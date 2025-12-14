@@ -7,6 +7,9 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "user_books")
@@ -29,12 +32,15 @@ public class UserBook {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    @Min(1) @Max(5)
+    @Min(1)
+    @Max(5)
     private Integer rating;
 
     @Column(length = 1000)
     private String review;
-    
+
+    @CreationTimestamp
+    @Column(name = "review_created_at", updatable = false)
     private LocalDateTime reviewCreatedAt;
 
     public UserBook(User user, Book book) {
@@ -42,14 +48,14 @@ public class UserBook {
         this.status = ReadingStatus.TO_READ;
         this.progress = 0;
     }
-    
+
     public UserBook(User user, Book book, ReadingStatus status) {
         this.id = new UserBookId(user.getId(), book.getId());
         this.status = status;
         this.progress = 0;
     }
 
-    public UserBook(Long userId, Long bookId, String review, Integer rating){
+    public UserBook(Long userId, Long bookId, String review, Integer rating) {
         this.id = new UserBookId(userId, bookId);
         this.review = review;
         this.rating = rating;
