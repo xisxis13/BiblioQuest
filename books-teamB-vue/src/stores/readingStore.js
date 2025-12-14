@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { readingService } from '@/services/readingService'
+import { readingSessionService } from '@/services/readingSessionService'
 
 export const useReadingStore = defineStore('reading', {
   state: () => ({
@@ -51,7 +51,7 @@ export const useReadingStore = defineStore('reading', {
         const currentUser = JSON.parse(localStorage.getItem('auth_user'))
         if (!currentUser) throw new Error('Utilisateur non connecté')
         
-        const library = await readingService.getUserLibrary(currentUser.id || 1)
+        const library = await readingSessionService.getUserLibrary(currentUser.id || 1)
         this.userLibrary = library
         return library
       } catch (error) {
@@ -72,7 +72,7 @@ export const useReadingStore = defineStore('reading', {
         const currentUser = JSON.parse(localStorage.getItem('auth_user'))
         if (!currentUser) throw new Error('Utilisateur non connecté')
         
-        const userBook = await readingService.addBookToLibrary(currentUser.id || 1, bookId)
+        const userBook = await readingSessionService.addBookToLibrary(currentUser.id || 1, bookId)
         this.userLibrary.push(userBook)
         return userBook
       } catch (error) {
@@ -93,7 +93,7 @@ export const useReadingStore = defineStore('reading', {
         const currentUser = JSON.parse(localStorage.getItem('auth_user'))
         if (!currentUser) throw new Error('Utilisateur non connecté')
         
-        const updatedBook = await readingService.updateUserBook(currentUser.id || 1, bookId, updates)
+        const updatedBook = await readingSessionService.updateUserBook(currentUser.id || 1, bookId, updates)
         
         // Mettre à jour dans le store local
         const index = this.userLibrary.findIndex(book => book.book.id === bookId)
@@ -122,7 +122,7 @@ export const useReadingStore = defineStore('reading', {
         const currentUser = JSON.parse(localStorage.getItem('auth_user'))
         if (!currentUser) throw new Error('Utilisateur non connecté')
         
-        const session = await readingService.createReadingSession(
+        const session = await readingSessionService.createReadingSession(
           currentUser.id || 1, 
           userBookId, 
           duration, 
@@ -149,7 +149,7 @@ export const useReadingStore = defineStore('reading', {
         const currentUser = JSON.parse(localStorage.getItem('auth_user'))
         if (!currentUser) throw new Error('Utilisateur non connecté')
         
-        const sessions = await readingService.getUserSessions(currentUser.id || 1)
+        const sessions = await readingSessionService.getUserSessions(currentUser.id || 1)
         this.readingSessions = sessions
         return sessions
       } catch (error) {
@@ -170,7 +170,7 @@ export const useReadingStore = defineStore('reading', {
         const currentUser = JSON.parse(localStorage.getItem('auth_user'))
         if (!currentUser) throw new Error('Utilisateur non connecté')
         
-        const stats = await readingService.getReadingStats(currentUser.id || 1)
+        const stats = await readingSessionService.getReadingStats(currentUser.id || 1)
         // Les stats arrivent sous forme de string, on peut les parser si nécessaire
         return stats
       } catch (error) {

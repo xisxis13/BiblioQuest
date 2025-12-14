@@ -33,9 +33,12 @@ public class ReadingSession {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Long userId;
-
-    private Long bookId;
+    @ManyToOne(fetch = FetchType.LAZY) 
+    @JoinColumns({
+        @JoinColumn(name = "user_id", referencedColumnName = "userId"), // "name" = colonne dans reading_sessions
+        @JoinColumn(name = "book_id", referencedColumnName = "bookId")  // "referencedColumnName" = champ dans UserBookId (ou colonne cible)
+    })
+    private UserBook userBook;
 
     @Min(1)
     @Column(nullable = false)
@@ -54,11 +57,13 @@ public class ReadingSession {
     @Column(length = 500)
     private String sessionNotes;
 
-    // Constructeurs utilitaires
-    public ReadingSession(UserBook userBook, Integer duration, Integer pagesRead) {
-        this.userId = userBook.getId().getUserId();
-        this.bookId = userBook.getId().getBookId();
+    // Constructeur utilitaire
+    public ReadingSession(UserBook userBook, Integer duration, Integer startPage, Integer endPage, String notes) {
+        this.userBook = userBook;
         this.duration = duration;
         this.sessionDate = LocalDateTime.now();
+        this.startPage = startPage;
+        this.endPage = endPage;
+        this.sessionNotes = notes;
     }
 }

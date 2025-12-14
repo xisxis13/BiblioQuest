@@ -7,13 +7,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import prj.books_teamB_spring.dto.ReadingSessionDTO;
 import prj.books_teamB_spring.model.ReadingSession;
-import prj.books_teamB_spring.model.UserBookId;
 import prj.books_teamB_spring.service.ReadingSessionService;
 
 @RestController
@@ -24,14 +25,15 @@ public class ReadingSessionController {
 
     private final ReadingSessionService readingService;
 
-    @PostMapping("/")
-    public ReadingSession addSession(@RequestParam UserBookId userBookId,
-            @RequestParam Integer duration, @RequestParam Integer pagesRead) {
-        return readingService.addSession(userBookId, duration, pagesRead);
+    @PostMapping("")
+    public ReadingSession addSession(@RequestBody ReadingSessionDTO readingSessionDTO) {
+        System.out.println("readingSessionDTO : " + readingSessionDTO);
+        return readingService.addSession(readingSessionDTO);
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public List<ReadingSession> getSessions(@RequestParam Long userId) {
+        System.out.println("HOLA : " + userId);
         return readingService.getSessions(userId);
     }
 

@@ -25,9 +25,9 @@
         <div class="flex flex-col items-start justify-start gap-3">
           <h2 class="text-xl font-semibold text-primary-text">Sessions Récentes</h2>
 
-          <div v-if="recentSessions.length > 0" class="w-full flex flex-col gap-3">
+          <div v-if="readingSessions.length > 0" class="w-full flex flex-col gap-3">
             <SessionCard
-              v-for="session in recentSessions"
+              v-for="session in readingSessions"
               :key="session.id"
               :session="session"
             />
@@ -58,7 +58,10 @@
           </button>
         </div>
 
-        <form  class="w-full h-full px-0.5 flex flex-col items-start justify-start gap-4 overflow-y-scroll">
+        <form 
+          @submit.prevent="addSession"
+          class="w-full h-full px-0.5 flex flex-col items-start justify-start gap-4 overflow-y-scroll"
+        >
           <div class="w-full flex flex-col gap-2">
             <label class="text-sm font-medium text-primary-text">
               Livre
@@ -94,7 +97,7 @@
               Page actuelle
             </label>
             <input
-              v-model.number="newSession.currentPage"
+              v-model.number="newSession.endPage"
               type="number"
               required
               :min="newSession.startPage"
@@ -162,6 +165,8 @@ import MenuBar from '@/components/MenuBar.vue';
 import SessionCard from '@/components/SessionCard.vue';
 import { PenLine, X } from 'lucide-vue-next';
 import { useReadingStore } from '@/stores/readingStore';
+import { useAuthStore } from '@/stores/authStore';
+import readingSessionService from '@/services/readingSessionService';
 
 export default {
   name: 'ReadingTrackerPage',
@@ -174,19 +179,23 @@ export default {
   },
   setup() {
     const readingStore = useReadingStore()
-    return { readingStore }
+    const authStore = useAuthStore()
+
+    const currentUser = authStore.getUser()
+
+    return { readingStore, currentUser }
   },
   data() {
     return {
       newSession: {
         bookId: '',
         startPage: 0,
-        currentPage: 0,
+        endPage: 0,
         duration: 30,
         notes: ''
       },
       currentlyReadingBooks: [],
-      recentSessions: [],
+      readingSessions: [],
       todayStats: {
         pagesRead: 0,
         readingTime: 0,
@@ -201,48 +210,38 @@ export default {
     }
   },
   methods: {
-    updateTodayStats() {
-      const today = new Date().toDateString()
-      const todaySessions = this.readingStore.readingSessions.filter(
-        session => new Date(session.createdAt).toDateString() === today
-      )
-      
-      this.todayStats.sessions = todaySessions.length
-      this.todayStats.pagesRead = todaySessions.reduce((total, session) => total + session.pagesRead, 0)
-      this.todayStats.readingTime = todaySessions.reduce((total, session) => total + session.duration, 0)
-    },
     closeSessionEditor() {
       this.showSessionEditor = false
       this.newSession = {
         bookId: '',
         startPage: 0,
-        currentPage: 0,
+        endPage: 0,
         duration: 30,
         notes: ''
       }
     },
-    async createSession() {
-      const pagesRead = this.newSession.currentPage - this.newSession.startPage
-      
+    async addSession() {
+      console.log("submited")
       const sessionData = {
-        bookId: this.newSession.bookId,
-        startPage: this.newSession.startPage,
-        currentPage: this.newSession.currentPage,
-        pagesRead,
+        userBookDTO: { userId: this.currentUser.id, bookId: this.newSession.bookId },
         duration: this.newSession.duration,
-        notes: this.newSession.notes,
-        totalPages: this.currentlyReadingBooks.find(b => b.id === this.newSession.bookId)?.totalPages || 0
+        sessionNotes: this.newSession.notes,
+        startPage: this.newSession.startPage,
+        endPage: this.newSession.endPage,
       }
 
-      const result = await this.readingStore.createReadingSession(sessionData)
+      const result = await readingSessionService.addSession(sessionData)
       
       if (result.success) {
-        // Close editor and reset form
         this.closeSessionEditor()
-        
-        // Reload sessions
-        this.loadRecentSessions()
-        this.updateTodayStats()
+      }
+    },
+    async loadReadingSessions() {
+      try {
+        const response = await readingSessionService.getSessions(this.currentUser.id)
+        this.readingSessions = response.data
+      } catch (error) {
+        console.error("Y'a une erreur bg : ", error)
       }
     },
     loadMockSessions() {
@@ -253,7 +252,7 @@ export default {
           bookId: 1,
           bookTitle: 'Harry Potter à l\'école des sorciers',
           startPage: 10,
-          currentPage: 46,
+          endPage: 46,
           pagesRead: 36,
           duration: 45,
           notes: 'Chapitre passionnant ! J\'adore découvrir le monde magique.',
@@ -264,7 +263,7 @@ export default {
           bookId: 2,
           bookTitle: 'Le Seigneur des Anneaux',
           startPage: 120,
-          currentPage: 165,
+          endPage: 165,
           pagesRead: 45,
           duration: 60,
           notes: 'La bataille de Helm est incroyable.',
@@ -275,7 +274,7 @@ export default {
           bookId: 3,
           bookTitle: '1984',
           startPage: 50,
-          currentPage: 78,
+          endPage: 78,
           pagesRead: 28,
           duration: 35,
           notes: 'L\'atmosphère dystopique est vraiment oppressante.',
@@ -286,7 +285,7 @@ export default {
           bookId: 1,
           bookTitle: 'Harry Potter à l\'école des sorciers',
           startPage: 1,
-          currentPage: 10,
+          endPage: 10,
           pagesRead: 10,
           duration: 20,
           notes: 'Début prometteur !',
@@ -297,7 +296,7 @@ export default {
           bookId: 4,
           bookTitle: 'Les Misérables',
           startPage: 200,
-          currentPage: 245,
+          endPage: 245,
           pagesRead: 45,
           duration: 55,
           notes: 'Victor Hugo est un génie de la description.',
@@ -314,7 +313,7 @@ export default {
     
 
     // Load mock data for testing
-    this.loadMockSessions()
+    this.loadReadingSessions()
   }
 }
 </script>

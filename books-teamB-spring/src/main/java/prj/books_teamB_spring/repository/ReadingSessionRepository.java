@@ -1,25 +1,30 @@
 package prj.books_teamB_spring.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import prj.books_teamB_spring.model.ReadingSession;
+import prj.books_teamB_spring.model.UserBook;
 
-/**
- * Repository pour la gestion des sessions de lecture
- */
 public interface ReadingSessionRepository extends JpaRepository<ReadingSession, Long> {
     
-    /**
-     * Trouve toutes les sessions d'un utilisateur
-     */
-    List<ReadingSession> findByUserId(Long userId);
-    
-    /**
-     * Trouve les sessions d'un utilisateur pour un livre spécifique
-     */
-    List<ReadingSession> findByUserIdAndBookId(Long userId, Long bookId);
-    
-    
+
+    @Query(
+        value = """
+            SELECT *
+            FROM reading_sessions
+            WHERE user_id = :userId
+        """,
+        nativeQuery = true
+    )
+    List<ReadingSession> findByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT rs FROM ReadingSession rs WHERE rs.userBook.id.userId = :userId AND rs.userBook.id.bookId = :bookId")
+    Optional<UserBook> findByUserIdAndBookId(@Param("userId") Long userId,
+            @Param("bookId") Long bookId);
+
 }
