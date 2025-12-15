@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import prj.books_teamB_spring.model.UserBook;
 import prj.books_teamB_spring.model.UserBookId;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,4 +22,9 @@ public interface UserBookRepository extends JpaRepository<UserBook, UserBookId> 
 
     @Query("SELECT ub FROM UserBook ub WHERE ub.id.bookId = :bookId")
     List<UserBook> findByBookId(@Param("bookId") Long bookId);
+
+    @Query("SELECT ub FROM UserBook ub WHERE ub.id.userId = :userId AND ub.status = 'COMPLETED' AND ub.endDate BETWEEN :startDate AND :endDate")
+    List<UserBook> findCompletedBooksBetween(@Param("userId") Long userId,
+                                             @Param("startDate") LocalDate startDate,
+                                             @Param("endDate") LocalDate endDate);
 }
