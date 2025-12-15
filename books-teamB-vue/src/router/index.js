@@ -20,6 +20,18 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/catalog',
+      name: 'catalog',
+      component: Catalog,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/books/:id',
+      name: 'book-detail',
+      component: BookDetail,
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/my-library',
       name: 'my-library',
       component: MyLibrary,
